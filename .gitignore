@@ -1,0 +1,66 @@
+# -------------------------------------------------------------------
+# GLOBAL IGNORES FOR ALL OPERATING SYSTEMS AND TOOLS
+# -------------------------------------------------------------------
+*.[Oo]bj
+*.[Dd]b
+*.suo
+*.user
+*.useros
+*.vspscc
+*.vssscc
+*.bak
+*.trc
+*.log
+*.zip
+
+# Visual Studio Code specific settings
+.vscode/
+
+# Package caches
+*.nupkg
+*.snupkg
+
+# -------------------------------------------------------------------
+# .NET / VISUAL STUDIO IGNORES
+# -------------------------------------------------------------------
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+# Rider/ReSharper
+.idea/
+*.sln.docstates
+*.resharper
+*.userprefs
+
+# Visual Studio specific files
+.vs/
+*.vsp
+*.pdb
+*.pidb
+*.dll
+*.exe
+
+# -------------------------------------------------------------------
+# ANGULAR / NODE.JS IGNORES (Frontend folder)
+# -------------------------------------------------------------------
+
+# Node modules
+node_modules/
+
+# Compilation output
+dist/
+tmp/
+out/
+.angular/
+
+# Tests / Coverage
+coverage/
+
+# Misc
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
