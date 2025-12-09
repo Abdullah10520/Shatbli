@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Shatbli.API/Shatbli.API.csproj" />
+  <Project Path="Shatbli.Core/Shatbli.Core.csproj" />
+  <Project Path="Shatbli.Data/Shatbli.Data.csproj" />
+  <Project Path="Shatbli.Infrustructure/Shatbli.Infrustructure.csproj" />
+  <Project Path="Shatbli.Service/Shatbli.Service.csproj" />
+</Solution>
