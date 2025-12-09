@@ -6,7 +6,7 @@ from fastapi.responses import Response
 
 app = FastAPI()
 
-client = genai.Client(api_key="AIzaSyCrAfNVf-wJcvjJu6eP5vos8cgjxka0SM0")
+client = genai.Client(api_key="API Key")
 
 
 @app.post("/roomCeramic")
