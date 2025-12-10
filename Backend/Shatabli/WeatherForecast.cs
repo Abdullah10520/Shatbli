@@ -1,4 +1,4 @@
-namespace Shatabli.API
+namespace Shatabli
 {
     public class WeatherForecast
     {

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Shatabli.API.Controllers
+namespace Shatabli.Controllers
 {
     [ApiController]
     [Route("[controller]")]
