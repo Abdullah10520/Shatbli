@@ -13,9 +13,9 @@ namespace Shatabli.Core.Domain.Entities
         public User User { get; set; } = null!;
 
         // Original image
-        public string OriginalImagePath { get; set; } = string.Empty;
+        public string? OriginalImagePath { get; set; } = string.Empty;
         public string OriginalImageUrl { get; set; } = string.Empty;
-        public long OriginalImageSize { get; set; }
+        public long? OriginalImageSize { get; set; }
 
         // Generated image
         public string? GeneratedImagePath { get; set; }
@@ -35,10 +35,10 @@ namespace Shatabli.Core.Domain.Entities
         public string? SelectedWallColor { get; set; }
 
         // AI Processing
-        public string Prompt { get; set; } = string.Empty;
-        public DesignStatus Status { get; set; } = DesignStatus.Pending;
+        public string? Prompt { get; set; } = string.Empty;
+        public DesignStatus? Status { get; set; } = DesignStatus.Pending;
         public string? ErrorMessage { get; set; }
-        public int ProcessingTimeSeconds { get; set; }
+        public int? ProcessingTimeSeconds { get; set; }
 
         // Metadata
         public DateTime? CompletedAt { get; set; }

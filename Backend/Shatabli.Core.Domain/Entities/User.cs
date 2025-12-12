@@ -21,6 +21,6 @@ namespace Shatabli.Core.Domain.Entities
         // Metadata
         public DateTime? LastLoginAt { get; set; }
         public bool IsActive { get; set; } = true;
-        public bool IsEmailVerified { get; set; } = false;
+        public bool? IsEmailVerified { get; set; } = false;
     }
 }

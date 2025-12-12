@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Infrastructure.Context;
+using Shatabli.Infrastructure.Services;
 
 namespace Shatabli.Infrastructure
 {
@@ -20,6 +21,7 @@ namespace Shatabli.Infrastructure
             });
 
             services.AddTransient<IApplicationDbContext, ApplictionDbContext>();
+            services.AddTransient<IStorageService, CloudinaryService>();
             return services;
         }
     }
