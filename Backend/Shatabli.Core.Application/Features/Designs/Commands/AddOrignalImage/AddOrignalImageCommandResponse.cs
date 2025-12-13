@@ -8,6 +8,6 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
 {
     public class AddOrignalImageCommandResponse
     {
-        public string ImageURL {  get; set; }
+        public Stream GeneratedImage {  get; set; }
     }
 }

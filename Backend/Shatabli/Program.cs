@@ -4,6 +4,7 @@ using Shatabli.Infrastructure;
 using Shatabli.Core.Application;
 using Shatabli.Infrastructure.Context;
 using FluentValidation;
+using Shatabli.Infrastructure.Services;
 namespace Shatabli
 {
     public class Program
@@ -31,6 +32,13 @@ namespace Shatabli
             //builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(applicationAssembly));
             //var applicationAssembly = typeof(Shatabli.Core.Application.AssemblyMarker).Assembly; 
 
+            //builder.Services.AddHttpClient<IStorageService, CloudinaryService>();
+
+
+            builder.Services.AddHttpClient<IStorageService, CloudinaryService>(client =>
+            {
+                client.Timeout = TimeSpan.FromMinutes(5);
+            });
 
             var app = builder.Build();
 

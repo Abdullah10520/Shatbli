@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Features\Designs\Queries\" />
-    <Folder Include="Features\Products\Queries\" />
+    <Folder Include="Features\Products\Commands\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +16,7 @@
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
     <PackageReference Include="MediatR" Version="12.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.20" />
   </ItemGroup>
 

@@ -22,6 +22,11 @@ namespace Shatabli.Infrastructure
 
             services.AddTransient<IApplicationDbContext, ApplictionDbContext>();
             services.AddTransient<IStorageService, CloudinaryService>();
+            services.AddTransient<IGenerateRoomImageService, PythonService>();
+
+            
+            
+
             return services;
         }
     }

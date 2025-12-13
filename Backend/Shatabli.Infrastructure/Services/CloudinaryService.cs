@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Shatabli.Core.Application.Interfaces;
+using Shatabli.Core.Domain.Entities;
 
 namespace Shatabli.Infrastructure.Services
 {
@@ -13,7 +14,8 @@ namespace Shatabli.Infrastructure.Services
     {
         public Account account;
         public Cloudinary cloudinary;
-        public CloudinaryService() 
+        private HttpClient _httpClient;
+        public CloudinaryService(HttpClient httpClient) 
         {
             account = new Account(
                 "dymvpdlzd",                            //Cloud Name
@@ -23,13 +25,15 @@ namespace Shatabli.Infrastructure.Services
             cloudinary = new Cloudinary(account);
             cloudinary.Api.Secure = true;
 
+            _httpClient = httpClient;
+
         }
-        public async Task<string> Upload(Stream stream, string ImageName)
+        public async Task<string> Upload(Stream stream, string imagePublicId)
         {
             var uploadparams = new ImageUploadParams()
             {
-                File = new FileDescription(ImageName, stream),
-                PublicId = Path.GetFileNameWithoutExtension(ImageName),
+                File = new FileDescription(imagePublicId, stream),
+                PublicId = imagePublicId,
                 Overwrite = true
             };
 
@@ -40,5 +44,28 @@ namespace Shatabli.Infrastructure.Services
             }
             return "Can't Save The Image";
         }
+
+        public string GetImageURL(string imagePublicId)
+        {
+            string publicId = imagePublicId.ToString();
+            var urlBuilder = cloudinary.Api.UrlImgUp.Format("jpg");
+            return urlBuilder.BuildUrl(publicId);
+        }
+
+        public async Task<Stream> downloadImageStream(string imagePublicId)
+        {
+            var downloadUrl = GetImageURL(imagePublicId);
+            //var urlBuilder = cloudinary.Api.UrlImgUp;
+            
+            //var downloadUrl = urlBuilder.BuildUrl($"OrignalImage/{imagePublicId}");
+            //var downloadUrl = urlBuilder.BuildUrl(imagePublicId);
+
+            var response = await _httpClient.GetAsync(downloadUrl);
+
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStreamAsync();
+
+        }
     }
+    
 }
