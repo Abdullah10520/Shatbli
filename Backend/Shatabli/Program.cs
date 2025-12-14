@@ -1,38 +1,72 @@
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Shatabli.Core.Application;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Infrastructure;
-using Shatabli.Core.Application;
 using Shatabli.Infrastructure.Context;
-using FluentValidation;
+using Shatabli.Infrastructure.Data;
+using Shatabli.Infrastructure.Services;
+using System.Text;
+
 namespace Shatabli
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //
             builder.Services.AddInfrastructureServices(builder.Configuration);
             builder.Services.AddCoreApplicationService();
+            builder.Services.AddScoped<ITokenService, TokenService>();
 
-            //builder.Services.AddScoped<IApplicationDbContext, ApplictionDbContext>();
+            var jwtSettings = builder.Configuration.GetSection("Jwt");
+            var secretKey = jwtSettings["SecretKey"] ?? "YourSecretKeyHere_MustBe32CharactersOrMore!";
 
-            //builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ModuleCoreDependencies).Assembly));
-            //builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(ModuleCoreDependencies).Assembly));
-            //builder.Services.AddMediatR()
-            //builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(applicationAssembly));
-            //var applicationAssembly = typeof(Shatabli.Core.Application.AssemblyMarker).Assembly; 
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtSettings["Issuer"] ?? "ShatabliAPI",
+                    ValidateAudience = true,
+                    ValidAudience = jwtSettings["Audience"] ?? "ShatabliClient",
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
 
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
+
+            // ⚡ Database Seeding
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<ApplictionDbContext>();
+                    await DatabaseSeeder.SeedAsync(context, builder.Configuration);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "❌ An error occurred while seeding the database.");
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -42,13 +76,12 @@ namespace Shatabli
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }
