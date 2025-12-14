@@ -49,9 +49,20 @@ namespace Shatabli.API.Controllers
             var roomStream = roomImageFile.OpenReadStream();
             var ceramicOrPaintStream = ceramicOrPaintImageFile.OpenReadStream();
 
+            MemoryStream roomMemoryStream = new MemoryStream();
+            MemoryStream ceramicMemoryStream = new MemoryStream();
+
+            await roomStream.CopyToAsync(roomMemoryStream);
+            await ceramicOrPaintStream.CopyToAsync(ceramicMemoryStream);
+
+            var roomBytes = roomMemoryStream.ToArray();
+            var ceramicOrPaintBytes = ceramicMemoryStream.ToArray();
+
+
+
             AddDesignWithUserCeramicImageCommand request = new AddDesignWithUserCeramicImageCommand();
-            request.roomstream = roomStream;
-            request.ceramicOrPaintStream = ceramicOrPaintStream;
+            request.roomBytes = roomBytes;
+            request.ceramicOrPaintBytes = ceramicOrPaintBytes;
             request.roomimageName = roomImageFile.FileName;
             request.ceramicOrPaintimageName = ceramicOrPaintImageFile.FileName;
             request.designType = designType;

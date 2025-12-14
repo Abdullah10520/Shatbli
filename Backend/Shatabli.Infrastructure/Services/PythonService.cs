@@ -17,7 +17,7 @@ namespace Shatabli.Infrastructure.Services
         {
             _storageService = storageService;
         }
-        public async Task<byte[]> GenerateImage(Stream roomImage, Stream ceramicImage , DesignType designType)
+        public async Task<byte[]> GenerateImage(byte[] roomImage, byte[] ceramicImage , DesignType designType)
         {
             //var image = await _storageService.downloadImageStream("screencapture-elite-car-vue-lovable-app-2025-11-26-22_08_22");
             var image = await _storageService.downloadImageStream("Image1");

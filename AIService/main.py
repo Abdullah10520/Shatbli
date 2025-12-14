@@ -2,7 +2,7 @@ import google.genai as genai
 from google.genai import types
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import Response
-
+pip
 
 app = FastAPI()
 

@@ -23,12 +23,14 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
         }
         public async Task<AddDesignWithUserCeramicImageResponse> Handle(AddDesignWithUserCeramicImageCommand request, CancellationToken cancellationToken)
         {
-            var roomImageUrl = await _storageService.Upload(request.roomstream, request.roomimageName);
+            var roomImageUrl = await _storageService.Upload(new MemoryStream(request.roomBytes), request.roomimageName);
+            //var roomImageUrl = await _storageService.Upload(request.roomstream, request.roomimageName);
 
-            var ceramicOrPaintImageUrl = await _storageService.Upload(request.ceramicOrPaintStream, request.ceramicOrPaintimageName);
+            var ceramicOrPaintImageUrl = await _storageService.Upload(new MemoryStream( request.ceramicOrPaintBytes), request.ceramicOrPaintimageName);
+            //var ceramicOrPaintImageUrl = await _storageService.Upload(request.ceramicOrPaintStream, request.ceramicOrPaintimageName);
 
 
-            var GeneratedImageBytes = await _generateRoomImageService.GenerateImage(request.roomstream, request.ceramicOrPaintStream, request.designType);
+            var GeneratedImageBytes = await _generateRoomImageService.GenerateImage(request.roomBytes, request.ceramicOrPaintBytes, request.designType);
 
             var genImageUrl = "";
 
