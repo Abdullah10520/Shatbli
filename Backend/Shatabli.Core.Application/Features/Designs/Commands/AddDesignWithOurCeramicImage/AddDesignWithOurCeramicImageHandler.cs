@@ -35,7 +35,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
             var ceramicImage = await _mediator.Send(query);
 
 
-            var generatedImageBytes = await _generateRoomImageService.GenerateImageWithCeramic(request.stream, ceramicImage.Stream, request.designType);
+            var generatedImageBytes = await _generateRoomImageService.GenerateImage(request.stream, ceramicImage.Stream, request.designType);
 
             
             var GeneratedImageURL = "";

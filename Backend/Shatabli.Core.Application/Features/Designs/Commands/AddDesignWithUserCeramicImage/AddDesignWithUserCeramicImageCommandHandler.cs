@@ -28,7 +28,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
             var ceramicOrPaintImageUrl = await _storageService.Upload(request.ceramicOrPaintStream, request.ceramicOrPaintimageName);
 
 
-            var GeneratedImageBytes = await _generateRoomImageService.GenerateImageWithCeramic(request.roomstream, request.ceramicOrPaintStream, request.designType);
+            var GeneratedImageBytes = await _generateRoomImageService.GenerateImage(request.roomstream, request.ceramicOrPaintStream, request.designType);
 
             var genImageUrl = "";
 
