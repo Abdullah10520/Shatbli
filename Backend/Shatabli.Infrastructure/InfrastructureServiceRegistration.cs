@@ -23,9 +23,12 @@ namespace Shatabli.Infrastructure
             services.AddTransient<IApplicationDbContext, ApplictionDbContext>();
             services.AddTransient<IStorageService, CloudinaryService>();
             services.AddTransient<IGenerateRoomImageService, PythonService>();
+            services.AddHttpClient("AIService", client =>
+            {
+                client.BaseAddress = new Uri("http://127.0.0.1:8000");
+            });
 
-            
-            
+
 
             return services;
         }
