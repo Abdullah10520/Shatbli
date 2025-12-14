@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Infrastructure.Context;
+using Shatabli.Infrastructure.Services;
 
 namespace Shatabli.Infrastructure
 {
@@ -18,9 +19,13 @@ namespace Shatabli.Infrastructure
                 .EnableSensitiveDataLogging(true);
             });
 
-            // ⚡ الحل: استخدم AddScoped بدل AddTransient
-            services.AddScoped<IApplicationDbContext>(provider =>
-                provider.GetRequiredService<ApplictionDbContext>());
+           
+            services.AddTransient<IApplicationDbContext, ApplictionDbContext>();
+            services.AddTransient<IStorageService, CloudinaryService>();
+            services.AddTransient<IGenerateRoomImageService, PythonService>();
+
+            
+            
 
             return services;
         }

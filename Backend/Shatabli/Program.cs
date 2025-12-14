@@ -7,7 +7,7 @@ using Shatabli.Infrastructure.Context;
 using Shatabli.Infrastructure.Data;
 using Shatabli.Infrastructure.Services;
 using System.Text;
-
+using FluentValidation;
 namespace Shatabli
 {
     public class Program
@@ -49,6 +49,13 @@ namespace Shatabli
             });
 
             builder.Services.AddAuthorization();
+            //builder.Services.AddHttpClient<IStorageService, CloudinaryService>();
+
+
+            builder.Services.AddHttpClient<IStorageService, CloudinaryService>(client =>
+            {
+                client.Timeout = TimeSpan.FromMinutes(5);
+            });
 
             var app = builder.Build();
 

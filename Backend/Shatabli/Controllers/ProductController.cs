@@ -2,7 +2,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Shatabli.Core.Application.Features.Products.Commands.Add;
 
 namespace Shatabli.API.Controllers
 {
@@ -14,13 +13,6 @@ namespace Shatabli.API.Controllers
         public ProductController(IMediator mediator)
         {
             _mediator = mediator;
-        }
-        [HttpPost]
-        public async Task<IActionResult> AddProduct(AddProductCommand query)
-        {
-            //var query = new AddProductCommand();
-            var result = await _mediator.Send(query);
-            return Ok(result);
         }
     }
 }
