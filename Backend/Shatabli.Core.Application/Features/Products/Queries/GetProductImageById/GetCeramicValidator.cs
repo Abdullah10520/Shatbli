@@ -5,10 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
 
-namespace Shatabli.Core.Application.Features.Products.Commands.Add
+namespace Shatabli.Core.Application.Features.Products.Queries.GetProductImageById
 {
-    public class AddProductCommandValidator : AbstractValidator<AddProductCommand>
+    public class GetCeramicValidator : AbstractValidator<GetCeramicQuery>
     {
-
     }
 }
