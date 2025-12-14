@@ -1,31 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Core.Domain.Entities;
 
 namespace Shatabli.Infrastructure.Context
 {
-    public class ApplictionDbContext : DbContext,IApplicationDbContext
+    public class ApplictionDbContext : DbContext, IApplicationDbContext
     {
         public ApplictionDbContext(DbContextOptions<ApplictionDbContext> options) : base(options) { }
 
-        // Catalog Management
         public DbSet<Product> Products { get; set; }
 
-        // Design Studio
         public DbSet<Design> Designs { get; set; }
         public DbSet<AIProcessingLog> AIProcessingLogs { get; set; }
 
-        // User Management
         public DbSet<User> Users { get; set; }
 
         public override int SaveChanges()
         {
-            //For Auidit
             UpdateTimestamps();
             return base.SaveChanges();
         }
@@ -68,7 +59,6 @@ namespace Shatabli.Infrastructure.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            // Product entity configuration
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -88,7 +78,6 @@ namespace Shatabli.Infrastructure.Context
                 entity.HasIndex(e => e.IsActive);
             });
 
-            // User entity configuration
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -102,7 +91,6 @@ namespace Shatabli.Infrastructure.Context
                 entity.HasIndex(e => e.Role);
             });
 
-            // Design entity configuration
             modelBuilder.Entity<Design>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -130,21 +118,6 @@ namespace Shatabli.Infrastructure.Context
                 entity.HasIndex(e => e.CreatedAt);
             });
 
-            // ScrapingJob entity configuration
-            //modelBuilder.Entity<ScrapingJob>(entity =>
-            //{
-            //    entity.HasKey(e => e.Id);
-            //    entity.Property(e => e.VendorName).IsRequired().HasMaxLength(100);
-            //    entity.Property(e => e.TargetUrl).IsRequired().HasMaxLength(500);
-            //    entity.Property(e => e.Category).IsRequired();
-            //    entity.Property(e => e.Status).IsRequired();
-            //    entity.Property(e => e.ErrorDetails).HasMaxLength(2000);
-
-            //    entity.HasIndex(e => e.Status);
-            //    entity.HasIndex(e => e.CreatedAt);
-            //});
-
-            // AIProcessingLog entity configuration
             modelBuilder.Entity<AIProcessingLog>(entity =>
             {
                 entity.HasKey(e => e.Id);
