@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shatabli.Core.Application.Features.Products.Commands.AddProductsFromExel;
 
 namespace Shatabli.API.Controllers
 {
@@ -14,5 +15,20 @@ namespace Shatabli.API.Controllers
         {
             _mediator = mediator;
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveProductsFromExcel(IFormFile excelFile)
+        {
+            var excelStream = excelFile.OpenReadStream();
+
+            AddProductsFromExelCommand request = new AddProductsFromExelCommand();
+            request.stream = excelStream ;
+
+            var response = await _mediator.Send(request);
+
+            return Ok();
+        }
+
+
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Shatabli.Core.Application.Interfaces;
+using Shatabli.Core.Domain.Enums;
 
 namespace Shatabli.Infrastructure.Services
 {
@@ -16,13 +17,21 @@ namespace Shatabli.Infrastructure.Services
         {
             _storageService = storageService;
         }
-        public async Task<byte[]> GenerateImageWithCeramic(Stream roomImage, Stream ceramicImage)
+        public async Task<byte[]> GenerateImageWithCeramic(Stream roomImage, Stream ceramicImage , DesignType designType)
         {
-            var image = await _storageService.downloadImageStream("screencapture-elite-car-vue-lovable-app-2025-11-26-22_08_22");
+            //var image = await _storageService.downloadImageStream("screencapture-elite-car-vue-lovable-app-2025-11-26-22_08_22");
+            var image = await _storageService.downloadImageStream("Image1");
+
+            if(designType == DesignType.CeramicFloor)
+            {
+
+            }
+            else if(designType == DesignType.WallPaint)
+            {
+
+            }
 
 
-                        
-            
             var memoryStream = new MemoryStream();
             await image.CopyToAsync(memoryStream);
 

@@ -3,10 +3,12 @@ using Azure.Core;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicImage;
 using Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage;
 using Shatabli.Core.Application.Features.Products.Queries.GetProductImageById;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Core.Domain.Entities;
+using Shatabli.Core.Domain.Enums;
 
 namespace Shatabli.API.Controllers
 {
@@ -24,13 +26,14 @@ namespace Shatabli.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateDesign(IFormFile imageFile , string ceramicId)
+        public async Task<IActionResult> GenerateDesign(IFormFile imageFile , string ceramicId ,DesignType designType)
         {
             var imageStream = imageFile.OpenReadStream();
-            AddOrignalImageCommand request = new AddOrignalImageCommand();
+            AddDesignWithOurCeramicImageCommand request = new AddDesignWithOurCeramicImageCommand();
             request.stream = imageStream;
-            request.ImageName = imageFile.FileName;
-            request.CeramicId = ceramicId;
+            request.imageName = imageFile.FileName;
+            request.ceramicId = ceramicId;
+            request.designType = designType; 
 
             var result = await _mediator.Send(request);
 
@@ -41,10 +44,24 @@ namespace Shatabli.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateDesignWithUserCeramicImage(IFormFile roomImageFile, IFormFile ceramicImageFile)
+        public async Task<IActionResult> GenerateDesignWithUserCeramicImage(IFormFile roomImageFile ,IFormFile ceramicOrPaintImageFile ,DesignType designType)
         {
+            var roomStream = roomImageFile.OpenReadStream();
+            var ceramicOrPaintStream = ceramicOrPaintImageFile.OpenReadStream();
 
-            return Ok();
+            AddDesignWithUserCeramicImageCommand request = new AddDesignWithUserCeramicImageCommand();
+            request.roomstream = roomStream;
+            request.ceramicOrPaintStream = ceramicOrPaintStream;
+            request.roomimageName = roomImageFile.FileName;
+            request.ceramicOrPaintimageName = ceramicOrPaintImageFile.FileName;
+            request.designType = designType;
+
+            var result = await _mediator.Send(request);
+
+            return File(result.GeneratedImage, "image/png");
+
+
+            //return Ok();
 
         }
 
