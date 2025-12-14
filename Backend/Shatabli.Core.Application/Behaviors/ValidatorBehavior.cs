@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 
 
 namespace Shatabli.Core.Application.Behaviors
 {
-    public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-        /// The 'where' constraint ensures this behavior only runs on types that are MediatR requests
-        where TRequest : IRequest<TResponse>
+    public class ValidationBehavior<TRequest, TResponse>
+    : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IRequest<TResponse>
     {
         /// This field will hold all validators that are registered for the current TRequest.
         private readonly IEnumerable<IValidator<TRequest>> _validators;
