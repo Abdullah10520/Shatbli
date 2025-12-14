@@ -3,15 +3,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
+using Shatabli.Core.Application.Interfaces;
+using Shatabli.Core.Domain.Entities;
 
 namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicImage
 {
     public class AddDesignWithUserCeramicImageCommandHandler : IRequestHandler<AddDesignWithUserCeramicImageCommand, AddDesignWithUserCeramicImageResponse>
     {
-        public Task<AddDesignWithUserCeramicImageResponse> Handle(AddDesignWithUserCeramicImageCommand request, CancellationToken cancellationToken)
+        private readonly IApplicationDbContext _context;
+        public IStorageService _storageService;
+        private readonly IGenerateRoomImageService _generateRoomImageService;
+        public AddDesignWithUserCeramicImageCommandHandler(IApplicationDbContext context ,IGenerateRoomImageService generateRoomImageService ,IStorageService storageService )
         {
-            throw new NotImplementedException();
+            _context = context;
+            _storageService = storageService;
+            _generateRoomImageService = generateRoomImageService;
+        }
+        public async Task<AddDesignWithUserCeramicImageResponse> Handle(AddDesignWithUserCeramicImageCommand request, CancellationToken cancellationToken)
+        {
+            var roomImageUrl = await _storageService.Upload(request.roomstream, request.roomimageName);
+
+            var ceramicOrPaintImageUrl = await _storageService.Upload(request.ceramicOrPaintStream, request.ceramicOrPaintimageName);
+
+
+            var GeneratedImageBytes = await _generateRoomImageService.GenerateImage(request.roomstream, request.ceramicOrPaintStream, request.designType);
+
+            var genImageUrl = "";
+
+            using (var genstream = new MemoryStream(GeneratedImageBytes))
+            {
+                genImageUrl = await _storageService.Upload(genstream, request.roomimageName + "Ai gen");
+            }
+
+            var genImgStream = new MemoryStream(GeneratedImageBytes);
+
+            AddDesignWithUserCeramicImageResponse response = new AddDesignWithUserCeramicImageResponse();
+            response.GeneratedImage = genImgStream;
+
+
+            Design design = new Design();
+            design.UserId = 4;
+            design.OriginalImageUrl = roomImageUrl;
+            design.GeneratedImageUrl = genImageUrl;
+            design.CeramicImageUrl = ceramicOrPaintImageUrl;
+
+            await _context.Designs.AddAsync(design, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return response;
+
+
         }
     }
 }

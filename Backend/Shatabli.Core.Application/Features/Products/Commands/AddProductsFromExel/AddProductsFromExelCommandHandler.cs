@@ -1,0 +1,90 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
+using Shatabli.Core.Application.Interfaces;
+using Shatabli.Core.Domain.Entities;
+
+namespace Shatabli.Core.Application.Features.Products.Commands.AddProductsFromExel
+{
+    public class AddProductsFromExelCommandHandler : IRequestHandler<AddProductsFromExelCommand, AddProductsFromExelResponse>
+    {
+        private readonly HttpClient httpClient;
+        private readonly IStorageService _storageService;
+        private readonly IApplicationDbContext _context;
+
+        public AddProductsFromExelCommandHandler(HttpClient httpClient ,IStorageService storageService, IApplicationDbContext context)
+        {
+            this.httpClient = httpClient;
+            _storageService = storageService;
+            _context = context;
+        }
+        async Task<AddProductsFromExelResponse> IRequestHandler<AddProductsFromExelCommand, AddProductsFromExelResponse>.Handle(AddProductsFromExelCommand request, CancellationToken cancellationToken)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            using (var htttpClient = new HttpClient())
+            using (var package = new ExcelPackage(request.stream))
+            {
+                var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+
+                int startRow = 2; // افتراض أن الصف الأول Headers
+                int rowCount = worksheet.Dimension.Rows;
+
+                for (int rowNum = startRow; rowNum <= rowCount; rowNum++)
+                {
+                    try
+                    {
+                        // 1. الاستخلاص (Extract): قراءة البيانات من الأعمدة
+                        var productName = worksheet.Cells[rowNum, 2].Text;      // العمود A
+                        var productSize = worksheet.Cells[rowNum, 3].Text; // العمود B
+                        var productPrice = worksheet.Cells[rowNum, 4].Text;
+                        var imageExternalUrl = worksheet.Cells[rowNum, 5].Text; // العمود C - رابط الصورة الخارجي
+
+                        string finalImageUrl = null;
+
+                        if (!string.IsNullOrEmpty(imageExternalUrl))
+                        {
+                            // 2. التنزيل (Download):
+                            var imageResponse = await httpClient.GetAsync(imageExternalUrl);
+                            imageResponse.EnsureSuccessStatusCode();
+
+                            // 3. الرفع (Upload):
+                            using (var imageStream = await imageResponse.Content.ReadAsStreamAsync())
+                            {
+                                // توليد Public ID فريد للصورة (مثلاً اسم المجلد + UUID)
+                                string publicId = productName;  //$"{cloudinaryFolderName}/{Guid.NewGuid()}";
+                                finalImageUrl = await _storageService.Upload(imageStream, publicId);
+                            }
+                        }
+
+                        // 4. التحويل (Transform) و 5. التخزين (Load):
+                        var product = new Product
+                        {
+                            Name = productName,
+                            Size = productSize,
+                            ImageUrl = finalImageUrl, // رابط Cloudinary النهائي
+                            ImagePath = imageExternalUrl                           // ... أي خصائص أخرى ...
+                        };
+
+                        await _context.Products.AddAsync(product);
+                    }
+                    catch (Exception ex)
+                    {
+                        // يجب تسجيل الخطأ هنا لتحديد الصف الذي فشل
+                        Console.WriteLine($"Failed to import row {rowNum}: {ex.Message}");
+                    }
+                }
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+
+            return new AddProductsFromExelResponse();
+        }
+    }
+}

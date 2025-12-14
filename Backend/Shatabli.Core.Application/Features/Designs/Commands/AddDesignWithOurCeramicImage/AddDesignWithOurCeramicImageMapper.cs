@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
 {
-    public class AddOrignalImageCommandResponse
+    internal class AddDesignWithOurCeramicImageMapper
     {
-        public Stream GeneratedImage {  get; set; }
     }
 }
