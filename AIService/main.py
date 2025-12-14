@@ -3,7 +3,6 @@ from google.genai import types
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import Response
 
-
 app = FastAPI()
 
 client = genai.Client(api_key="API Key")

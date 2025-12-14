@@ -35,24 +35,24 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
             var ceramicImage = await _mediator.Send(query);
 
 
-            var generatedImageBytes = await _generateRoomImageService.GenerateImage(request.stream, ceramicImage.Stream, request.designType);
+            //var generatedImageBytes = await _generateRoomImageService.GenerateImage( request.stream, ceramicImage.Stream, request.designType);
 
             
             var GeneratedImageURL = "";
 
-            using (var uploadStream = new MemoryStream(generatedImageBytes))
-            {
-                GeneratedImageURL = await _storageService.Upload(uploadStream, request.imageName+"Ai Generated");
-            }
+            //using (var uploadStream = new MemoryStream(generatedImageBytes))
+            //{
+            //    GeneratedImageURL = await _storageService.Upload(uploadStream, request.imageName+"Ai Generated");
+            //}
 
             var ceramicImageUrl = _storageService.GetImageURL(request.ceramicId);
 
 
             AddDesignWithOurCeramicImageResponse result = new AddDesignWithOurCeramicImageResponse();
 
-            var streamToReturn = new MemoryStream(generatedImageBytes);
+            //var streamToReturn = new MemoryStream(generatedImageBytes);
 
-            result.GeneratedImage = streamToReturn;
+            //result.GeneratedImage = streamToReturn;
 
             Design design = new Design();
             design.UserId = 4;

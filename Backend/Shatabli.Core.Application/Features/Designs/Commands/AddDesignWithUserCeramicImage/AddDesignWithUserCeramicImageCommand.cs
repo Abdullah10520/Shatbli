@@ -10,8 +10,10 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
 {
     public class AddDesignWithUserCeramicImageCommand : IRequest<AddDesignWithUserCeramicImageResponse>
     {
-        public Stream roomstream { get; set; }
-        public Stream ceramicOrPaintStream { get; set; }
+        public byte[] roomBytes { get; set; }
+        //public Stream roomstream { get; set; }
+        public byte[] ceramicOrPaintBytes { get; set; }
+        //public Stream ceramicOrPaintStream { get; set; }
         public string roomimageName { get; set; }
         public string ceramicOrPaintimageName { get; set; }
         public DesignType designType { get; set; }
