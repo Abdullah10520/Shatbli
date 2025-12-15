@@ -29,8 +29,13 @@ namespace Shatabli.API.Controllers
         public async Task<IActionResult> GenerateDesign(IFormFile imageFile , string ceramicId ,DesignType designType)
         {
             var imageStream = imageFile.OpenReadStream();
+
+            MemoryStream roomImageMemoryStream = new MemoryStream();
+
+            await imageStream.CopyToAsync(roomImageMemoryStream);
+
             AddDesignWithOurCeramicImageCommand request = new AddDesignWithOurCeramicImageCommand();
-            request.stream = imageStream;
+            request.stream = roomImageMemoryStream.ToArray();
             request.imageName = imageFile.FileName;
             request.ceramicId = ceramicId;
             request.designType = designType; 

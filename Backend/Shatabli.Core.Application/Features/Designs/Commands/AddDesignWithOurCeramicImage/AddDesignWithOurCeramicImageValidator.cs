@@ -19,10 +19,10 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
 
 
             // Check Not Empty
-            RuleFor(c => c.stream)
-                .Must(StreamMustHaveData)
-                .When(c => c.stream != null)
-                .WithMessage("The Image File Is Empty ");
+            //RuleFor(c => c.stream)
+                //.Must(StreamMustHaveData)
+                //.When(c => c.stream != null)
+                //.WithMessage("The Image File Is Empty ");
 
             // Check On File Name Exists Or Not
             RuleFor(c => c.imageName)
