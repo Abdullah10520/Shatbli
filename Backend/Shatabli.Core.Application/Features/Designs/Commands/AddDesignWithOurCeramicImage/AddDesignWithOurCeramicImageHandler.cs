@@ -55,10 +55,10 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
             //result.GeneratedImage = streamToReturn;
 
             Design design = new Design();
-            design.UserId = 4;
+            design.UserId = "4";
             design.OriginalImageUrl = cloudinaryImageUrl;
             design.GeneratedImageUrl = GeneratedImageURL;
-            design.CeramicImageUrl = ceramicImageUrl;
+            design.ProductImageUrl = ceramicImageUrl;
 
             await _context.Designs.AddAsync(design, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);

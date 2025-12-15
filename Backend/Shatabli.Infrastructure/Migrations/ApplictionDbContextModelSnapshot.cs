@@ -24,24 +24,8 @@ namespace Shatabli.Infrastructure.Migrations
 
             modelBuilder.Entity("Shatabli.Core.Domain.Entities.AIProcessingLog", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal?>("ApiCost")
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<string>("ApiEndpoint")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("ApiVersion")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -50,21 +34,19 @@ namespace Shatabli.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("DelatedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DesignId")
-                        .HasColumnType("int");
+                    b.Property<string>("DesignId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ErrorMessage")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("ErrorStackTrace")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -76,26 +58,11 @@ namespace Shatabli.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Prompt")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("RequestPayload")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("RequestedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("RespondedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ResponsePayload")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ResponseTimeMs")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -111,17 +78,8 @@ namespace Shatabli.Infrastructure.Migrations
 
             modelBuilder.Entity("Shatabli.Core.Domain.Entities.Design", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CeramicImagePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CeramicImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime2");
@@ -133,7 +91,7 @@ namespace Shatabli.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("DelatedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
@@ -141,9 +99,6 @@ namespace Shatabli.Infrastructure.Migrations
 
                     b.Property<int>("DesignType")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("DownloadedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("ErrorMessage")
                         .HasMaxLength(1000)
@@ -153,17 +108,11 @@ namespace Shatabli.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<long?>("GeneratedImageSize")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("GeneratedImageUrl")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDownloaded")
                         .HasColumnType("bit");
 
                     b.Property<string>("ModifiedBy")
@@ -175,27 +124,16 @@ namespace Shatabli.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<long?>("OriginalImageSize")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("OriginalImageUrl")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int?>("ProcessingTimeSeconds")
-                        .HasColumnType("int");
+                    b.Property<string>("ProductImagePath")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Prompt")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<int?>("SelectedCeramicProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SelectedWallColor")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<string>("ProductImageUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -203,14 +141,13 @@ namespace Shatabli.Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt");
-
-                    b.HasIndex("SelectedCeramicProductId");
 
                     b.HasIndex("Status");
 
@@ -221,22 +158,11 @@ namespace Shatabli.Infrastructure.Migrations
 
             modelBuilder.Entity("Shatabli.Core.Domain.Entities.Product", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Brand")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Category")
                         .HasColumnType("int");
-
-                    b.Property<string>("ColorCode")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -245,7 +171,7 @@ namespace Shatabli.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("DelatedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
@@ -266,9 +192,6 @@ namespace Shatabli.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastScrapedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("ModifiedBy")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -278,28 +201,8 @@ namespace Shatabli.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<decimal?>("PricePerUnit")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Size")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("SourceUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Texture")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Vendor")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -307,18 +210,13 @@ namespace Shatabli.Infrastructure.Migrations
 
                     b.HasIndex("IsActive");
 
-                    b.HasIndex("Vendor");
-
                     b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Shatabli.Core.Domain.Entities.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -327,7 +225,7 @@ namespace Shatabli.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("DelatedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
@@ -349,7 +247,7 @@ namespace Shatabli.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool?>("IsEmailVerified")
+                    b.Property<bool>("IsEmailVerified")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastLoginAt")
@@ -396,18 +294,11 @@ namespace Shatabli.Infrastructure.Migrations
 
             modelBuilder.Entity("Shatabli.Core.Domain.Entities.Design", b =>
                 {
-                    b.HasOne("Shatabli.Core.Domain.Entities.Product", "SelectedCeramicProduct")
-                        .WithMany()
-                        .HasForeignKey("SelectedCeramicProductId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Shatabli.Core.Domain.Entities.User", "User")
                         .WithMany("Designs")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("SelectedCeramicProduct");
 
                     b.Navigation("User");
                 });

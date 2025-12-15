@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Shatabli.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class ChangeIDToString : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,24 +15,15 @@ namespace Shatabli.Infrastructure.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Vendor = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Category = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Texture = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Size = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    PricePerUnit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    ColorCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    Brand = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    SourceUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    LastScrapedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DelatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -47,8 +38,7 @@ namespace Shatabli.Infrastructure.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -58,8 +48,8 @@ namespace Shatabli.Infrastructure.Migrations
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsEmailVerified = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DelatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -74,30 +64,21 @@ namespace Shatabli.Infrastructure.Migrations
                 name: "Designs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     OriginalImagePath = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     OriginalImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    OriginalImageSize = table.Column<long>(type: "bigint", nullable: false),
                     GeneratedImagePath = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     GeneratedImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    GeneratedImageSize = table.Column<long>(type: "bigint", nullable: true),
                     DesignType = table.Column<int>(type: "int", nullable: false),
-                    SelectedCeramicProductId = table.Column<int>(type: "int", nullable: true),
-                    CeramicImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CeramicImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SelectedWallColor = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    Prompt = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    ProductImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     ErrorMessage = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    ProcessingTimeSeconds = table.Column<int>(type: "int", nullable: false),
                     CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDownloaded = table.Column<bool>(type: "bit", nullable: false),
-                    DownloadedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DelatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -106,12 +87,6 @@ namespace Shatabli.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Designs", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Designs_Products_SelectedCeramicProductId",
-                        column: x => x.SelectedCeramicProductId,
-                        principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Designs_Users_UserId",
                         column: x => x.UserId,
@@ -124,24 +99,15 @@ namespace Shatabli.Infrastructure.Migrations
                 name: "AIProcessingLogs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DesignId = table.Column<int>(type: "int", nullable: false),
-                    Prompt = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
-                    RequestPayload = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DesignId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     RequestedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ResponsePayload = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RespondedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ResponseTimeMs = table.Column<int>(type: "int", nullable: false),
                     IsSuccess = table.Column<bool>(type: "bit", nullable: false),
                     ErrorMessage = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    ErrorStackTrace = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ApiEndpoint = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    ApiVersion = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    ApiCost = table.Column<decimal>(type: "decimal(18,4)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DelatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ModifiedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -174,11 +140,6 @@ namespace Shatabli.Infrastructure.Migrations
                 column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Designs_SelectedCeramicProductId",
-                table: "Designs",
-                column: "SelectedCeramicProductId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Designs_Status",
                 table: "Designs",
                 column: "Status");
@@ -199,11 +160,6 @@ namespace Shatabli.Infrastructure.Migrations
                 column: "IsActive");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Products_Vendor",
-                table: "Products",
-                column: "Vendor");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
@@ -222,10 +178,10 @@ namespace Shatabli.Infrastructure.Migrations
                 name: "AIProcessingLogs");
 
             migrationBuilder.DropTable(
-                name: "Designs");
+                name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "Designs");
 
             migrationBuilder.DropTable(
                 name: "Users");

@@ -23,6 +23,8 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
         }
         public async Task<AddDesignWithUserCeramicImageResponse> Handle(AddDesignWithUserCeramicImageCommand request, CancellationToken cancellationToken)
         {
+            string designId = Guid.NewGuid().ToString();
+
             var roomImageUrl = await _storageService.Upload(new MemoryStream(request.roomBytes), request.roomimageName);
             //var roomImageUrl = await _storageService.Upload(request.roomstream, request.roomimageName);
 
@@ -46,10 +48,10 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
 
 
             Design design = new Design();
-            design.UserId = 1;
+            design.UserId = "4";
             design.OriginalImageUrl = roomImageUrl;
             design.GeneratedImageUrl = genImageUrl;
-            design.CeramicImageUrl = ceramicOrPaintImageUrl;
+            design.ProductImageUrl = ceramicOrPaintImageUrl;
 
             await _context.Designs.AddAsync(design, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);

@@ -68,7 +68,7 @@ namespace Shatabli.Core.Application.Features.Products.Commands.AddProductsFromEx
                         var product = new Product
                         {
                             Name = productName,
-                            Size = productSize,
+                            //Size = productSize,
                             ImageUrl = finalImageUrl, // رابط Cloudinary النهائي
                             ImagePath = imageExternalUrl                           // ... أي خصائص أخرى ...
                         };
