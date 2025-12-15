@@ -46,7 +46,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
 
 
             Design design = new Design();
-            design.UserId = 4;
+            design.UserId = 1;
             design.OriginalImageUrl = roomImageUrl;
             design.GeneratedImageUrl = genImageUrl;
             design.CeramicImageUrl = ceramicOrPaintImageUrl;

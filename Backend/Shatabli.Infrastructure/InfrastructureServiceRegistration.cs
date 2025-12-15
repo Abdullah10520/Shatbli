@@ -23,9 +23,17 @@ namespace Shatabli.Infrastructure
             services.AddTransient<IApplicationDbContext, ApplictionDbContext>();
             services.AddTransient<IStorageService, CloudinaryService>();
             services.AddTransient<IGenerateRoomImageService, PythonService>();
+            services.AddHttpClient("AIService", client =>
+            {
+                var baseAddress = configuration["AIService:BaseAddress"];
+                if (string.IsNullOrEmpty(baseAddress))
+                {
+                    throw new InvalidOperationException("AIService:BaseAddress configuration is missing.");
+                }
+                client.BaseAddress = new Uri(baseAddress);
+            });
 
-            
-            
+
 
             return services;
         }
