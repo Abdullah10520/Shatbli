@@ -7,7 +7,7 @@ namespace Shatabli.Core.Application.Features.Users.Commands.UpdateProfile
         public UpdateProfileCommandValidator()
         {
             RuleFor(x => x.UserId)
-                .GreaterThan(0).WithMessage("User ID must be greater than 0");
+                .NotEmpty().WithMessage("User ID must be provided");
 
             RuleFor(x => x.FullName)
                 .NotEmpty().WithMessage("Full name is required")

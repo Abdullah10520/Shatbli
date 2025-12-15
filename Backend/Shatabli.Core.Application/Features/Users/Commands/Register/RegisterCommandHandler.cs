@@ -7,7 +7,7 @@ using Shatabli.Core.Domain.Enums;
 
 namespace Shatabli.Core.Application.Features.Users.Commands.Register
 {
-    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, int>
+    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -18,7 +18,7 @@ namespace Shatabli.Core.Application.Features.Users.Commands.Register
             _mapper = mapper;
         }
 
-        public async Task<int> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             // Check if email already exists
             var existingUser = await _context.Users
@@ -34,6 +34,7 @@ namespace Shatabli.Core.Application.Features.Users.Commands.Register
 
             var user = new User
             {
+                Id = Guid.NewGuid().ToString(),
                 Email = request.Email,
                 PasswordHash = passwordHash,
                 FullName = request.FullName,
