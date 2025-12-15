@@ -39,9 +39,17 @@ namespace Shatabli.Infrastructure.Services
             form.Add(ceramicContent, "ceramicTileImage", "tile.jpg");
 
             HttpResponseMessage response;
+            // Determine endpoint based on designType
+            string endpoint = designType switch
+            {
+                DesignType.CeramicFloor => "/roomCeramic",
+                DesignType.WallPaint => "/roomWallPaint",
+                // Add more mappings as needed
+                _ => "/roomCeramic"
+            };
             try
             {
-                response = await _httpClient.PostAsync("/roomCeramic", form);
+                response = await _httpClient.PostAsync(endpoint, form);
                 response.EnsureSuccessStatusCode();
 
                 return await response.Content.ReadAsByteArrayAsync();
