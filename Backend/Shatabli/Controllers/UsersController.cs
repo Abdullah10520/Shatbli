@@ -23,7 +23,7 @@ namespace Shatabli.API.Controllers
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<int>> Register([FromBody] RegisterCommand command)
+        public async Task<ActionResult<string>> Register([FromBody] RegisterCommand command)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace Shatabli.API.Controllers
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GetUserProfileQueryResponse>> GetProfile(int id)
+        public async Task<ActionResult<GetUserProfileQueryResponse>> GetProfile(string id)
         {
             try
             {
@@ -70,12 +70,11 @@ namespace Shatabli.API.Controllers
             }
         }
 
-        //[HttpPut]
         [HttpPut("{id}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<bool>> UpdateProfile(int id, [FromBody] UpdateProfileCommand command)
+        public async Task<ActionResult<bool>> UpdateProfile(string id, [FromBody] UpdateProfileCommand command)
         {
             try
             {
@@ -94,7 +93,7 @@ namespace Shatabli.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<bool>> ChangePassword(int id, [FromBody] ChangePasswordCommand command)
+        public async Task<ActionResult<bool>> ChangePassword(string id, [FromBody] ChangePasswordCommand command)
         {
             try
             {

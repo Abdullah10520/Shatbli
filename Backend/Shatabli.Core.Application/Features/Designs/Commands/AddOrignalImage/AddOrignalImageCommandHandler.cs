@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Core.Domain.Entities;
 
@@ -15,7 +10,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
         public IStorageService _storageService;
         private readonly IGenerateRoomImageService _generateRoomImageService;
 
-        public AddOrignalImageCommandHandler(IApplicationDbContext context ,IStorageService storageService ,IGenerateRoomImageService generateRoomImageService)
+        public AddOrignalImageCommandHandler(IApplicationDbContext context, IStorageService storageService, IGenerateRoomImageService generateRoomImageService)
         {
             _context = context;
             _storageService = storageService;
@@ -23,7 +18,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
         }
         async Task<AddOrignalImageCommandResponse> IRequestHandler<AddOrignalImageCommand, AddOrignalImageCommandResponse>.Handle(AddOrignalImageCommand request, CancellationToken cancellationToken)
         {
-            var cloudinaryImageUrl = await _storageService.Upload(request.stream , request.ImageName);
+            var cloudinaryImageUrl = await _storageService.Upload(request.stream, request.ImageName);
 
             var ceramicImageStream = await _storageService.downloadImageStream(request.CeramicId);
 
@@ -59,10 +54,9 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
             //await Task.WhenAll(cloudinaryImageUrl, GeneratedImageURL);
 
             Design design = new Design();
-            design.UserId = 4;
             design.OriginalImageUrl = cloudinaryImageUrl;
             design.GeneratedImageUrl = GeneratedImageURL;
-            design.CeramicImageUrl = ceramicImageUrl;
+            design.ProductImageUrl = ceramicImageUrl;
 
             await _context.Designs.AddAsync(design, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
