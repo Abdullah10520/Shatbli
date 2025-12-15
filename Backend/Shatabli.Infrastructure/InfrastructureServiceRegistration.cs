@@ -25,7 +25,12 @@ namespace Shatabli.Infrastructure
             services.AddTransient<IGenerateRoomImageService, PythonService>();
             services.AddHttpClient("AIService", client =>
             {
-                client.BaseAddress = new Uri("http://127.0.0.1:8000");
+                var baseAddress = configuration["AIService:BaseAddress"];
+                if (string.IsNullOrEmpty(baseAddress))
+                {
+                    throw new InvalidOperationException("AIService:BaseAddress configuration is missing.");
+                }
+                client.BaseAddress = new Uri(baseAddress);
             });
 
 
