@@ -49,7 +49,7 @@ namespace Shatabli.Infrastructure.Context
                 {
                     entry.Entity.DeletedAt = DateTime.UtcNow;
                     entry.Entity.IsDeleted = true;
-
+                    entry.State = EntityState.Modified;
                 }
             }
 
@@ -59,22 +59,26 @@ namespace Shatabli.Infrastructure.Context
         {
             base.OnModelCreating(modelBuilder);
 
+
+            modelBuilder.Entity<Design>()
+            .HasQueryFilter(d => !d.IsDeleted);
+
+
+            modelBuilder.Entity<User>()
+                .HasQueryFilter(u => !u.IsDeleted);
+
+
+            modelBuilder.Entity<Product>()
+                .HasQueryFilter(c => !c.IsDeleted);
+
+
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.ImageUrl).IsRequired().HasMaxLength(500);
-                //entity.Property(e => e.Vendor).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Category).IsRequired();
-                //entity.Property(e => e.ColorCode).HasMaxLength(20);
-                //entity.Property(e => e.Brand).HasMaxLength(100);
-                //entity.Property(e => e.Texture).HasMaxLength(100);
-                //entity.Property(e => e.Size).HasMaxLength(50);
-                //entity.Property(e => e.SourceUrl).HasMaxLength(500);
-                //entity.Property(e => e.PricePerUnit).HasColumnType("decimal(18,2)");
-
                 entity.HasIndex(e => e.Category);
-                //entity.HasIndex(e => e.Vendor);
                 entity.HasIndex(e => e.IsActive);
             });
 
@@ -86,7 +90,6 @@ namespace Shatabli.Infrastructure.Context
                 entity.Property(e => e.FullName).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.PhoneNumber).HasMaxLength(20);
                 entity.Property(e => e.Role).IsRequired();
-
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.HasIndex(e => e.Role);
             });
@@ -98,8 +101,6 @@ namespace Shatabli.Infrastructure.Context
                 entity.Property(e => e.OriginalImageUrl).IsRequired().HasMaxLength(500);
                 entity.Property(e => e.GeneratedImagePath).HasMaxLength(500);
                 entity.Property(e => e.GeneratedImageUrl).HasMaxLength(500);
-                //entity.Property(e => e.SelectedWallColor).HasMaxLength(20);
-                //entity.Property(e => e.Prompt).HasMaxLength(2000);
                 entity.Property(e => e.ErrorMessage).HasMaxLength(1000);
                 entity.Property(e => e.Status).IsRequired();
 
@@ -107,11 +108,6 @@ namespace Shatabli.Infrastructure.Context
                     .WithMany(u => u.Designs)
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
-
-                //entity.HasOne(e => e.SelectedCeramicProduct)
-                //    .WithMany()
-                //    .HasForeignKey(e => e.SelectedCeramicProductId)
-                //    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasIndex(e => e.UserId);
                 entity.HasIndex(e => e.Status);
@@ -121,14 +117,7 @@ namespace Shatabli.Infrastructure.Context
             modelBuilder.Entity<AIProcessingLog>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                //entity.Property(e => e.Prompt).IsRequired().HasMaxLength(2000);
-                //entity.Property(e => e.RequestPayload).HasColumnType("nvarchar(max)");
-                //entity.Property(e => e.ResponsePayload).HasColumnType("nvarchar(max)");
                 entity.Property(e => e.ErrorMessage).HasMaxLength(1000);
-                //entity.Property(e => e.ErrorStackTrace).HasColumnType("nvarchar(max)");
-                //entity.Property(e => e.ApiEndpoint).IsRequired().HasMaxLength(500);
-                //entity.Property(e => e.ApiVersion).HasMaxLength(50);
-                //entity.Property(e => e.ApiCost).HasColumnType("decimal(18,4)");
 
                 entity.HasOne(e => e.Design)
                     .WithMany()

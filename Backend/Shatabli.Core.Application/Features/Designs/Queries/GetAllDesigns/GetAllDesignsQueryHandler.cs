@@ -23,17 +23,6 @@ namespace Shatabli.Core.Application.Features.Designs.Queries.GetAllDesigns
         }
         async Task<GetAllDesignsResponse> IRequestHandler<GetAllDesignsQuery, GetAllDesignsResponse>.Handle(GetAllDesignsQuery request, CancellationToken cancellationToken)
         {
-
-            //var result = await _context.Designs
-            //.Where(d => d.UserId == "4")
-            //.Select(d => new DesignDTO
-            //{
-            //    Id = d.Id,
-            //    GeneratedImageUrl = d.GeneratedImageUrl,
-            //    CompletedAt = d.CompletedAt
-            //})
-            //.ToListAsync();
-
             var result = await _context.Designs
             .Where(d => d.UserId == "4")
             .ProjectTo<GetAllDesignDTO>(_mapper.ConfigurationProvider)
