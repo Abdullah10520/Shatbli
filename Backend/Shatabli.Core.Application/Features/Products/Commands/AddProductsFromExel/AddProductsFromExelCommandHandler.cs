@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Core.Domain.Entities;
+using Shatabli.Core.Domain.Enums;
 
 namespace Shatabli.Core.Application.Features.Products.Commands.AddProductsFromExel
 {
@@ -71,7 +72,8 @@ namespace Shatabli.Core.Application.Features.Products.Commands.AddProductsFromEx
                             Name = productName,
                             //Size = productSize,
                             ImageUrl = finalImageUrl, // رابط Cloudinary النهائي
-                            ImagePath = imageExternalUrl                           // ... أي خصائص أخرى ...
+                            ImagePath = imageExternalUrl,                           // ... أي خصائص أخرى ...
+                            Category = ProductCategory.FlooringCeramics
                         };
 
                         await _context.Products.AddAsync(product);
