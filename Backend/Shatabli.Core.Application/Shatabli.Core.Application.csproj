@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Designs\Queries\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
 
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
@@ -26,6 +22,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shatabli.Core.Domain\Shatabli.Core.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Designs\Queries\GetAllDesigns\" />
+    <Folder Include="Features\Designs\Queries\GetDesignById\" />
   </ItemGroup>
 
 </Project>

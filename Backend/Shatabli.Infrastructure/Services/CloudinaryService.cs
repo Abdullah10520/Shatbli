@@ -28,13 +28,13 @@ namespace Shatabli.Infrastructure.Services
             _httpClient = httpClient;
 
         }
-        public async Task<string> Upload(Stream stream, string imagePublicId)
+        public async Task<string> Upload(Stream stream, string imageName, string imagePublicId)
         {
             var uploadparams = new ImageUploadParams()
             {
-                File = new FileDescription(imagePublicId, stream),
+                File = new FileDescription(imageName, stream),
                 PublicId = imagePublicId,
-                Overwrite = true
+                Overwrite = false
             };
 
             var uploadResult = await cloudinary.UploadAsync(uploadparams);

@@ -8,7 +8,7 @@ namespace Shatabli.Core.Application.Interfaces
 {
     public interface IStorageService
     {
-        public Task<string> Upload(Stream stream, string ImageName);
+        public Task<string> Upload(Stream stream, string imageName, string imagePublicId);
         public string GetImageURL(string imagePublicId);
         public Task<Stream> downloadImageStream(string imagePublicId);
 

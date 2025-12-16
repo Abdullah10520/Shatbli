@@ -23,12 +23,12 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
         }
         public async Task<AddDesignWithUserCeramicImageResponse> Handle(AddDesignWithUserCeramicImageCommand request, CancellationToken cancellationToken)
         {
-            var roomImageUrl = await _storageService.Upload(new MemoryStream(request.roomBytes), request.roomimageName);
-            //var roomImageUrl = await _storageService.Upload(request.roomstream, request.roomimageName);
+            string designId = Guid.NewGuid().ToString();
 
-            var ceramicOrPaintImageUrl = await _storageService.Upload(new MemoryStream( request.ceramicOrPaintBytes), request.ceramicOrPaintimageName);
-            //var ceramicOrPaintImageUrl = await _storageService.Upload(request.ceramicOrPaintStream, request.ceramicOrPaintimageName);
+            var roomImageUrl = await _storageService.Upload(new MemoryStream(request.roomBytes), request.roomimageName, designId);
 
+            var productImageUrl = await _storageService.Upload(new MemoryStream( request.ceramicOrPaintBytes), request.ceramicOrPaintimageName, designId+" Product");
+            
 
             var GeneratedImageBytes = await _generateRoomImageService.GenerateImage(request.roomBytes, request.ceramicOrPaintBytes, request.designType);
 
@@ -36,7 +36,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
 
             using (var genstream = new MemoryStream(GeneratedImageBytes))
             {
-                genImageUrl = await _storageService.Upload(genstream, request.roomimageName + "Ai gen");
+                genImageUrl = await _storageService.Upload(genstream, "Ai Generted "+request.roomimageName , designId + "-AiGen");
             }
 
             var genImgStream = new MemoryStream(GeneratedImageBytes);
@@ -46,10 +46,11 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
 
 
             Design design = new Design();
-            design.UserId = 1;
+            design.Id = designId;
+            design.UserId = "4";
             design.OriginalImageUrl = roomImageUrl;
             design.GeneratedImageUrl = genImageUrl;
-            design.CeramicImageUrl = ceramicOrPaintImageUrl;
+            design.ProductImageUrl = productImageUrl;
 
             await _context.Designs.AddAsync(design, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);

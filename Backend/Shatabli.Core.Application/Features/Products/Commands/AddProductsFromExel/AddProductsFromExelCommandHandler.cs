@@ -48,27 +48,28 @@ namespace Shatabli.Core.Application.Features.Products.Commands.AddProductsFromEx
                         var imageExternalUrl = worksheet.Cells[rowNum, 5].Text; // العمود C - رابط الصورة الخارجي
 
                         string finalImageUrl = null;
+                        string productId = Guid.NewGuid().ToString();
 
                         if (!string.IsNullOrEmpty(imageExternalUrl))
                         {
                             // 2. التنزيل (Download):
                             var imageResponse = await httpClient.GetAsync(imageExternalUrl);
                             imageResponse.EnsureSuccessStatusCode();
-
                             // 3. الرفع (Upload):
                             using (var imageStream = await imageResponse.Content.ReadAsStreamAsync())
                             {
                                 // توليد Public ID فريد للصورة (مثلاً اسم المجلد + UUID)
-                                string publicId = productName;  //$"{cloudinaryFolderName}/{Guid.NewGuid()}";
-                                finalImageUrl = await _storageService.Upload(imageStream, publicId);
+                                //string publicId = productName;  //$"{cloudinaryFolderName}/{Guid.NewGuid()}";
+                                finalImageUrl = await _storageService.Upload(imageStream, productName, productId);
                             }
                         }
 
                         // 4. التحويل (Transform) و 5. التخزين (Load):
                         var product = new Product
                         {
+                            Id = productId,
                             Name = productName,
-                            Size = productSize,
+                            //Size = productSize,
                             ImageUrl = finalImageUrl, // رابط Cloudinary النهائي
                             ImagePath = imageExternalUrl                           // ... أي خصائص أخرى ...
                         };

@@ -27,38 +27,46 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
         }
         async Task<AddDesignWithOurCeramicImageResponse> IRequestHandler<AddDesignWithOurCeramicImageCommand, AddDesignWithOurCeramicImageResponse>.Handle(AddDesignWithOurCeramicImageCommand request, CancellationToken cancellationToken)
         {
-            var cloudinaryImageUrl = await _storageService.Upload(request.stream , request.imageName);
+            string designId = Guid.NewGuid().ToString();
+
+            var cloudinaryImageUrl = await _storageService.Upload(new MemoryStream(request.stream) , request.imageName, designId);
 
             GetCeramicQuery query = new GetCeramicQuery();
             query.CeramicId = request.ceramicId;
 
-            var ceramicImage = await _mediator.Send(query);
+            var ceramicImagestream = await _mediator.Send(query);
 
+            MemoryStream ceramicMemoryStream = new MemoryStream();
 
-            //var generatedImageBytes = await _generateRoomImageService.GenerateImage( request.stream, ceramicImage.Stream, request.designType);
+            await ceramicImagestream.Stream.CopyToAsync(ceramicMemoryStream);
+
+            var generatedImageBytes = await _generateRoomImageService.GenerateImage( request.stream, ceramicMemoryStream.ToArray(), request.designType);
 
             
             var GeneratedImageURL = "";
 
-            //using (var uploadStream = new MemoryStream(generatedImageBytes))
-            //{
-            //    GeneratedImageURL = await _storageService.Upload(uploadStream, request.imageName+"Ai Generated");
-            //}
+            using (var uploadStream = new MemoryStream(generatedImageBytes))
+            {
+                GeneratedImageURL = await _storageService.Upload(uploadStream, "Ai Generated" + request.imageName, designId+ "-AiGen");
+            }
 
             var ceramicImageUrl = _storageService.GetImageURL(request.ceramicId);
 
 
             AddDesignWithOurCeramicImageResponse result = new AddDesignWithOurCeramicImageResponse();
 
-            //var streamToReturn = new MemoryStream(generatedImageBytes);
+            var streamToReturn = new MemoryStream(generatedImageBytes);
 
-            //result.GeneratedImage = streamToReturn;
+            result.GeneratedImage = streamToReturn;
+
+            //Saving data in database
 
             Design design = new Design();
-            design.UserId = 4;
+            design.Id = designId;
+            design.UserId = "4";
             design.OriginalImageUrl = cloudinaryImageUrl;
             design.GeneratedImageUrl = GeneratedImageURL;
-            design.CeramicImageUrl = ceramicImageUrl;
+            design.ProductImageUrl = ceramicImageUrl;
 
             await _context.Designs.AddAsync(design, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
