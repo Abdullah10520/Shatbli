@@ -21,7 +21,7 @@ namespace Shatabli.Infrastructure.Services
             _storageService = storageService;
             _httpClient = httpClientFactory.CreateClient("AIService");
         }
-        public async Task<byte[]> GenerateImage(byte[] roomImage, byte[] ceramicImage , DesignType designType)
+        public async Task<byte[]> GenerateImage(byte[] roomImage, byte[] ceramicOrPaintImage , DesignType designType)
         {
             var form = new MultipartFormDataContent();
             
@@ -31,19 +31,20 @@ namespace Shatabli.Infrastructure.Services
                 MediaTypeHeaderValue.Parse("image/jpeg");
 
             // Ceramic / paint image
-            var ceramicContent = new ByteArrayContent(ceramicImage);
-            ceramicContent.Headers.ContentType =
+            var ceramicOrPaintContent = new ByteArrayContent(ceramicOrPaintImage);
+            ceramicOrPaintContent.Headers.ContentType =
                 MediaTypeHeaderValue.Parse("image/jpeg");
 
             form.Add(roomContent, "roomImage", "room.jpg");
-            form.Add(ceramicContent, "ceramicTileImage", "tile.jpg");
+
+            form.Add(ceramicOrPaintContent, (designType == DesignType.CeramicFloor ? "ceramicTileImage" : "wallPaintingImage"), "tile.jpg");
 
             HttpResponseMessage response;
             // Determine endpoint based on designType
             string endpoint = designType switch
             {
                 DesignType.CeramicFloor => "/roomCeramic",
-                DesignType.WallPaint => "/roomWallPaint",
+                DesignType.WallPaint => "/roomWall",
                 // Add more mappings as needed
                 _ => "/roomCeramic"
             };
