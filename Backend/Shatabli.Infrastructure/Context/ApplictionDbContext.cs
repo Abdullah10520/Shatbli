@@ -49,6 +49,7 @@ namespace Shatabli.Infrastructure.Context
                 {
                     entry.Entity.DeletedAt = DateTime.UtcNow;
                     entry.Entity.IsDeleted = true;
+                    entry.State = EntityState.Modified;
 
                 }
             }

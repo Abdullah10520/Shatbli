@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicImage;
 using Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage;
+using Shatabli.Core.Application.Features.Designs.Commands.SoftDeleteDesign;
+using Shatabli.Core.Application.Features.Designs.Queries.GetAllDesigns;
+using Shatabli.Core.Application.Features.Designs.Queries.GetDesignById;
 using Shatabli.Core.Application.Features.Products.Queries.GetProductImageById;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Core.Domain.Entities;
@@ -76,9 +79,37 @@ namespace Shatabli.API.Controllers
 
             return File(result.GeneratedImage, "image/png");
 
+        }
 
-            //return Ok();
+        [HttpGet]
+        public async Task<IActionResult> GetAllDesigns()
+        {
+            GetAllDesignsQuery request = new GetAllDesignsQuery();
 
+            var result = await _mediator.Send(request);
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDesignById(string designId)
+        {
+            GetDesignByIdQuery request = new();
+            request.designId = designId;
+
+            var response = await _mediator.Send(request);
+
+            return Ok(response);
+        }
+        [HttpDelete]
+        public async Task<IActionResult> SoftDeleteDesign(string designId)
+        {
+            DesignSoftDeleteCommand request = new DesignSoftDeleteCommand();
+            request.designId = designId;
+
+            var response = await _mediator.Send(request);
+
+            return Ok(response);
         }
 
     }

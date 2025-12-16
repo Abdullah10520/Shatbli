@@ -51,6 +51,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
             design.OriginalImageUrl = roomImageUrl;
             design.GeneratedImageUrl = genImageUrl;
             design.ProductImageUrl = productImageUrl;
+            design.CompletedAt = DateTime.UtcNow;
 
             await _context.Designs.AddAsync(design, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);

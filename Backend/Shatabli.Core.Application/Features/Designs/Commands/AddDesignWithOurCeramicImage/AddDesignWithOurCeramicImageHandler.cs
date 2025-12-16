@@ -67,6 +67,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
             design.OriginalImageUrl = cloudinaryImageUrl;
             design.GeneratedImageUrl = GeneratedImageURL;
             design.ProductImageUrl = ceramicImageUrl;
+            design.CompletedAt = DateTime.UtcNow;
 
             await _context.Designs.AddAsync(design, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);

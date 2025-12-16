@@ -24,9 +24,4 @@
     <ProjectReference Include="..\Shatabli.Core.Domain\Shatabli.Core.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Designs\Queries\GetAllDesigns\" />
-    <Folder Include="Features\Designs\Queries\GetDesignById\" />
-  </ItemGroup>
-
 </Project>
