@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Shatabli.Core.Application.Interfaces;
 
 namespace Shatabli.Core.Domain.Entities
 {
-    public class BaseEntity
+    public class BaseEntity : ISoftDelete
     {
         //string
         public string Id { get; set; } = Guid.NewGuid().ToString();
