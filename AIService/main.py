@@ -2,10 +2,16 @@ import google.genai as genai
 from google.genai import types
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import Response
+import os
 
 app = FastAPI()
 
-client = genai.Client(api_key="API Key")
+api_key = os.getenv("GEMINI_API_KEY")
+
+if not api_key:
+    raise RuntimeError("GEMINI_API_KEY environment variable is not set")
+
+client = genai.Client(api_key=api_key)
 
 
 @app.post("/roomCeramic")

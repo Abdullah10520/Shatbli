@@ -47,7 +47,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
 
             Design design = new Design();
             design.Id = designId;
-            design.UserId = "4";
+            design.UserId = "14106a0e-6db9-46b3-bb9f-b13de883db30";
             design.OriginalImageUrl = roomImageUrl;
             design.GeneratedImageUrl = genImageUrl;
             design.ProductImageUrl = productImageUrl;
