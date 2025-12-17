@@ -3,10 +3,12 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shatabli.Core.Application.Features.Products.Commands.AddProductsFromExel;
+using Shatabli.Core.Application.Features.Products.Queries.GetAllCeramics;
+using Shatabli.Core.Application.Features.Products.Queries.GetCeramicById;
 
 namespace Shatabli.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]/[action]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -27,6 +29,23 @@ namespace Shatabli.API.Controllers
             var response = await _mediator.Send(request);
 
             return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCeramics()
+        {
+            GetAllCeramicsQuery request = new();
+            var response = await _mediator.Send(request);
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCeramicById(string ceramicId)
+        {
+            GetCeramicByIdQuery request = new();
+            request.ceramicId = ceramicId;
+            var response = await _mediator.Send(request);
+            return Ok(response);
         }
 
 
