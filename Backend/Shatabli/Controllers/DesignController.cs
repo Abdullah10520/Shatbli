@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Azure.Core;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicImage;
@@ -17,6 +18,7 @@ namespace Shatabli.API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class DesignController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shatabli.Core.Application.Features.Products.Commands.AddProductsFromExel;
 using Shatabli.Core.Application.Features.Products.Queries.GetAllCeramics;
 using Shatabli.Core.Application.Features.Products.Queries.GetCeramicById;
+using System.Threading.Tasks;
 
 namespace Shatabli.API.Controllers
 {
@@ -19,6 +20,7 @@ namespace Shatabli.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SaveProductsFromExcel(IFormFile excelFile)
         {
             var excelStream = excelFile.OpenReadStream();
@@ -32,6 +34,7 @@ namespace Shatabli.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllCeramics()
         {
             GetAllCeramicsQuery request = new();
@@ -40,6 +43,7 @@ namespace Shatabli.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetCeramicById(string ceramicId)
         {
             GetCeramicByIdQuery request = new();

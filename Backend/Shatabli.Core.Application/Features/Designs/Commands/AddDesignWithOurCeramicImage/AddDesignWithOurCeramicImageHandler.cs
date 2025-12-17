@@ -17,13 +17,15 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
         public IStorageService _storageService;
         private readonly IGenerateRoomImageService _generateRoomImageService;
         private readonly IMediator _mediator;
+        private readonly IClaimsService _claimsService;
 
-        public AddDesignWithOurCeramicImageHandler(IApplicationDbContext context ,IStorageService storageService ,IGenerateRoomImageService generateRoomImageService ,IMediator mediator)
+        public AddDesignWithOurCeramicImageHandler(IApplicationDbContext context ,IStorageService storageService ,IGenerateRoomImageService generateRoomImageService ,IMediator mediator , IClaimsService claimsService)
         {
             _context = context;
             _storageService = storageService;
             _generateRoomImageService = generateRoomImageService;
             _mediator = mediator;
+            _claimsService = claimsService;
         }
         async Task<AddDesignWithOurCeramicImageResponse> IRequestHandler<AddDesignWithOurCeramicImageCommand, AddDesignWithOurCeramicImageResponse>.Handle(AddDesignWithOurCeramicImageCommand request, CancellationToken cancellationToken)
         {
@@ -63,7 +65,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
 
             Design design = new Design();
             design.Id = designId;
-            design.UserId = "4";
+            design.UserId = _claimsService.GetCurrentUserId();
             design.OriginalImageUrl = cloudinaryImageUrl;
             design.GeneratedImageUrl = GeneratedImageURL;
             design.ProductImageUrl = ceramicImageUrl;
