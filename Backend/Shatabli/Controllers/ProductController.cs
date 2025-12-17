@@ -11,6 +11,7 @@ namespace Shatabli.API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
+    [Authorize] 
     public class ProductController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -20,7 +21,7 @@ namespace Shatabli.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")] 
         public async Task<IActionResult> SaveProductsFromExcel(IFormFile excelFile)
         {
             var excelStream = excelFile.OpenReadStream();
@@ -33,8 +34,7 @@ namespace Shatabli.API.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        [Authorize]
+        [HttpGet] 
         public async Task<IActionResult> GetAllCeramics()
         {
             GetAllCeramicsQuery request = new();
@@ -42,8 +42,7 @@ namespace Shatabli.API.Controllers
             return Ok(response);
         }
 
-        [HttpGet]
-        [Authorize]
+        [HttpGet] 
         public async Task<IActionResult> GetCeramicById(string ceramicId)
         {
             GetCeramicByIdQuery request = new();
@@ -51,7 +50,5 @@ namespace Shatabli.API.Controllers
             var response = await _mediator.Send(request);
             return Ok(response);
         }
-
-
     }
 }
