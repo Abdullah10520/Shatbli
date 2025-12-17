@@ -33,6 +33,7 @@ namespace Shatabli.Infrastructure
                 client.BaseAddress = new Uri(baseAddress);
             });
 
+            services.AddHttpContextAccessor();
 
 
             return services;

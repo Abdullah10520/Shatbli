@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Shatabli.Core.Application.Behaviors;
+using Shatabli.Core.Application.Interfaces;
 using System.Reflection;
 
 
@@ -25,6 +26,7 @@ namespace Shatabli.Core.Application
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        
 
 
             return services;

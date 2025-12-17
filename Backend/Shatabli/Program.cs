@@ -24,6 +24,8 @@ namespace Shatabli
             builder.Services.AddInfrastructureServices(builder.Configuration);
             builder.Services.AddCoreApplicationService();
             builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddTransient<IClaimsService, ClaimsService>();
+
 
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             var secretKey = jwtSettings["SecretKey"] ?? "YourSecretKeyHere_MustBe32CharactersOrMore!";
