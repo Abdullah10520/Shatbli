@@ -18,7 +18,7 @@ namespace Shatabli.API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class DesignController : ControllerBase
     {
         private readonly IMediator _mediator;

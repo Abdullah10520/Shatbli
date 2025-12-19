@@ -66,8 +66,8 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
 
             Design design = new Design();
             design.Id = designId;
-            //design.UserId = _claimsService.GetCurrentUserId();
-            design.UserId = "4";
+            design.UserId = _claimsService.GetCurrentUserId();
+            //design.UserId = "4";
             design.OriginalImageUrl = cloudinaryImageUrl;
             design.GeneratedImageUrl = GeneratedImageURL;
             design.ProductImageUrl = ceramicImageUrl;
