@@ -57,15 +57,17 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
 
             AddDesignWithOurCeramicImageResponse result = new AddDesignWithOurCeramicImageResponse();
 
-            var streamToReturn = new MemoryStream(generatedImageBytes);
+            //var streamToReturn = new MemoryStream(generatedImageBytes);
 
-            result.GeneratedImage = streamToReturn;
+            result.GeneratedImageUrl = GeneratedImageURL;
+            result.designId = designId;
 
             //Saving data in database
 
             Design design = new Design();
             design.Id = designId;
-            design.UserId = _claimsService.GetCurrentUserId();
+            //design.UserId = _claimsService.GetCurrentUserId();
+            design.UserId = "4";
             design.OriginalImageUrl = cloudinaryImageUrl;
             design.GeneratedImageUrl = GeneratedImageURL;
             design.ProductImageUrl = ceramicImageUrl;
