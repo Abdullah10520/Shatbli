@@ -18,7 +18,7 @@ namespace Shatabli.API.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class DesignController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -33,56 +33,96 @@ namespace Shatabli.API.Controllers
         [HttpPost]
         public async Task<IActionResult> GenerateDesign(IFormFile imageFile , string ceramicId ,DesignType designType)
         {
-            var imageStream = imageFile.OpenReadStream();
 
-            MemoryStream roomImageMemoryStream = new MemoryStream();
+            try
+            {
+                var imageStream = imageFile.OpenReadStream();
 
-            await imageStream.CopyToAsync(roomImageMemoryStream);
+                MemoryStream roomImageMemoryStream = new MemoryStream();
 
-            AddDesignWithOurCeramicImageCommand request = new AddDesignWithOurCeramicImageCommand();
-            request.stream = roomImageMemoryStream.ToArray();
-            request.imageName = imageFile.FileName;
-            request.ceramicId = ceramicId;
-            request.designType = designType; 
+                await imageStream.CopyToAsync(roomImageMemoryStream);
 
-            var result = await _mediator.Send(request);
+                AddDesignWithOurCeramicImageCommand request = new AddDesignWithOurCeramicImageCommand();
+                request.stream = roomImageMemoryStream.ToArray();
+                request.imageName = imageFile.FileName;
+                request.ceramicId = ceramicId;
+                request.designType = designType;
+
+                var result = await _mediator.Send(request);
 
 
 
-            return File(result.GeneratedImage , "image/png");
+                //return File(result.GeneratedImage , "image/png");
+                return Ok(new
+                {
+                    success = true,
+                    generatedImageUrl = result.GeneratedImageUrl,
+                    designId = result.designId
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Error While Generate Design !"
+                });
+            }
+
 
         }
 
         [HttpPost]
         public async Task<IActionResult> GenerateDesignWithUserCeramicImage(IFormFile roomImageFile ,IFormFile ceramicOrPaintImageFile ,DesignType designType)
         {
-            var roomStream = roomImageFile.OpenReadStream();
-            var ceramicOrPaintStream = ceramicOrPaintImageFile.OpenReadStream();
 
-            MemoryStream roomMemoryStream = new MemoryStream();
-            MemoryStream ceramicMemoryStream = new MemoryStream();
+            try
+            {
+                var roomStream = roomImageFile.OpenReadStream();
+                var ceramicOrPaintStream = ceramicOrPaintImageFile.OpenReadStream();
 
-            await roomStream.CopyToAsync(roomMemoryStream);
-            await ceramicOrPaintStream.CopyToAsync(ceramicMemoryStream);
+                MemoryStream roomMemoryStream = new MemoryStream();
+                MemoryStream ceramicMemoryStream = new MemoryStream();
 
-            var roomBytes = roomMemoryStream.ToArray();
-            var ceramicOrPaintBytes = ceramicMemoryStream.ToArray();
+                await roomStream.CopyToAsync(roomMemoryStream);
+                await ceramicOrPaintStream.CopyToAsync(ceramicMemoryStream);
 
-
-
-            AddDesignWithUserCeramicImageCommand request = new AddDesignWithUserCeramicImageCommand();
-            request.roomBytes = roomBytes;
-            request.ceramicOrPaintBytes = ceramicOrPaintBytes;
-            request.roomimageName = roomImageFile.FileName;
-            request.ceramicOrPaintimageName = ceramicOrPaintImageFile.FileName;
-            request.designType = designType;
-
-            var result = await _mediator.Send(request);
-
-            return File(result.GeneratedImage, "image/png");
+                var roomBytes = roomMemoryStream.ToArray();
+                var ceramicOrPaintBytes = ceramicMemoryStream.ToArray();
 
 
-            //return Ok();
+
+                AddDesignWithUserCeramicImageCommand request = new AddDesignWithUserCeramicImageCommand();
+                request.roomBytes = roomBytes;
+                request.ceramicOrPaintBytes = ceramicOrPaintBytes;
+                request.roomimageName = roomImageFile.FileName;
+                request.ceramicOrPaintimageName = ceramicOrPaintImageFile.FileName;
+                request.designType = designType;
+
+                var result = await _mediator.Send(request);
+
+                //return File(result.GeneratedImage, "image/png");
+                return Ok(new
+                {
+                    success = true,
+                    generatedImageUrl = result.GeneratedImageUrl,
+                    designId = result.designId
+                });
+                //return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Error While Generate Design"
+                });
+            }
+
+
+
+
+
 
         }
         [HttpGet]

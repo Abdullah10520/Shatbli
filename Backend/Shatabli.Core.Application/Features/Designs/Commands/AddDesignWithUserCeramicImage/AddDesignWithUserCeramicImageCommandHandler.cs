@@ -14,11 +14,13 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
     {
         private readonly IApplicationDbContext _context;
         public IStorageService _storageService;
+        private readonly IClaimsService _claimsService;
         private readonly IGenerateRoomImageService _generateRoomImageService;
-        public AddDesignWithUserCeramicImageCommandHandler(IApplicationDbContext context ,IGenerateRoomImageService generateRoomImageService ,IStorageService storageService )
+        public AddDesignWithUserCeramicImageCommandHandler(IApplicationDbContext context ,IGenerateRoomImageService generateRoomImageService ,IStorageService storageService, IClaimsService claimsService )
         {
             _context = context;
             _storageService = storageService;
+            _claimsService = claimsService;
             _generateRoomImageService = generateRoomImageService;
         }
         public async Task<AddDesignWithUserCeramicImageResponse> Handle(AddDesignWithUserCeramicImageCommand request, CancellationToken cancellationToken)
@@ -39,15 +41,17 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
                 genImageUrl = await _storageService.Upload(genstream, "Ai Generted "+request.roomimageName , designId + "-AiGen");
             }
 
-            var genImgStream = new MemoryStream(GeneratedImageBytes);
+            //var genImgStream = new MemoryStream(GeneratedImageBytes);
 
             AddDesignWithUserCeramicImageResponse response = new AddDesignWithUserCeramicImageResponse();
-            response.GeneratedImage = genImgStream;
+            response.GeneratedImageUrl = genImageUrl;
+            response.designId = designId;
 
 
             Design design = new Design();
             design.Id = designId;
-            design.UserId = "14106a0e-6db9-46b3-bb9f-b13de883db30";
+            //design.UserId = _claimsService.GetCurrentUserId();
+            design.UserId = "4";
             design.OriginalImageUrl = roomImageUrl;
             design.GeneratedImageUrl = genImageUrl;
             design.ProductImageUrl = productImageUrl;

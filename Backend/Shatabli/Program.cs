@@ -59,6 +59,11 @@ namespace Shatabli
                 client.Timeout = TimeSpan.FromMinutes(5);
             });
 
+
+
+
+            builder.Services.AddCors();
+
             var app = builder.Build();
 
             // ⚡ Database Seeding
@@ -83,6 +88,16 @@ namespace Shatabli
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+
+
+
+
+            app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            );
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
