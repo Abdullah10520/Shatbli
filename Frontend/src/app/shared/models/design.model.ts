@@ -4,7 +4,25 @@ export enum DesignType {
     Paint = 2
 }
 
-// نموذج التصميم (سيراميك أو لون)
+// استجابة جلب السيراميك
+export interface CeramicsResponse {
+    ceramicList: Ceramic[];
+}
+
+// استجابة جلب الألوان
+export interface PaintsResponse {
+    paintList: Ceramic[];
+}
+
+// نموذج السيراميك/اللون
+export interface Ceramic {
+    id: string;
+    name: string;
+    imageUrl: string;
+    isActive: boolean;
+}
+
+// نموذج التصميم (للتوافق مع الكود القديم)
 export interface Design {
     id: string;
     name: string;
@@ -45,3 +63,4 @@ export interface GenerateDesignResponse {
     designId: string;
     message?: string;
 }
+

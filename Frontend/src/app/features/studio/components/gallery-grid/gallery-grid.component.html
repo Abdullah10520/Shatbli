@@ -1,16 +1,4 @@
 <div class="space-y-4" dir="rtl">
-    <!-- العنوان -->
-    <div class="flex items-center justify-between">
-        <span class="text-sm font-medium text-gray-700">
-            @if (designType() === 1) {
-            اختر السيراميك
-            } @else {
-            اختر اللون
-            }
-        </span>
-        <span class="text-xs text-gray-400">اختر واحد</span>
-    </div>
-
     <!-- حالة التحميل -->
     @if (isLoading()) {
     <div class="grid grid-cols-3 gap-3">
@@ -21,16 +9,16 @@
     } @else {
     <!-- شبكة المعرض -->
     <div class="grid grid-cols-3 gap-3">
-        @for (design of designs(); track design.id) {
+        @for (item of items(); track item.id) {
         <div class="aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-200 relative group"
-            [class.ring-2]="selectedDesign()?.id === design.id"
-            [class.ring-purple-500]="selectedDesign()?.id === design.id"
-            [class.ring-offset-2]="selectedDesign()?.id === design.id" (click)="selectDesign(design)">
-            <img [src]="design.imageUrl" [alt]="design.name"
+            [class.ring-2]="selectedItem()?.id === item.id"
+            [class.ring-purple-500]="selectedItem()?.id === item.id"
+            [class.ring-offset-2]="selectedItem()?.id === item.id" (click)="selectItem(item)">
+            <img [src]="item.imageUrl" [alt]="item.name"
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
 
             <!-- علامة الاختيار -->
-            @if (selectedDesign()?.id === design.id) {
+            @if (selectedItem()?.id === item.id) {
             <div class="absolute inset-0 bg-purple-500/20 flex items-center justify-center">
                 <div class="bg-white rounded-full p-1 shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600" viewBox="0 0 20 20"
@@ -46,7 +34,7 @@
             <!-- اسم التصميم عند الـ hover -->
             <div
                 class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <p class="text-white text-xs truncate">{{ design.name }}</p>
+                <p class="text-white text-xs truncate">{{ item.name }}</p>
             </div>
         </div>
         }
@@ -76,7 +64,7 @@
     }
 
     <!-- رسالة فارغة -->
-    @if (designs().length === 0 && !isLoading()) {
+    @if (items().length === 0 && !isLoading()) {
     <div class="text-center py-8 text-gray-500">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 mb-3" fill="none"
             viewBox="0 0 24 24" stroke="currentColor">

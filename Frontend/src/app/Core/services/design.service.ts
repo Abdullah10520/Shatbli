@@ -1,9 +1,11 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, catchError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
-    Design,
+    Ceramic,
+    CeramicsResponse,
+    PaintsResponse,
     DesignType,
     GeneratedDesign,
     GenerateDesignResponse
@@ -14,8 +16,9 @@ export class DesignService {
     private readonly apiUrl = environment.apiUrl;
     private http = inject(HttpClient);
 
-    // حالة المعرض
-    designsSig = signal<Design[]>([]);
+    // حالة السيراميك
+    ceramicsSig = signal<Ceramic[]>([]);
+    paintsSig = signal<Ceramic[]>([]);
     isLoadingSig = signal(false);
 
     // حالة التوليد
@@ -23,26 +26,44 @@ export class DesignService {
     generatedResultSig = signal<GeneratedDesign | null>(null);
 
     /**
-     * جلب كل التصميمات (سيراميك وألوان)
+     * جلب كل السيراميك
      */
-    getAllDesigns(): Observable<Design[]> {
+    getAllCeramics(): Observable<CeramicsResponse> {
         this.isLoadingSig.set(true);
-        return this.http.get<Design[]>(`${this.apiUrl}/Design/GetAllDesigns`)
+        return this.http.get<CeramicsResponse>(`${this.apiUrl}/Product/GetAllCeramics`)
             .pipe(
-                tap(designs => {
-                    this.designsSig.set(designs);
+                tap(response => {
+                    // فلترة العناصر النشطة فقط
+                    const activeCeramics = response.ceramicList.filter(c => c.isActive);
+                    this.ceramicsSig.set(activeCeramics);
                     this.isLoadingSig.set(false);
+                }),
+                catchError(error => {
+                    this.isLoadingSig.set(false);
+                    return of({ ceramicList: [] });
                 })
             );
     }
 
     /**
-     * جلب تفاصيل تصميم معين
+     * جلب كل الألوان
+     * (افتراضي: نفس endpoint السيراميك مع تغيير الاسم)
      */
-    getDesignById(designId: string): Observable<Design> {
-        return this.http.get<Design>(`${this.apiUrl}/Design/GetDesignById`, {
-            params: { designId }
-        });
+    getAllPaints(): Observable<PaintsResponse> {
+        this.isLoadingSig.set(true);
+        return this.http.get<PaintsResponse>(`${this.apiUrl}/Product/GetAllPaints`)
+            .pipe(
+                tap(response => {
+                    // فلترة العناصر النشطة فقط
+                    const activePaints = response.paintList.filter(p => p.isActive);
+                    this.paintsSig.set(activePaints);
+                    this.isLoadingSig.set(false);
+                }),
+                catchError(error => {
+                    this.isLoadingSig.set(false);
+                    return of({ paintList: [] });
+                })
+            );
     }
 
     /**
@@ -59,16 +80,14 @@ export class DesignService {
         this.isGeneratingSig.set(true);
 
         const formData = new FormData();
-        formData.append('roomImageFile', roomImage);
+        formData.append('imageFile', roomImage);
 
         return this.http.post<GenerateDesignResponse>(
             `${this.apiUrl}/Design/GenerateDesign`,
             formData,
-            { params: { ceramicId, designType: designType.toString() } }
+            { params: { designType: designType.toString(), ceramicId } }
         ).pipe(
             tap(response => {
-                console.log('📥 GenerateDesign Response:', response);
-                console.log('📥 Response Type:', typeof response);
                 this.isGeneratingSig.set(false);
                 if (response.success) {
                     this.generatedResultSig.set({
@@ -80,6 +99,10 @@ export class DesignService {
                         createdAt: new Date().toISOString()
                     });
                 }
+            }),
+            catchError(error => {
+                this.isGeneratingSig.set(false);
+                throw error;
             })
         );
     }
@@ -104,11 +127,9 @@ export class DesignService {
         return this.http.post<GenerateDesignResponse>(
             `${this.apiUrl}/Design/GenerateDesignWithUserCeramicImage`,
             formData,
-            { params: { designType: '1' } }
+            { params: { designType: designType.toString() } }
         ).pipe(
             tap(response => {
-                console.log('📥 GenerateDesignWithUserImage Response:', response);
-                console.log('📥 Response Type:', typeof response);
                 this.isGeneratingSig.set(false);
                 if (response.success) {
                     this.generatedResultSig.set({
@@ -119,6 +140,10 @@ export class DesignService {
                         createdAt: new Date().toISOString()
                     });
                 }
+            }),
+            catchError(error => {
+                this.isGeneratingSig.set(false);
+                throw error;
             })
         );
     }

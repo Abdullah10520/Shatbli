@@ -16,12 +16,23 @@ export class AuthService {
   }
 
   private loadUserFromStorage(): void {
-    const userJson = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-    if (userJson && token) {
-      const user = JSON.parse(userJson);
-      user.token = token;
-      this.currentUserSig.set(user);
+    try {
+      const userJson = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
+
+      // التحقق من أن القيم موجودة وليست undefined
+      if (userJson && userJson !== 'undefined' && userJson !== 'null' &&
+        token && token !== 'undefined' && token !== 'null') {
+        const user = JSON.parse(userJson);
+        user.token = token;
+        this.currentUserSig.set(user);
+      } else {
+        // مسح البيانات غير الصالحة
+        this.logout();
+      }
+    } catch {
+      // في حالة حدوث خطأ في JSON.parse
+      this.logout();
     }
   }
 
@@ -44,10 +55,20 @@ export class AuthService {
   }
 
   private saveAuthData(res: AuthResponse): void {
-    localStorage.setItem('user', JSON.stringify(res.user));
-    localStorage.setItem('token', res.token);
-    const user = { ...res.user, token: res.token };
-    this.currentUserSig.set(user);
+    // التأكد من وجود البيانات قبل حفظها
+    // الـ API بيرجع البيانات مباشرة: { userId, email, fullName, token, role }
+    if (res && res.token && res.userId) {
+      const user: User = {
+        id: res.userId,
+        email: res.email,
+        fullName: res.fullName,
+        role: res.role,
+        token: res.token
+      };
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', res.token);
+      this.currentUserSig.set(user);
+    }
   }
 
   logout(): void {

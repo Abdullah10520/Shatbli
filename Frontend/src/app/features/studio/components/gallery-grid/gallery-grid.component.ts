@@ -1,6 +1,6 @@
 import { Component, input, output, signal, OnInit, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Design, DesignType } from '../../../../shared/models/design.model';
+import { Ceramic, DesignType } from '../../../../shared/models/design.model';
 import { DesignService } from '../../../../Core/services/design.service';
 
 @Component({
@@ -17,12 +17,12 @@ export class GalleryGridComponent implements OnInit {
     designType = input<DesignType>(DesignType.Ceramic);
 
     // المخرجات
-    designSelected = output<Design>();
+    designSelected = output<Ceramic>();
     customImageSelected = output<File>();
 
     // الحالة
-    designs = signal<Design[]>([]);
-    selectedDesign = signal<Design | null>(null);
+    items = signal<Ceramic[]>([]);
+    selectedItem = signal<Ceramic | null>(null);
     isLoading = signal(false);
     showCustomUpload = signal(false);
 
@@ -30,47 +30,57 @@ export class GalleryGridComponent implements OnInit {
         // تحديث المعرض عند تغيير النوع
         effect(() => {
             const type = this.designType();
-            this.filterDesigns(type);
+            this.loadItems(type);
         });
     }
 
     ngOnInit(): void {
-        this.loadDesigns();
+        this.loadItems(this.designType());
     }
 
-    private loadDesigns(): void {
+    private loadItems(type: DesignType): void {
         this.isLoading.set(true);
-        this.designService.getAllDesigns().subscribe({
-            next: (designs) => {
-                this.filterDesigns(this.designType());
-                this.isLoading.set(false);
-            },
-            error: () => {
-                this.isLoading.set(false);
-            }
-        });
+        this.selectedItem.set(null);
+
+        if (type === DesignType.Ceramic) {
+            this.designService.getAllCeramics().subscribe({
+                next: () => {
+                    this.items.set(this.designService.ceramicsSig());
+                    this.isLoading.set(false);
+                },
+                error: () => {
+                    this.isLoading.set(false);
+                }
+            });
+        } else {
+            this.designService.getAllPaints().subscribe({
+                next: () => {
+                    this.items.set(this.designService.paintsSig());
+                    this.isLoading.set(false);
+                },
+                error: () => {
+                    this.isLoading.set(false);
+                }
+            });
+        }
     }
 
-    private filterDesigns(type: DesignType): void {
-        const allDesigns = this.designService.designsSig();
-        this.designs.set(allDesigns.filter(d => d.type === type));
-    }
-
-    selectDesign(design: Design): void {
-        this.selectedDesign.set(design);
+    selectItem(item: Ceramic): void {
+        this.selectedItem.set(item);
         this.showCustomUpload.set(false);
-        this.designSelected.emit(design);
+        this.designSelected.emit(item);
     }
 
     toggleCustomUpload(): void {
         this.showCustomUpload.update(v => !v);
-        this.selectedDesign.set(null);
+        this.selectedItem.set(null);
     }
 
     onCustomImageSelect(event: Event): void {
         const input = event.target as HTMLInputElement;
         if (input.files && input.files.length > 0) {
             this.customImageSelected.emit(input.files[0]);
+            this.showCustomUpload.set(false);
         }
     }
 }

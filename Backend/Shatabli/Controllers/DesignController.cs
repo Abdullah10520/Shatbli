@@ -1,22 +1,17 @@
-﻿using System.Threading.Tasks;
-using Azure.Core;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicImage;
 using Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage;
 using Shatabli.Core.Application.Features.Designs.Commands.SoftDeleteDesign;
 using Shatabli.Core.Application.Features.Designs.Queries.GetAllDesigns;
 using Shatabli.Core.Application.Features.Designs.Queries.GetDesignById;
-using Shatabli.Core.Application.Features.Products.Queries.GetProductImageById;
 using Shatabli.Core.Application.Interfaces;
-using Shatabli.Core.Domain.Entities;
 using Shatabli.Core.Domain.Enums;
 
 namespace Shatabli.API.Controllers
 {
-    [Route("[controller]/[action]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize]
     public class DesignController : ControllerBase
@@ -24,14 +19,14 @@ namespace Shatabli.API.Controllers
         private readonly IMediator _mediator;
         private readonly IStorageService _storageService;
 
-        public DesignController(IMediator mediator , IStorageService storageService)
+        public DesignController(IMediator mediator, IStorageService storageService)
         {
             _mediator = mediator;
             _storageService = storageService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateDesign(IFormFile imageFile , string ceramicId ,DesignType designType)
+        public async Task<IActionResult> GenerateDesign(IFormFile imageFile, string ceramicId, DesignType designType)
         {
 
             try
@@ -73,7 +68,7 @@ namespace Shatabli.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateDesignWithUserCeramicImage(IFormFile roomImageFile ,IFormFile ceramicOrPaintImageFile ,DesignType designType)
+        public async Task<IActionResult> GenerateDesignWithUserCeramicImage(IFormFile roomImageFile, IFormFile ceramicOrPaintImageFile, DesignType designType)
         {
 
             try

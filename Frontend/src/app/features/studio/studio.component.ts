@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../Core/auth/auth.service';
 import { DesignService } from '../../Core/services/design.service';
-import { Design, DesignType, GeneratedDesign } from '../../shared/models/design.model';
+import { Ceramic, DesignType, GeneratedDesign } from '../../shared/models/design.model';
 
 // المكونات الفرعية
 import { ImageUploadComponent } from './components/image-upload/image-upload.component';
@@ -37,7 +37,7 @@ export class StudioComponent {
     roomImage = signal<File | null>(null);
     roomImageUrl = signal<string | null>(null);
     designType = signal<DesignType>(DesignType.Ceramic);
-    selectedDesign = signal<Design | null>(null);
+    selectedCeramic = signal<Ceramic | null>(null);
     customImage = signal<File | null>(null);
 
     // حالة التوليد
@@ -47,12 +47,18 @@ export class StudioComponent {
     // التحقق من جاهزية التوليد
     canGenerate = computed(() => {
         return this.roomImage() !== null &&
-            (this.selectedDesign() !== null || this.customImage() !== null) &&
+            (this.selectedCeramic() !== null || this.customImage() !== null) &&
             !this.isGenerating();
     });
 
     // معالجة رفع صورة الغرفة
     onRoomImageSelected(file: File): void {
+        // تحرير الـ URL القديم لمنع memory leak
+        const oldUrl = this.roomImageUrl();
+        if (oldUrl) {
+            URL.revokeObjectURL(oldUrl);
+        }
+
         this.roomImage.set(file);
         this.roomImageUrl.set(URL.createObjectURL(file));
         this.designService.clearResult();
@@ -61,20 +67,20 @@ export class StudioComponent {
     // معالجة تغيير نوع التصميم
     onDesignTypeChanged(type: DesignType): void {
         this.designType.set(type);
-        this.selectedDesign.set(null);
+        this.selectedCeramic.set(null);
         this.customImage.set(null);
     }
 
     // معالجة اختيار تصميم من المعرض
-    onDesignSelected(design: Design): void {
-        this.selectedDesign.set(design);
+    onDesignSelected(ceramic: Ceramic): void {
+        this.selectedCeramic.set(ceramic);
         this.customImage.set(null);
     }
 
     // معالجة رفع صورة مخصصة
     onCustomImageSelected(file: File): void {
         this.customImage.set(file);
-        this.selectedDesign.set(null);
+        this.selectedCeramic.set(null);
     }
 
     // توليد التصميم
@@ -83,7 +89,7 @@ export class StudioComponent {
         if (!roomImage) return;
 
         const customImage = this.customImage();
-        const selectedDesign = this.selectedDesign();
+        const selectedCeramic = this.selectedCeramic();
 
         if (customImage) {
             // توليد بصورة مخصصة
@@ -96,11 +102,11 @@ export class StudioComponent {
                     alert(err.error?.message || 'حدث خطأ أثناء التوليد');
                 }
             });
-        } else if (selectedDesign) {
+        } else if (selectedCeramic) {
             // توليد من المعرض
             this.designService.generateDesign(
                 roomImage,
-                selectedDesign.id,
+                selectedCeramic.id,
                 this.designType()
             ).subscribe({
                 error: (err) => {

@@ -3,7 +3,8 @@ export interface User {
   email: string;
   fullName: string;
   phoneNumber?: string;
-  token: string;
+  role?: string;
+  token?: string;
 }
 
 export interface LoginRequest {
@@ -18,7 +19,11 @@ export interface RegisterRequest {
   phoneNumber: string;
 }
 
+// استجابة تسجيل الدخول (الـ API بيرجع البيانات مباشرة مش nested)
 export interface AuthResponse {
-  user: User;
+  userId: string;
+  email: string;
+  fullName: string;
   token: string;
+  role: string;
 }

@@ -57,19 +57,19 @@
                     <app-image-upload (imageSelected)="onRoomImageSelected($event)" />
                 </div>
 
-                <!-- اختيار نوع التصميم -->
+                <!-- اختيار نوع التصميم والمعرض (مدمجين) -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h2 class="text-lg font-semibold mb-1">٢. اختر نوع التصميم</h2>
-                    <p class="text-sm text-gray-500 mb-4">سيراميك أو لون الحائط</p>
-                    <app-design-selector [selectedType]="designType()" (typeChanged)="onDesignTypeChanged($event)" />
-                </div>
+                    <h2 class="text-lg font-semibold mb-1">٢. اختر التصميم</h2>
+                    <p class="text-sm text-gray-500 mb-4">اختر سيراميك أو لون حائط</p>
 
-                <!-- اختيار من المعرض -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                    <h2 class="text-lg font-semibold mb-1">٣. اختر التصميم</h2>
-                    <p class="text-sm text-gray-500 mb-4">من المعرض أو ارفع صورة</p>
-                    <app-gallery-grid [designType]="designType()" (designSelected)="onDesignSelected($event)"
-                        (customImageSelected)="onCustomImageSelected($event)" />
+                    <!-- أزرار اختيار النوع -->
+                    <app-design-selector [selectedType]="designType()" (typeChanged)="onDesignTypeChanged($event)" />
+
+                    <!-- المعرض مباشرة تحت الأزرار -->
+                    <div class="mt-4">
+                        <app-gallery-grid [designType]="designType()" (designSelected)="onDesignSelected($event)"
+                            (customImageSelected)="onCustomImageSelected($event)" />
+                    </div>
                 </div>
 
                 <!-- زر التوليد -->
