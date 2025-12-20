@@ -55,7 +55,9 @@ export class RegisterComponent {
 
       this.authService.register(registerData).subscribe({
         next: () => {
-          this.router.navigate(['/studio']);
+          // التسجيل ناجح - توجيه المستخدم لصفحة تسجيل الدخول
+          // لأن الـ Register API بيرجع userId فقط، مش token
+          this.router.navigate(['/auth/login']);
         },
         error: (err) => {
           this.isLoading.set(false);
