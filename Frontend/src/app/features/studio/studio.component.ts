@@ -140,13 +140,29 @@ export class StudioComponent {
     }
 
     // تحميل النتيجة
-    downloadResult(): void {
+    async downloadResult(): Promise<void> {
         const result = this.generatedResult();
         if (result) {
-            const link = document.createElement('a');
-            link.href = result.generatedImageUrl;
-            link.download = `shatbli-design-${Date.now()}.jpg`;
-            link.click();
+            try {
+                // جلب الصورة كـ blob لتجاوز قيود CORS
+                const response = await fetch(result.generatedImageUrl);
+                const blob = await response.blob();
+
+                // إنشاء رابط تحميل من الـ blob
+                const blobUrl = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = `shatbli-design-${Date.now()}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // تحرير الـ URL
+                URL.revokeObjectURL(blobUrl);
+            } catch (error) {
+                // في حالة فشل fetch، فتح الصورة في تاب جديد
+                window.open(result.generatedImageUrl, '_blank');
+            }
         }
     }
 
