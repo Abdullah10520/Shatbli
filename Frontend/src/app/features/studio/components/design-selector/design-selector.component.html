@@ -1,11 +1,15 @@
-<div class="flex p-1 bg-gray-100 rounded-lg" dir="rtl">
+<div class="flex p-1 bg-gray-100 dark:bg-gray-700 rounded-lg" dir="rtl">
     <button type="button" (click)="selectType(DesignType.Ceramic)"
         class="flex-1 py-2.5 px-4 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
         [class.bg-white]="selectedType() === DesignType.Ceramic"
+        [class.dark:bg-gray-600]="selectedType() === DesignType.Ceramic"
         [class.shadow-sm]="selectedType() === DesignType.Ceramic"
         [class.text-purple-600]="selectedType() === DesignType.Ceramic"
+        [class.dark:text-purple-400]="selectedType() === DesignType.Ceramic"
         [class.text-gray-500]="selectedType() !== DesignType.Ceramic"
-        [class.hover:text-gray-700]="selectedType() !== DesignType.Ceramic">
+        [class.dark:text-gray-400]="selectedType() !== DesignType.Ceramic"
+        [class.hover:text-gray-700]="selectedType() !== DesignType.Ceramic"
+        [class.dark:hover:text-gray-300]="selectedType() !== DesignType.Ceramic">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
@@ -15,10 +19,15 @@
 
     <button type="button" (click)="selectType(DesignType.Paint)"
         class="flex-1 py-2.5 px-4 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
-        [class.bg-white]="selectedType() === DesignType.Paint" [class.shadow-sm]="selectedType() === DesignType.Paint"
+        [class.bg-white]="selectedType() === DesignType.Paint"
+        [class.dark:bg-gray-600]="selectedType() === DesignType.Paint"
+        [class.shadow-sm]="selectedType() === DesignType.Paint"
         [class.text-purple-600]="selectedType() === DesignType.Paint"
+        [class.dark:text-purple-400]="selectedType() === DesignType.Paint"
         [class.text-gray-500]="selectedType() !== DesignType.Paint"
-        [class.hover:text-gray-700]="selectedType() !== DesignType.Paint">
+        [class.dark:text-gray-400]="selectedType() !== DesignType.Paint"
+        [class.hover:text-gray-700]="selectedType() !== DesignType.Paint"
+        [class.dark:hover:text-gray-300]="selectedType() !== DesignType.Paint">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />

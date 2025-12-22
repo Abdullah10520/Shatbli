@@ -1,3 +1,67 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* ===== الخطوط العربية ===== */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+
 @import "tailwindcss";
+
+/* ===== تفعيل الوضع الداكن ===== */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ===== المتغيرات الأساسية ===== */
+@theme {
+  --font-family-arabic: 'Tajawal', sans-serif;
+
+  /* ألوان الوضع الفاتح */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #9ca3af;
+  --color-border: #e5e7eb;
+
+  /* ألوان العلامة التجارية */
+  --color-brand-primary: #7c3aed;
+  --color-brand-secondary: #4f46e5;
+}
+
+/* ===== الأنماط الأساسية ===== */
+html {
+  direction: rtl;
+  font-family: 'Tajawal', sans-serif;
+}
+
+body {
+  @apply bg-white text-gray-900 transition-colors duration-300;
+}
+
+/* الوضع الداكن للـ body */
+.dark body {
+  @apply bg-gray-900 text-gray-100;
+}
+
+/* ===== تحسينات الـ Scrollbar للوضع الداكن ===== */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* ===== تحسينات التحديد للوضع الداكن ===== */
+.dark ::selection {
+  background-color: #7c3aed;
+  color: white;
+}

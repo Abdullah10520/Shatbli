@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../Core/auth/auth.service';
 import { DesignService } from '../../Core/services/design.service';
+import { ThemeService } from '../../Core/services/theme.service';
 import { Ceramic, DesignType, GeneratedDesign } from '../../shared/models/design.model';
 
 // المكونات الفرعية
@@ -10,6 +11,7 @@ import { ImageUploadComponent } from './components/image-upload/image-upload.com
 import { DesignSelectorComponent } from './components/design-selector/design-selector.component';
 import { GalleryGridComponent } from './components/gallery-grid/gallery-grid.component';
 import { PreviewPanelComponent } from './components/preview-panel/preview-panel.component';
+import { ThemeToggleComponent } from '../../shared/components/theme-toggle.component';
 
 @Component({
     selector: 'app-studio',
@@ -20,7 +22,8 @@ import { PreviewPanelComponent } from './components/preview-panel/preview-panel.
         ImageUploadComponent,
         DesignSelectorComponent,
         GalleryGridComponent,
-        PreviewPanelComponent
+        PreviewPanelComponent,
+        ThemeToggleComponent
     ],
     templateUrl: './studio.component.html',
     styleUrl: './studio.component.css',
@@ -28,6 +31,7 @@ import { PreviewPanelComponent } from './components/preview-panel/preview-panel.
 export class StudioComponent {
     private authService = inject(AuthService);
     private designService = inject(DesignService);
+    readonly themeService = inject(ThemeService);
     private router = inject(Router);
 
     // حالة المستخدم

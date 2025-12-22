@@ -3,7 +3,7 @@
     @if (isLoading()) {
     <div class="grid grid-cols-3 gap-3">
         @for (i of [1,2,3,4,5,6]; track i) {
-        <div class="aspect-square rounded-lg bg-gray-200 animate-pulse"></div>
+        <div class="aspect-square rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
         }
     </div>
     } @else {
@@ -11,18 +11,18 @@
     <div class="grid grid-cols-3 gap-3">
         @for (item of items(); track item.id) {
         <div class="aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-200 relative group"
-            [class.ring-2]="selectedItem()?.id === item.id"
-            [class.ring-purple-500]="selectedItem()?.id === item.id"
-            [class.ring-offset-2]="selectedItem()?.id === item.id" (click)="selectItem(item)">
+            [class.ring-2]="selectedItem()?.id === item.id" [class.ring-purple-500]="selectedItem()?.id === item.id"
+            [class.ring-offset-2]="selectedItem()?.id === item.id"
+            [class.dark:ring-offset-gray-800]="selectedItem()?.id === item.id" (click)="selectItem(item)">
             <img [src]="item.imageUrl" [alt]="item.name"
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
 
             <!-- علامة الاختيار -->
             @if (selectedItem()?.id === item.id) {
             <div class="absolute inset-0 bg-purple-500/20 flex items-center justify-center">
-                <div class="bg-white rounded-full p-1 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600" viewBox="0 0 20 20"
-                        fill="currentColor">
+                <div class="bg-white dark:bg-gray-800 rounded-full p-1 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400"
+                        viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd"
                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                             clip-rule="evenodd" />
@@ -42,32 +42,33 @@
         <!-- زر رفع صورة مخصصة -->
         <div class="aspect-square rounded-lg border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all duration-200"
             [class.border-purple-500]="showCustomUpload()" [class.bg-purple-50]="showCustomUpload()"
-            [class.border-gray-300]="!showCustomUpload()" [class.hover:border-purple-400]="!showCustomUpload()"
+            [class.dark:bg-purple-900/20]="showCustomUpload()" [class.border-gray-300]="!showCustomUpload()"
+            [class.dark:border-gray-600]="!showCustomUpload()" [class.hover:border-purple-400]="!showCustomUpload()"
             (click)="toggleCustomUpload()">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 dark:text-gray-500" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
-            <span class="text-xs text-gray-500 mt-1">صورة مخصصة</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">صورة مخصصة</span>
         </div>
     </div>
 
     <!-- رفع صورة مخصصة -->
     @if (showCustomUpload()) {
-    <div class="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+    <div class="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             ارفع صورة {{ designType() === 1 ? 'السيراميك' : 'اللون' }} الخاصة بك
         </label>
         <input type="file" accept="image/*" (change)="onCustomImageSelect($event)"
-            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-100 file:text-purple-600 hover:file:bg-purple-200">
+            class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-100 dark:file:bg-purple-900/50 file:text-purple-600 dark:file:text-purple-400 hover:file:bg-purple-200 dark:hover:file:bg-purple-800/50">
     </div>
     }
 
     <!-- رسالة فارغة -->
     @if (items().length === 0 && !isLoading()) {
-    <div class="text-center py-8 text-gray-500">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 mb-3" fill="none"
-            viewBox="0 0 24 24" stroke="currentColor">
+    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600 mb-3"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
