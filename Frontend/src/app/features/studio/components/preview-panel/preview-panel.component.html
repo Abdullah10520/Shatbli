@@ -63,13 +63,13 @@
             class="w-full h-full object-cover">
         }
         @case ('compare') {
-        <!-- عرض المقارنة -->
-        <div class="relative w-full h-full" (mousemove)="onSliderMove($event)">
+        <!-- عرض المقارنة - نستخدم LTR دائماً لضمان عمل الـ slider بشكل صحيح -->
+        <div class="relative w-full h-full" dir="ltr" (mousemove)="onSliderMove($event)">
             <!-- الصورة الأصلية (خلفية) -->
             <img [src]="generatedResult()!.originalImageUrl" [alt]="'preview.original' | translate"
                 class="absolute inset-0 w-full h-full object-cover">
 
-            <!-- الصورة الجديدة (مقطوعة) -->
+            <!-- الصورة الجديدة (مقطوعة من اليسار) -->
             <div class="absolute inset-0 overflow-hidden" [style.width.%]="sliderPosition()">
                 <img [src]="generatedResult()!.generatedImageUrl" [alt]="'preview.new' | translate"
                     class="absolute inset-0 w-full h-full object-cover" [style.width.%]="100 / sliderPosition() * 100">
@@ -87,11 +87,11 @@
                 </div>
             </div>
 
-            <!-- التسميات -->
-            <div class="absolute top-4 right-4 bg-black/50 backdrop-blur text-white text-xs px-3 py-1 rounded-full">
-                {{ 'preview.original' | translate }}</div>
+            <!-- التسميات - الجديد على اليسار والأصلي على اليمين -->
             <div class="absolute top-4 left-4 bg-black/50 backdrop-blur text-white text-xs px-3 py-1 rounded-full">
                 {{ 'preview.new' | translate }}</div>
+            <div class="absolute top-4 right-4 bg-black/50 backdrop-blur text-white text-xs px-3 py-1 rounded-full">
+                {{ 'preview.original' | translate }}</div>
         </div>
         }
         }

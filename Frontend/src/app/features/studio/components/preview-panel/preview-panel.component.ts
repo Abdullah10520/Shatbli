@@ -1,7 +1,8 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, input, output, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { GeneratedDesign } from '../../../../shared/models/design.model';
+import { LanguageService } from '../../../../Core/services/language.service';
 
 @Component({
     selector: 'app-preview-panel',
@@ -11,6 +12,8 @@ import { GeneratedDesign } from '../../../../shared/models/design.model';
     styleUrl: './preview-panel.component.css'
 })
 export class PreviewPanelComponent {
+    readonly languageService = inject(LanguageService);
+
     // المدخلات
     roomImageUrl = input<string | null>(null);
     generatedResult = input<GeneratedDesign | null>(null);
