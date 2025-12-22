@@ -1,9 +1,12 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../Core/auth/auth.service';
 import { DesignService } from '../../Core/services/design.service';
 import { ThemeService } from '../../Core/services/theme.service';
+import { LanguageService } from '../../Core/services/language.service';
+import { ProgressMessagesService } from '../../Core/services/progress-messages.service';
 import { Ceramic, DesignType, GeneratedDesign } from '../../shared/models/design.model';
 
 // المكونات الفرعية
@@ -12,6 +15,7 @@ import { DesignSelectorComponent } from './components/design-selector/design-sel
 import { GalleryGridComponent } from './components/gallery-grid/gallery-grid.component';
 import { PreviewPanelComponent } from './components/preview-panel/preview-panel.component';
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle.component';
+import { LanguageSwitcherComponent } from '../../shared/components/language-switcher.component';
 
 @Component({
     selector: 'app-studio',
@@ -19,11 +23,13 @@ import { ThemeToggleComponent } from '../../shared/components/theme-toggle.compo
     imports: [
         CommonModule,
         RouterModule,
+        TranslatePipe,
         ImageUploadComponent,
         DesignSelectorComponent,
         GalleryGridComponent,
         PreviewPanelComponent,
-        ThemeToggleComponent
+        ThemeToggleComponent,
+        LanguageSwitcherComponent
     ],
     templateUrl: './studio.component.html',
     styleUrl: './studio.component.css',
@@ -32,7 +38,20 @@ export class StudioComponent {
     private authService = inject(AuthService);
     private designService = inject(DesignService);
     readonly themeService = inject(ThemeService);
+    readonly languageService = inject(LanguageService);
+    readonly progressService = inject(ProgressMessagesService);
     private router = inject(Router);
+
+    constructor() {
+        // مراقبة حالة التوليد لإدارة الرسائل
+        effect(() => {
+            if (this.isGenerating()) {
+                this.progressService.startMessages(this.designType());
+            } else {
+                this.progressService.stopMessages();
+            }
+        });
+    }
 
     // حالة المستخدم
     currentUser = this.authService.currentUserSig;

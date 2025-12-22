@@ -1,0 +1,92 @@
+{
+    "app": {
+        "name": "Shatbli",
+        "tagline": "Design your dream home with AI"
+    },
+    "nav": {
+        "studio": "Studio",
+        "logout": "Logout"
+    },
+    "studio": {
+        "title": "Design Your Dream Space",
+        "subtitle": "Upload a photo of your room, choose ceramic or paint, and let AI transform your vision into reality",
+        "step1_title": "1. Upload Room Photo",
+        "step1_desc": "Start by adding a photo of your space",
+        "step2_title": "2. Choose Design",
+        "step2_desc": "Select ceramic or wall paint",
+        "generate_btn": "Generate with AI",
+        "generating": "Generating..."
+    },
+    "design": {
+        "ceramic": "Ceramic",
+        "paint": "Wall Paint",
+        "custom_image": "Custom Image",
+        "upload_custom": "Upload your own ceramic image",
+        "upload_custom_paint": "Upload your own paint image",
+        "no_designs": "No designs available"
+    },
+    "upload": {
+        "drag_drop": "Drag and drop your image here",
+        "or": "or",
+        "browse": "Browse Files",
+        "size_limit": "PNG, JPG, JPEG (Max 10MB)",
+        "tip": "💡 Tip: For best results, take photos in good lighting with a high-quality camera"
+    },
+    "preview": {
+        "title": "Preview",
+        "original": "Original",
+        "compare": "Compare",
+        "new": "New",
+        "upload_prompt": "Upload an image to start",
+        "select_prompt": "Select ceramic or paint then click \"Generate\"",
+        "share": "Share Design",
+        "download": "Download Result"
+    },
+    "progress": {
+        "received": "✨ Request received!",
+        "analyzing": "🔍 Analyzing room image...",
+        "preparing_ceramic": "🎨 Preparing ceramic...",
+        "preparing_paint": "🖌️ Preparing wall paint...",
+        "ai_working": "🤖 AI is working on your design...",
+        "applying_design": "✨ Applying design...",
+        "final_touches": "🎯 Final touches...",
+        "almost_done": "⏳ Almost done...",
+        "working_ceramic": "🎨 Working on ceramic...",
+        "working_paint": "🖌️ Working on wall paint...",
+        "combining": "🔄 Combining designs..."
+    },
+    "auth": {
+        "login": "Login",
+        "register": "Register",
+        "email": "Email",
+        "email_placeholder": "example@email.com",
+        "password": "Password",
+        "password_placeholder": "••••••••",
+        "confirm_password": "Confirm Password",
+        "full_name": "Full Name",
+        "full_name_placeholder": "Enter your full name",
+        "phone": "Phone Number",
+        "phone_placeholder": "01xxxxxxxxx",
+        "logging_in": "Logging in...",
+        "registering": "Registering...",
+        "no_account": "Don't have an account?",
+        "have_account": "Already have an account?",
+        "create_account": "Create New Account"
+    },
+    "errors": {
+        "email_invalid": "Please enter a valid email",
+        "password_required": "Password is required (at least 6 characters)",
+        "name_required": "Name is required (at least 3 characters)",
+        "phone_invalid": "Please enter a valid Egyptian phone number",
+        "password_mismatch": "Passwords do not match",
+        "generation_error": "An error occurred during generation"
+    },
+    "footer": {
+        "rights": "© 2024 Shatbli. All rights reserved.",
+        "terms": "Terms",
+        "privacy": "Privacy"
+    },
+    "common": {
+        "copied": "Image link copied!"
+    }
+}

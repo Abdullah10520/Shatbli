@@ -1,4 +1,5 @@
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300" dir="rtl">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300"
+    [dir]="languageService.isRTL() ? 'rtl' : 'ltr'">
     <!-- Header -->
     <header
         class="sticky top-0 z-40 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
@@ -6,22 +7,21 @@
             <div class="flex items-center justify-between h-16">
                 <!-- الشعار -->
                 <div class="flex items-center gap-2">
-                    <img src="/assets/images/logo.png" alt="شطبلي" class="h-8 w-auto">
-                    <span class="text-2xl font-bold text-gray-800 dark:text-white">شطبلي</span>
+                    <img src="/assets/images/logo.png" [alt]="'app.name' | translate" class="h-8 w-auto">
+                    <span class="text-2xl font-bold text-gray-800 dark:text-white">{{ 'app.name' | translate }}</span>
                 </div>
 
                 <!-- القائمة -->
                 <div class="hidden md:flex items-center gap-8">
-                    <a routerLink="/studio"
-                        class="text-sm font-medium text-purple-600 dark:text-purple-400">الاستوديو</a>
-                    <a href="#"
-                        class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">المعرض</a>
-                    <a href="#"
-                        class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">الأسعار</a>
+                    <a routerLink="/studio" class="text-sm font-medium text-purple-600 dark:text-purple-400">{{
+                        'nav.studio' | translate }}</a>
                 </div>
 
-                <!-- المستخدم وزر الوضع -->
-                <div class="flex items-center gap-4">
+                <!-- المستخدم وزر الوضع واللغة -->
+                <div class="flex items-center gap-3">
+                    <!-- زر تبديل اللغة -->
+                    <app-language-switcher />
+
                     <!-- زر التبديل للوضع الداكن -->
                     <app-theme-toggle />
 
@@ -31,7 +31,7 @@
                             currentUser()?.fullName }}</span>
                         <button (click)="logout()"
                             class="text-sm text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium">
-                            خروج
+                            {{ 'nav.logout' | translate }}
                         </button>
                     </div>
                     }
@@ -46,10 +46,10 @@
         <div class="text-center mb-10">
             <h1
                 class="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-l from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 bg-clip-text text-transparent mb-3">
-                صمم مساحة أحلامك
+                {{ 'studio.title' | translate }}
             </h1>
             <p class="max-w-xl mx-auto text-gray-500 dark:text-gray-400">
-                ارفع صورة لغرفتك، اختر السيراميك أو اللون، ودع الذكاء الاصطناعي يحول رؤيتك لحقيقة
+                {{ 'studio.subtitle' | translate }}
             </p>
         </div>
 
@@ -60,16 +60,25 @@
                 <!-- رفع صورة الغرفة -->
                 <div
                     class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h2 class="text-lg font-semibold mb-1 text-gray-900 dark:text-white">١. ارفع صورة الغرفة</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">ابدأ بإضافة صورة لمساحتك</p>
+                    <h2 class="text-lg font-semibold mb-1 text-gray-900 dark:text-white">{{ 'studio.step1_title' |
+                        translate }}</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ 'studio.step1_desc' | translate }}</p>
+
+                    <!-- نصيحة الإضاءة -->
+                    <div
+                        class="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 rounded-lg">
+                        <p class="text-xs text-amber-700 dark:text-amber-400">{{ 'upload.tip' | translate }}</p>
+                    </div>
+
                     <app-image-upload (imageSelected)="onRoomImageSelected($event)" />
                 </div>
 
                 <!-- اختيار نوع التصميم والمعرض (مدمجين) -->
                 <div
                     class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h2 class="text-lg font-semibold mb-1 text-gray-900 dark:text-white">٢. اختر التصميم</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">اختر سيراميك أو لون حائط</p>
+                    <h2 class="text-lg font-semibold mb-1 text-gray-900 dark:text-white">{{ 'studio.step2_title' |
+                        translate }}</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ 'studio.step2_desc' | translate }}</p>
 
                     <!-- أزرار اختيار النوع -->
                     <app-design-selector [selectedType]="designType()" (typeChanged)="onDesignTypeChanged($event)" />
@@ -86,14 +95,14 @@
                     class="w-full bg-gradient-to-l from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 dark:from-purple-500 dark:to-indigo-500 dark:hover:from-purple-600 dark:hover:to-indigo-600 text-white py-4 px-6 rounded-xl text-lg font-semibold flex items-center justify-center gap-3 transition-all shadow-lg disabled:from-gray-400 disabled:to-gray-400 dark:disabled:from-gray-600 dark:disabled:to-gray-600 disabled:cursor-not-allowed">
                     @if (isGenerating()) {
                     <div class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>جاري التوليد...</span>
+                    <span>{{ 'studio.generating' | translate }}</span>
                     } @else {
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                     </svg>
-                    <span>توليد بالذكاء الاصطناعي</span>
+                    <span>{{ 'studio.generate_btn' | translate }}</span>
                     }
                 </button>
             </div>
@@ -101,8 +110,8 @@
             <!-- اللوحة اليمنى - المعاينة -->
             <div class="lg:col-span-2">
                 <app-preview-panel [roomImageUrl]="roomImageUrl()" [generatedResult]="generatedResult()"
-                    [isGenerating]="isGenerating()" (downloadClicked)="downloadResult()"
-                    (shareClicked)="shareResult()" />
+                    [isGenerating]="isGenerating()" [progressMessage]="progressService.currentMessage()"
+                    (downloadClicked)="downloadResult()" (shareClicked)="shareResult()" />
             </div>
         </div>
     </main>
@@ -112,15 +121,18 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-2">
-                    <img src="/assets/images/logo.png" alt="شطبلي" class="h-6 w-auto">
-                    <span class="text-lg font-semibold text-gray-800 dark:text-white">شطبلي</span>
+                    <img src="/assets/images/logo.png" [alt]="'app.name' | translate" class="h-6 w-auto">
+                    <span class="text-lg font-semibold text-gray-800 dark:text-white">{{ 'app.name' | translate
+                        }}</span>
                 </div>
-                <p class="text-sm text-gray-500 dark:text-gray-400">© 2024 شطبلي. جميع الحقوق محفوظة.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'footer.rights' | translate }}</p>
                 <div class="flex gap-6">
                     <a href="#"
-                        class="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">الشروط</a>
+                        class="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">{{
+                        'footer.terms' | translate }}</a>
                     <a href="#"
-                        class="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">الخصوصية</a>
+                        class="text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">{{
+                        'footer.privacy' | translate }}</a>
                 </div>
             </div>
         </div>

@@ -1,12 +1,13 @@
 import { Component, input, output, signal, OnInit, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Ceramic, DesignType } from '../../../../shared/models/design.model';
 import { DesignService } from '../../../../Core/services/design.service';
 
 @Component({
     selector: 'app-gallery-grid',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, TranslatePipe],
     templateUrl: './gallery-grid.component.html',
     styleUrl: './gallery-grid.component.css'
 })

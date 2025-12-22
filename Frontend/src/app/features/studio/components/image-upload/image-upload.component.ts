@@ -1,10 +1,11 @@
 import { Component, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-image-upload',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, TranslatePipe],
     templateUrl: './image-upload.component.html',
     styleUrl: './image-upload.component.css'
 })

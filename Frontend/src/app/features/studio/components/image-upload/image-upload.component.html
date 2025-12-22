@@ -1,4 +1,4 @@
-<div class="w-full" dir="rtl">
+<div class="w-full">
     @if (previewUrl()) {
     <!-- معاينة الصورة -->
     <div
@@ -37,13 +37,13 @@
             </svg>
         </div>
 
-        <p class="font-medium text-gray-700 dark:text-gray-300 mb-1">اسحب وأفلت صورتك هنا</p>
-        <p class="text-sm text-gray-400 dark:text-gray-500 mb-4">أو</p>
+        <p class="font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'upload.drag_drop' | translate }}</p>
+        <p class="text-sm text-gray-400 dark:text-gray-500 mb-4">{{ 'upload.or' | translate }}</p>
         <span
             class="bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors">
-            تصفح الملفات
+            {{ 'upload.browse' | translate }}
         </span>
-        <p class="text-xs text-gray-400 dark:text-gray-500 mt-4">PNG, JPG, JPEG (حد أقصى 10MB)</p>
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-4">{{ 'upload.size_limit' | translate }}</p>
     </div>
     }
 </div>
