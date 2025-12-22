@@ -1,6 +1,6 @@
 import google.genai as genai
 from google.genai import types
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import Response
 import os
 
@@ -130,3 +130,86 @@ async def generateRoomWithWallPainting(roomImage: UploadFile = File(...), wallPa
                 media_type=part.inline_data.mime_type
             )
 
+@app.post("/roomCeramicWithWallColor")
+async def generateRoomWithCeramicAndWallColor(
+    roomImage: UploadFile = File(...),
+    ceramicTileImage: UploadFile = File(...),
+    wall_color_hex: str = Form(...)
+):
+    # Read images
+    room_bytes = await roomImage.read()
+    tile_bytes = await ceramicTileImage.read()
+
+    # Prompt with HEX color
+    prompt = (
+        "You are a professional architectural renderer. Produce one PHOTOREALISTIC edit of IMAGE 1 (the apartment interior)."
+        "\n\nStrict instructions:"
+
+        "\n1) FLOOR: Replace the entire visible floor surface in IMAGE 1 with the ceramic tile pattern from IMAGE 2."
+        " Remove all sand, dust, concrete, or debris before applying the tile."
+        " The original floor must be completely replaced — ensure full coverage with no visible old material."
+
+        "\n2) WALL COLOR (WALLS ONLY): Repaint ALL visible WALL surfaces using the EXACT solid color specified by this HEX code: "
+        f"{wall_color_hex}. "
+        "The wall color must match this HEX code precisely with no variation, tint, or artistic interpretation."
+
+        "\nIMPORTANT: DO NOT paint, recolor, or modify the CEILING in any way."
+        " The ceiling must remain EXACTLY as it appears in IMAGE 1, including its original color, texture, lighting, and material."
+        " Ceiling surfaces are STRICTLY excluded from repainting."
+
+        "\n3) TILE APPEARANCE: Match the scale, orientation, grout spacing, and color tone exactly as seen in IMAGE 2."
+        " The pattern and color of the tile are extremely IMPORTANT — replicate them with perfect accuracy."
+        " Align the tiles to the apartment’s floor plane using realistic perspective projection (correct vanishing lines)."
+
+        "\n4) SURFACE PREPARATION (WALLS ONLY): Before painting, CLEAN and RESTORE wall surfaces — remove dust, stains, cracks,"
+        " concrete patches, or unfinished textures so the walls appear smooth and professionally painted."
+        " Do NOT clean, modify, or alter the ceiling."
+
+        "\n5) PRESERVATION: Preserve all furniture, objects, shadows, reflections, and lighting direction from IMAGE 1."
+        " Only modify the FLOOR material and WALL color — do not alter geometry, decor, lighting, or ceiling surfaces."
+
+        "\n6) CONSTRAINTS: Do not hallucinate or remove objects."
+        " Do not modify the structure, windows, ceiling, or perspective."
+
+        "\n7) FINISH QUALITY: The painted walls should appear clean, uniform, and recently completed,"
+        " with realistic light interaction (brighter near light sources, softer in shadows)."
+
+        "\n8) OUTPUT: Output exactly ONE high-resolution, photorealistic image (PNG only)."
+        " Do not include text, borders, watermarks, or artistic filters."
+
+        "\n\nRendering quality goals: physically-based realism, accurate light interaction,"
+        " smooth surfaces, consistent perspective alignment, and no visible seams or distortions."
+    )
+
+    # Call Gemini
+    response = client.models.generate_content(
+        model="gemini-2.5-flash-image",
+        contents=[
+            prompt,
+            types.Part(
+                inline_data=types.Blob(
+                    mime_type="image/png",
+                    data=room_bytes
+                )
+            ),
+            types.Part(
+                inline_data=types.Blob(
+                    mime_type="image/png",
+                    data=tile_bytes
+                )
+            )
+        ],
+        config={
+            "temperature": 0.4,
+            "top_p": 0.75,
+            "max_output_tokens": 8192
+        }
+    )
+
+    # Return generated image
+    for part in response.candidates[0].content.parts:
+        if part.inline_data is not None:
+            return Response(
+                content=part.inline_data.data,
+                media_type=part.inline_data.mime_type
+            )
