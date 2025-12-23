@@ -7,27 +7,28 @@ using AutoMapper;
 using MediatR;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Core.Domain.Entities;
+using Shatabli.Core.Domain.Enums;
 
-namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicImage
+namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicAndPaint
 {
-    public class AddDesignWithUserCeramicImageCommandHandler : IRequestHandler<AddDesignWithUserCeramicImageCommand, AddDesignWithUserCeramicImageResponse>
+    public class AddDesignWithUserCeramicAndPaintCommandHandler : IRequestHandler<AddDesignWithUserCeramicAndPaintCommand, AddDesignWithUserCeramicAndPaintResponse>
     {
         private readonly IApplicationDbContext _context;
         public IStorageService _storageService;
         private readonly IClaimsService _claimsService;
         private readonly IGenerateRoomImageService _generateRoomImageService;
-        public AddDesignWithUserCeramicImageCommandHandler(IApplicationDbContext context ,IGenerateRoomImageService generateRoomImageService ,IStorageService storageService, IClaimsService claimsService )
+        public AddDesignWithUserCeramicAndPaintCommandHandler(IApplicationDbContext context ,IGenerateRoomImageService generateRoomImageService ,IStorageService storageService, IClaimsService claimsService )
         {
             _context = context;
             _storageService = storageService;
             _claimsService = claimsService;
             _generateRoomImageService = generateRoomImageService;
         }
-        public async Task<AddDesignWithUserCeramicImageResponse> Handle(AddDesignWithUserCeramicImageCommand request, CancellationToken cancellationToken)
+        public async Task<AddDesignWithUserCeramicAndPaintResponse> Handle(AddDesignWithUserCeramicAndPaintCommand request, CancellationToken cancellationToken)
         {
             string designId = Guid.NewGuid().ToString();
-
-            var GeneratedImageBytes = await _generateRoomImageService.GenerateImage(request.roomBytes, request.ceramicOrPaintBytes, request.designType);
+            var GeneratedImageBytes = await _generateRoomImageService.GenerateDesignWithCeramicAndPaint(request.roomBytes, request.ceramicBytes, request.colorCode);
+            //var GeneratedImageBytes = await _generateRoomImageService.GenerateImage(request.roomBytes, request.ceramicBytes, DesignType.CeramicFloor);
 
 
             var fileName = $"{Guid.NewGuid()}.png";
@@ -42,20 +43,18 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
 
             var genImagePath = $"/temp-images/{fileName}";
 
-
             Design design = new Design();
             design.Id = designId;
             design.GeneratedImagePath = genImagePath;
             design.UserId = _claimsService.GetCurrentUserId();
-            //design.UserId = "bad9014b-a457-47a6-afa0-cedefa8832c0";
-
 
 
             _context.Designs.Add(design);
             await _context.SaveChangesAsync(cancellationToken);
 
-            AddDesignWithUserCeramicImageResponse response = new AddDesignWithUserCeramicImageResponse();
-            response.GeneratedImagePath = genImagePath;
+
+            AddDesignWithUserCeramicAndPaintResponse response = new AddDesignWithUserCeramicAndPaintResponse();
+            response.GeneratedImageUrl = genImagePath;
             response.designId = designId;
 
             return response;

@@ -1,13 +1,17 @@
-﻿using MediatR;
+﻿using Azure.Core;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicAndPaint;
 using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicImage;
 using Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage;
+using Shatabli.Core.Application.Features.Designs.Commands.SaveDesign;
 using Shatabli.Core.Application.Features.Designs.Commands.SoftDeleteDesign;
 using Shatabli.Core.Application.Features.Designs.Queries.GetAllDesigns;
 using Shatabli.Core.Application.Features.Designs.Queries.GetDesignById;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Core.Domain.Enums;
+using System.Threading.Tasks;
 
 namespace Shatabli.API.Controllers
 {
@@ -18,15 +22,17 @@ namespace Shatabli.API.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IStorageService _storageService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public DesignController(IMediator mediator, IStorageService storageService)
+        public DesignController(IMediator mediator, IStorageService storageService, IWebHostEnvironment webHostEnvironment)
         {
             _mediator = mediator;
             _storageService = storageService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateDesign(IFormFile imageFile, string ceramicId, DesignType designType)
+        public async Task<IActionResult> GenerateDesign(IFormFile imageFile,string ceramicId, DesignType designType)
         {
 
             try
@@ -46,16 +52,19 @@ namespace Shatabli.API.Controllers
                 var result = await _mediator.Send(request);
 
 
+                var baseUrl = $"{Request.Scheme}://{Request.Host}";
+                var imagePath = $"{baseUrl}{result.GeneratedImagePath}";
 
-                //return File(result.GeneratedImage , "image/png");
+
+                //return File(result.GeneratedImage, "image/png");
                 return Ok(new
                 {
                     success = true,
-                    generatedImageUrl = result.GeneratedImageUrl,
+                    generatedImageUrl = imagePath,
                     designId = result.designId
                 });
             }
-            catch (Exception)
+            catch (Exception Ex)
             {
                 return BadRequest(new
                 {
@@ -63,8 +72,6 @@ namespace Shatabli.API.Controllers
                     message = "Error While Generate Design !"
                 });
             }
-
-
         }
 
         [HttpPost]
@@ -96,14 +103,17 @@ namespace Shatabli.API.Controllers
 
                 var result = await _mediator.Send(request);
 
+                var baseUrl = $"{Request.Scheme}://{Request.Host}";
+                var imageUrl = $"{baseUrl}{result.GeneratedImagePath}";
+
+
                 //return File(result.GeneratedImage, "image/png");
                 return Ok(new
                 {
                     success = true,
-                    generatedImageUrl = result.GeneratedImageUrl,
+                    generatedImageUrl = imageUrl,
                     designId = result.designId
                 });
-                //return Ok();
             }
             catch (Exception)
             {
@@ -113,13 +123,90 @@ namespace Shatabli.API.Controllers
                     message = "Error While Generate Design"
                 });
             }
-
-
-
-
-
-
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateDesignWithUserCeramicAndPaint([FromForm] IFormFile roomImageFile, [FromForm] IFormFile ceramicOrPaintImageFile, [FromForm] string colorCode)
+        {
+            //try
+            //{
+            var roomStream = roomImageFile.OpenReadStream();
+            var ceramicOrPaintStream = ceramicOrPaintImageFile.OpenReadStream();
+
+            MemoryStream roomMemoryStream = new MemoryStream();
+            MemoryStream ceramicMemoryStream = new MemoryStream();
+
+            await roomStream.CopyToAsync(roomMemoryStream);
+            await ceramicOrPaintStream.CopyToAsync(ceramicMemoryStream);
+
+            var roomBytes = roomMemoryStream.ToArray();
+            var ceramicOrPaintBytes = ceramicMemoryStream.ToArray();
+
+            AddDesignWithUserCeramicAndPaintCommand request = new AddDesignWithUserCeramicAndPaintCommand();
+            request.roomBytes = roomBytes;
+            request.ceramicBytes = ceramicOrPaintBytes;
+            request.colorCode = colorCode;
+
+            var result = await _mediator.Send(request);
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var imageUrl = $"{baseUrl}/{result.GeneratedImageUrl}";
+
+            return Ok(new
+            {
+                success = true,
+                generatedImageUrl = imageUrl,
+                designId = result.designId
+            });
+            //    }
+            //    catch (Exception)
+            //    {
+            //        return BadRequest(new
+            //        {
+            //            success = false,
+            //            message = "Error While Generate Design"
+            //        });
+            //    }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveDesign(SaveDesignCommand request)
+        {
+
+            //try
+            //{
+                //var imageUrl = request.designImagePath;
+                //var fileName = Path.GetFileName(imageUrl);
+
+                //var fullPath = Path.Combine(
+                //_webHostEnvironment.WebRootPath,
+                //"temp-images",
+                //fileName
+                //);
+                //request.designImagePath = fullPath;
+
+                var result = await _mediator.Send(request);
+
+                //System.IO.File.Delete(fullPath);
+
+                return Ok(new
+                {
+                    success = true,
+                    generatedImageUrl = result.generatedImageUrl,
+                    designId = result.designId
+                });
+            //}
+            //catch (Exception)
+            //{
+            //    return BadRequest(new
+            //    {
+            //        success = false,
+            //        message = "Error While Saving Design"
+            //    });
+            //}
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> GetAllDesigns()
         {
@@ -150,7 +237,5 @@ namespace Shatabli.API.Controllers
 
             return Ok(response);
         }
-
-
     }
 }
