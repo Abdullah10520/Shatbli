@@ -10,5 +10,6 @@ namespace Shatabli.Core.Application.Interfaces
     public interface IGenerateRoomImageService
     {
         public Task<byte[]> GenerateImage(byte[] roomImage, byte[] ceramicImage, DesignType designType);
+        public Task<byte[]> GenerateDesignWithCeramicAndPaint(byte[] roomImage, byte[] ceramicImage, string colorCode);
     }
 }

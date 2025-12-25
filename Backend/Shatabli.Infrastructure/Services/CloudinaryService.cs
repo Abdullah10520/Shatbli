@@ -8,6 +8,7 @@ using CloudinaryDotNet.Actions;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Core.Domain.Entities;
 
+
 namespace Shatabli.Infrastructure.Services
 {
     public class CloudinaryService : IStorageService
@@ -15,7 +16,8 @@ namespace Shatabli.Infrastructure.Services
         public Account account;
         public Cloudinary cloudinary;
         private HttpClient _httpClient;
-        public CloudinaryService(HttpClient httpClient) 
+        private readonly IPathProvider _pathProvider;
+        public CloudinaryService(HttpClient httpClient, IPathProvider pathProvider) 
         {
             account = new Account(
                 "dymvpdlzd",                            //Cloud Name
@@ -26,6 +28,7 @@ namespace Shatabli.Infrastructure.Services
             cloudinary.Api.Secure = true;
 
             _httpClient = httpClient;
+            _pathProvider = pathProvider;
 
         }
         public async Task<string> Upload(Stream stream, string imageName, string imagePublicId)
@@ -41,6 +44,39 @@ namespace Shatabli.Infrastructure.Services
             if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 return uploadResult.SecureUrl.ToString();
+            }
+            return "Can't Save The Image";
+        }
+
+        public async Task<string> UploadAsync(string imageUrl,string imagePublicId)
+        {
+
+            var fileName = Path.GetFileName(imageUrl);
+
+            var fullPath = Path.Combine(
+                _pathProvider.WebRootPath,
+                "temp-images",
+                fileName
+            );
+
+            if (!File.Exists(fullPath))
+                throw new FileNotFoundException("Temp image not found", fullPath);
+
+
+            using var stream = System.IO.File.OpenRead(fullPath);
+
+            var uploadparams = new ImageUploadParams()
+            {
+                File = new FileDescription(imagePublicId, stream),
+                PublicId = imagePublicId,
+                Overwrite = false
+            };
+            var uploadResult = await cloudinary.UploadAsync(uploadparams);
+            if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                File.Delete(fullPath);
+                return uploadResult.SecureUrl.ToString();
+
             }
             return "Can't Save The Image";
         }

@@ -1,8 +1,12 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../Core/auth/auth.service';
 import { DesignService } from '../../Core/services/design.service';
+import { ThemeService } from '../../Core/services/theme.service';
+import { LanguageService } from '../../Core/services/language.service';
+import { ProgressMessagesService } from '../../Core/services/progress-messages.service';
 import { Ceramic, DesignType, GeneratedDesign } from '../../shared/models/design.model';
 
 // المكونات الفرعية
@@ -10,6 +14,8 @@ import { ImageUploadComponent } from './components/image-upload/image-upload.com
 import { DesignSelectorComponent } from './components/design-selector/design-selector.component';
 import { GalleryGridComponent } from './components/gallery-grid/gallery-grid.component';
 import { PreviewPanelComponent } from './components/preview-panel/preview-panel.component';
+import { ThemeToggleComponent } from '../../shared/components/theme-toggle.component';
+import { LanguageSwitcherComponent } from '../../shared/components/language-switcher.component';
 
 @Component({
     selector: 'app-studio',
@@ -17,10 +23,13 @@ import { PreviewPanelComponent } from './components/preview-panel/preview-panel.
     imports: [
         CommonModule,
         RouterModule,
+        TranslatePipe,
         ImageUploadComponent,
         DesignSelectorComponent,
         GalleryGridComponent,
-        PreviewPanelComponent
+        PreviewPanelComponent,
+        ThemeToggleComponent,
+        LanguageSwitcherComponent
     ],
     templateUrl: './studio.component.html',
     styleUrl: './studio.component.css',
@@ -28,7 +37,21 @@ import { PreviewPanelComponent } from './components/preview-panel/preview-panel.
 export class StudioComponent {
     private authService = inject(AuthService);
     private designService = inject(DesignService);
+    readonly themeService = inject(ThemeService);
+    readonly languageService = inject(LanguageService);
+    readonly progressService = inject(ProgressMessagesService);
     private router = inject(Router);
+
+    constructor() {
+        // مراقبة حالة التوليد لإدارة الرسائل
+        effect(() => {
+            if (this.isGenerating()) {
+                this.progressService.startMessages(this.designType());
+            } else {
+                this.progressService.stopMessages();
+            }
+        });
+    }
 
     // حالة المستخدم
     currentUser = this.authService.currentUserSig;
@@ -117,13 +140,29 @@ export class StudioComponent {
     }
 
     // تحميل النتيجة
-    downloadResult(): void {
+    async downloadResult(): Promise<void> {
         const result = this.generatedResult();
         if (result) {
-            const link = document.createElement('a');
-            link.href = result.generatedImageUrl;
-            link.download = `shatbli-design-${Date.now()}.jpg`;
-            link.click();
+            try {
+                // جلب الصورة كـ blob لتجاوز قيود CORS
+                const response = await fetch(result.generatedImageUrl);
+                const blob = await response.blob();
+
+                // إنشاء رابط تحميل من الـ blob
+                const blobUrl = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = `shatbli-design-${Date.now()}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // تحرير الـ URL
+                URL.revokeObjectURL(blobUrl);
+            } catch (error) {
+                // في حالة فشل fetch، فتح الصورة في تاب جديد
+                window.open(result.generatedImageUrl, '_blank');
+            }
         }
     }
 

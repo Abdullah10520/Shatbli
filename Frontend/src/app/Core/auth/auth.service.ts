@@ -46,12 +46,10 @@ export class AuthService {
   }
 
   register(data: RegisterRequest) {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/Users/register`, data)
-      .pipe(
-        tap(res => {
-          this.saveAuthData(res);
-        })
-      );
+    // الـ Register API بيرجع userId فقط (plain text string)، مش JSON
+    return this.http.post(`${this.apiUrl}/Users/register`, data, {
+      responseType: 'text'
+    });
   }
 
   private saveAuthData(res: AuthResponse): void {

@@ -27,41 +27,38 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
         {
             string designId = Guid.NewGuid().ToString();
 
-            var roomImageUrl = await _storageService.Upload(new MemoryStream(request.roomBytes), request.roomimageName, designId);
-
-            var productImageUrl = await _storageService.Upload(new MemoryStream( request.ceramicOrPaintBytes), request.ceramicOrPaintimageName, designId+" Product");
-            
-
             var GeneratedImageBytes = await _generateRoomImageService.GenerateImage(request.roomBytes, request.ceramicOrPaintBytes, request.designType);
 
-            var genImageUrl = "";
 
-            using (var genstream = new MemoryStream(GeneratedImageBytes))
-            {
-                genImageUrl = await _storageService.Upload(genstream, "Ai Generted "+request.roomimageName , designId + "-AiGen");
-            }
+            var fileName = $"{Guid.NewGuid()}.png";
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp-images");
 
-            //var genImgStream = new MemoryStream(GeneratedImageBytes);
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
 
-            AddDesignWithUserCeramicImageResponse response = new AddDesignWithUserCeramicImageResponse();
-            response.GeneratedImageUrl = genImageUrl;
-            response.designId = designId;
+            var filePath = Path.Combine(folderPath, fileName);
+
+            await System.IO.File.WriteAllBytesAsync(filePath, GeneratedImageBytes);
+
+            var genImagePath = $"/temp-images/{fileName}";
 
 
             Design design = new Design();
             design.Id = designId;
+            design.GeneratedImagePath = genImagePath;
             design.UserId = _claimsService.GetCurrentUserId();
-            //design.UserId = "4";
-            design.OriginalImageUrl = roomImageUrl;
-            design.GeneratedImageUrl = genImageUrl;
-            design.ProductImageUrl = productImageUrl;
+            //design.UserId = "bad9014b-a457-47a6-afa0-cedefa8832c0";
 
-            await _context.Designs.AddAsync(design, cancellationToken);
+
+
+            _context.Designs.Add(design);
             await _context.SaveChangesAsync(cancellationToken);
 
+            AddDesignWithUserCeramicImageResponse response = new AddDesignWithUserCeramicImageResponse();
+            response.GeneratedImagePath = genImagePath;
+            response.designId = designId;
+
             return response;
-
-
         }
     }
 }

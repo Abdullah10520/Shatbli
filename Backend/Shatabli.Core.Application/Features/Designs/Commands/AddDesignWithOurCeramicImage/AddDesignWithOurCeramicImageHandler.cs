@@ -22,7 +22,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
         public AddDesignWithOurCeramicImageHandler(IApplicationDbContext context ,IStorageService storageService ,IGenerateRoomImageService generateRoomImageService ,IMediator mediator , IClaimsService claimsService)
         {
             _context = context;
-            _storageService = storageService;
+            //_storageService = storageService;
             _generateRoomImageService = generateRoomImageService;
             _mediator = mediator;
             _claimsService = claimsService;
@@ -30,8 +30,6 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
         async Task<AddDesignWithOurCeramicImageResponse> IRequestHandler<AddDesignWithOurCeramicImageCommand, AddDesignWithOurCeramicImageResponse>.Handle(AddDesignWithOurCeramicImageCommand request, CancellationToken cancellationToken)
         {
             string designId = Guid.NewGuid().ToString();
-
-            var cloudinaryImageUrl = await _storageService.Upload(new MemoryStream(request.stream) , request.imageName, designId);
 
             GetCeramicQuery query = new GetCeramicQuery();
             query.CeramicId = request.ceramicId;
@@ -44,36 +42,33 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
 
             var generatedImageBytes = await _generateRoomImageService.GenerateImage( request.stream, ceramicMemoryStream.ToArray(), request.designType);
 
-            
-            var GeneratedImageURL = "";
+            var fileName = $"{Guid.NewGuid()}.png";
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp-images");
 
-            using (var uploadStream = new MemoryStream(generatedImageBytes))
-            {
-                GeneratedImageURL = await _storageService.Upload(uploadStream, "Ai Generated" + request.imageName, designId+ "-AiGen");
-            }
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
 
-            var ceramicImageUrl = _storageService.GetImageURL(request.ceramicId);
+            var filePath = Path.Combine(folderPath, fileName);
+
+            await System.IO.File.WriteAllBytesAsync(filePath, generatedImageBytes);
+
+            var genImagePath = $"/temp-images/{fileName}";
+
+            Design design = new Design();
+            design.Id = designId;
+            design.GeneratedImagePath = genImagePath;
+            design.UserId = _claimsService.GetCurrentUserId();
+            //design.UserId = "bad9014b-a457-47a6-afa0-cedefa8832c0";
+
+
+            _context.Designs.Add(design);
+            await _context.SaveChangesAsync(cancellationToken);
 
 
             AddDesignWithOurCeramicImageResponse result = new AddDesignWithOurCeramicImageResponse();
 
-            //var streamToReturn = new MemoryStream(generatedImageBytes);
-
-            result.GeneratedImageUrl = GeneratedImageURL;
+            result.GeneratedImagePath = genImagePath;
             result.designId = designId;
-
-            //Saving data in database
-
-            Design design = new Design();
-            design.Id = designId;
-            design.UserId = _claimsService.GetCurrentUserId();
-            //design.UserId = "4";
-            design.OriginalImageUrl = cloudinaryImageUrl;
-            design.GeneratedImageUrl = GeneratedImageURL;
-            design.ProductImageUrl = ceramicImageUrl;
-
-            await _context.Designs.AddAsync(design, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
 
             return result;
         }

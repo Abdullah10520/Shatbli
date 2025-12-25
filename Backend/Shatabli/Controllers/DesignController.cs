@@ -32,7 +32,7 @@ namespace Shatabli.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateDesign(IFormFile imageFile, string ceramicId, DesignType designType)
+        public async Task<IActionResult> GenerateDesign(IFormFile imageFile,string ceramicId, DesignType designType)
         {
 
             try
@@ -175,26 +175,26 @@ namespace Shatabli.API.Controllers
 
             //try
             //{
-            //var imageUrl = request.designImagePath;
-            //var fileName = Path.GetFileName(imageUrl);
+                //var imageUrl = request.designImagePath;
+                //var fileName = Path.GetFileName(imageUrl);
 
-            //var fullPath = Path.Combine(
-            //_webHostEnvironment.WebRootPath,
-            //"temp-images",
-            //fileName
-            //);
-            //request.designImagePath = fullPath;
+                //var fullPath = Path.Combine(
+                //_webHostEnvironment.WebRootPath,
+                //"temp-images",
+                //fileName
+                //);
+                //request.designImagePath = fullPath;
 
-            var result = await _mediator.Send(request);
+                var result = await _mediator.Send(request);
 
-            //System.IO.File.Delete(fullPath);
+                //System.IO.File.Delete(fullPath);
 
-            return Ok(new
-            {
-                success = true,
-                generatedImageUrl = result.generatedImageUrl,
-                designId = result.designId
-            });
+                return Ok(new
+                {
+                    success = true,
+                    generatedImageUrl = result.generatedImageUrl,
+                    designId = result.designId
+                });
             //}
             //catch (Exception)
             //{

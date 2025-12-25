@@ -9,7 +9,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
     public class AddDesignWithOurCeramicImageResponse
     {
         //public Stream GeneratedImage {  get; set; }
-        public string GeneratedImageUrl { get; set; }
+        public string GeneratedImagePath { get; set; }
         public string designId { get; set; }
     }
 }

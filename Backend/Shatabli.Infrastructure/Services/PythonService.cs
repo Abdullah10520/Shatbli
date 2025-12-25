@@ -21,6 +21,12 @@ namespace Shatabli.Infrastructure.Services
             _storageService = storageService;
             _httpClient = httpClientFactory.CreateClient("AIService");
         }
+
+        public Task<byte[]> GenerateDesignWithCeramicAndPaint(byte[] roomImage, byte[] ceramicImage, string colorCode)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<byte[]> GenerateImage(byte[] roomImage, byte[] ceramicOrPaintImage , DesignType designType)
         {
             var form = new MultipartFormDataContent();
