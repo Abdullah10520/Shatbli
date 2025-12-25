@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Core.Domain.Entities;
+using Shatabli.Core.Domain.Enums;
 
 namespace Shatabli.Infrastructure.Context
 {
@@ -9,11 +10,11 @@ namespace Shatabli.Infrastructure.Context
         public ApplictionDbContext(DbContextOptions<ApplictionDbContext> options) : base(options) { }
 
         public DbSet<Product> Products { get; set; }
-
         public DbSet<Design> Designs { get; set; }
         public DbSet<AIProcessingLog> AIProcessingLogs { get; set; }
-
         public DbSet<User> Users { get; set; }
+        public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+        public DbSet<UserSubscription> UserSubscriptions { get; set; }
 
         public override int SaveChanges()
         {
@@ -21,8 +22,6 @@ namespace Shatabli.Infrastructure.Context
             return base.SaveChanges();
         }
 
-        //Because Any one Can Write With Async and At That Time Auidit Has No Effict 
-        //So We Ovverride SaveChangesAsync 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             UpdateTimestamps();
@@ -40,7 +39,6 @@ namespace Shatabli.Infrastructure.Context
                     entry.Entity.CreatedAt = DateTime.UtcNow;
                     entry.Entity.UpdatedAt = DateTime.UtcNow;
                 }
-
                 else if (entry.State == EntityState.Modified)
                 {
                     entry.Entity.UpdatedAt = DateTime.UtcNow;
@@ -52,25 +50,26 @@ namespace Shatabli.Infrastructure.Context
                     entry.State = EntityState.Modified;
                 }
             }
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-
             modelBuilder.Entity<Design>()
-            .HasQueryFilter(d => !d.IsDeleted);
-
+                .HasQueryFilter(d => !d.IsDeleted);
 
             modelBuilder.Entity<User>()
                 .HasQueryFilter(u => !u.IsDeleted);
 
-
             modelBuilder.Entity<Product>()
                 .HasQueryFilter(c => !c.IsDeleted);
 
+            modelBuilder.Entity<SubscriptionPlan>()
+                .HasQueryFilter(sp => !sp.IsDeleted);
+
+            modelBuilder.Entity<UserSubscription>()
+                .HasQueryFilter(us => !us.IsDeleted);
 
             modelBuilder.Entity<Product>(entity =>
             {
@@ -128,7 +127,36 @@ namespace Shatabli.Infrastructure.Context
                 entity.HasIndex(e => e.RequestedAt);
             });
 
+            // ✅ Subscription Plan Configuration
+            modelBuilder.Entity<SubscriptionPlan>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Description).HasMaxLength(500);
+                entity.HasIndex(e => e.Type);
+            });
 
+            // ✅ User Subscription Configuration
+            modelBuilder.Entity<UserSubscription>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(e => e.User)
+                    .WithMany(u => u.Subscriptions)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.SubscriptionPlan)
+                    .WithMany(sp => sp.UserSubscriptions)
+                    .HasForeignKey(e => e.SubscriptionPlanId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => e.UserId);
+                entity.HasIndex(e => e.IsActive);
+            });
+
+            // ❌ REMOVED - Seed data moved to SubscriptionPlanSeeder
         }
     }
 }

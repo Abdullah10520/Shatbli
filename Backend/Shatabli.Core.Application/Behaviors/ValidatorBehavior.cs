@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using Shatabli.Core.Domain.Common;
 
 
 namespace Shatabli.Core.Application.Behaviors
@@ -73,30 +74,59 @@ namespace Shatabli.Core.Application.Behaviors
                 _validators.Select(v => v.ValidateAsync(context, cancellationToken))
             );
 
-            /// 2. Collect all errors
-            /// At this point, 'validationResults' is an array of results, e.g., [ Result_From_Validator1, Result_From_Validator2 ]
             var failures = validationResults
-                /// .SelectMany() takes the nested 'Errors' list (like [ "Error A1", "Error A2" ]) from *each* result...
-                /// ...and flattens them all into one single, combined list.
-                /// The result is: [ "Error A1", "Error A2", "Error B1" ]
                 .SelectMany(r => r.Errors)
-
-                /// This is a defensive safety check. It filters out any 'null' entries 
-                /// in case a developer manually overrode a validator and incorrectly added a null error.
                 .Where(f => f != null)
-
-                // .ToList() executes the LINQ query and materializes the final List<ValidationFailure>.
                 .ToList();
 
-            // 3. If any failures were found, stop the pipeline and throw an exception
             if (failures.Count != 0)
             {
-                // (You can also throw a custom exception here instead of the default one)
-                throw new FluentValidation.ValidationException(failures);
+                // ✅ Group errors by PropertyName
+                var errorsDictionary = failures
+                    .GroupBy(f => ToCamelCase(f.PropertyName))
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Select(e => e.ErrorMessage).ToList()
+                    );
+
+                // ✅ Check if TResponse is Result<T>
+                if (typeof(TResponse).IsGenericType &&
+                    typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
+                {
+                    var failureMethod = typeof(TResponse).GetMethod(
+                        "Failure",
+                        new[] { typeof(string), typeof(int), typeof(Dictionary<string, List<string>>) }
+                    );
+
+                    if (failureMethod != null)
+                    {
+                        var result = failureMethod.Invoke(
+                            null,
+                            new object[] { "Validation failed", 400, errorsDictionary }
+                        );
+                        return (TResponse)result!;
+                    }
+                }
+                // ✅ Check if TResponse is Result (non-generic)
+                else if (typeof(TResponse) == typeof(Result))
+                {
+                    var result = Result.Failure("Validation failed", 400, errorsDictionary);
+                    return (TResponse)(object)result;
+                }
+
+                // ❌ Fallback: If it's not Result type, throw exception
+                throw new ValidationException(failures);
             }
 
-            // 4. If there are no errors, continue to the next behavior or the final handler
             return await next();
+        }
+
+        private static string ToCamelCase(string str)
+        {
+            if (string.IsNullOrEmpty(str) || char.IsLower(str[0]))
+                return str;
+
+            return char.ToLowerInvariant(str[0]) + str.Substring(1);
         }
     }
 }

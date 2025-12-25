@@ -213,6 +213,113 @@ namespace Shatabli.Infrastructure.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("Shatabli.Core.Domain.Entities.SubscriptionPlan", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("HasPriorityGeneration")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasWatermark")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaxImagesPerDay")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxImagesPerMonth")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Type");
+
+                    b.ToTable("SubscriptionPlans");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "87898451-2156-46a0-a72a-315662335558",
+                            CreatedAt = new DateTime(2025, 12, 24, 14, 26, 39, 353, DateTimeKind.Utc).AddTicks(3368),
+                            Description = "باقة مجانية - 10 صور شهرياً",
+                            HasPriorityGeneration = false,
+                            HasWatermark = true,
+                            IsDeleted = false,
+                            MaxImagesPerDay = 1,
+                            MaxImagesPerMonth = 10,
+                            Name = "مجاني",
+                            Price = 0m,
+                            Type = 0
+                        },
+                        new
+                        {
+                            Id = "ae9e9b8e-7b4e-435e-afd1-beb5f4e523d7",
+                            CreatedAt = new DateTime(2025, 12, 24, 14, 26, 39, 353, DateTimeKind.Utc).AddTicks(3383),
+                            Description = "باقة أساسية - 100 صورة شهرياً",
+                            HasPriorityGeneration = false,
+                            HasWatermark = false,
+                            IsDeleted = false,
+                            MaxImagesPerDay = 20,
+                            MaxImagesPerMonth = 100,
+                            Name = "أساسي",
+                            Price = 9.99m,
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = "83ca6546-aad4-413d-8618-e6badc33ea81",
+                            CreatedAt = new DateTime(2025, 12, 24, 14, 26, 39, 353, DateTimeKind.Utc).AddTicks(3392),
+                            Description = "باقة مميزة - صور غير محدودة",
+                            HasPriorityGeneration = true,
+                            HasWatermark = false,
+                            IsDeleted = false,
+                            MaxImagesPerDay = -1,
+                            MaxImagesPerMonth = -1,
+                            Name = "مميز",
+                            Price = 29.99m,
+                            Type = 2
+                        });
+                });
+
             modelBuilder.Entity("Shatabli.Core.Domain.Entities.User", b =>
                 {
                     b.Property<string>("Id")
@@ -281,6 +388,71 @@ namespace Shatabli.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Shatabli.Core.Domain.Entities.UserSubscription", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ImagesGeneratedThisMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ImagesGeneratedToday")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastResetDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SubscriptionPlanId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("SubscriptionPlanId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserSubscriptions");
+                });
+
             modelBuilder.Entity("Shatabli.Core.Domain.Entities.AIProcessingLog", b =>
                 {
                     b.HasOne("Shatabli.Core.Domain.Entities.Design", "Design")
@@ -303,9 +475,35 @@ namespace Shatabli.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Shatabli.Core.Domain.Entities.UserSubscription", b =>
+                {
+                    b.HasOne("Shatabli.Core.Domain.Entities.SubscriptionPlan", "SubscriptionPlan")
+                        .WithMany("UserSubscriptions")
+                        .HasForeignKey("SubscriptionPlanId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Shatabli.Core.Domain.Entities.User", "User")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SubscriptionPlan");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Shatabli.Core.Domain.Entities.SubscriptionPlan", b =>
+                {
+                    b.Navigation("UserSubscriptions");
+                });
+
             modelBuilder.Entity("Shatabli.Core.Domain.Entities.User", b =>
                 {
                     b.Navigation("Designs");
+
+                    b.Navigation("Subscriptions");
                 });
 #pragma warning restore 612, 618
         }

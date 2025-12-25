@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shatabli.Core.Application.Features.Products.Commands.AddProductsFromExel;
 using Shatabli.Core.Application.Features.Products.Queries.GetAllCeramics;
 using Shatabli.Core.Application.Features.Products.Queries.GetCeramicById;
+using Shatabli.Core.Domain.Common;
 
 namespace Shatabli.API.Controllers
 {
@@ -13,6 +14,7 @@ namespace Shatabli.API.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IMediator _mediator;
+
         public ProductController(IMediator mediator)
         {
             _mediator = mediator;
@@ -22,30 +24,57 @@ namespace Shatabli.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SaveProductsFromExcel(IFormFile excelFile)
         {
-            var excelStream = excelFile.OpenReadStream();
+            if (excelFile == null || excelFile.Length == 0)
+                throw new ArgumentException("Excel file is required");
 
-            AddProductsFromExelCommand request = new AddProductsFromExelCommand();
-            request.stream = excelStream;
+            using var excelStream = excelFile.OpenReadStream();
 
-            var response = await _mediator.Send(request);
+            var request = new AddProductsFromExelCommand
+            {
+                stream = excelStream
+            };
 
-            return Ok();
-        }
+            var result = await _mediator.Send(request);
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllCeramics()
-        {
-            GetAllCeramicsQuery request = new();
-            var response = await _mediator.Send(request);
+            var response = ApiResponse<object>.SuccessResponse(
+                result,
+                "Products imported successfully from Excel");
+
             return Ok(response);
         }
 
         [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllCeramics()
+        {
+            var request = new GetAllCeramicsQuery();
+            var result = await _mediator.Send(request);
+
+            var response = ApiResponse<object>.SuccessResponse(
+                result,
+                "Ceramics retrieved successfully");
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetCeramicById(string ceramicId)
         {
-            GetCeramicByIdQuery request = new();
-            request.ceramicId = ceramicId;
-            var response = await _mediator.Send(request);
+            if (string.IsNullOrWhiteSpace(ceramicId))
+                throw new ArgumentException("Ceramic ID is required");
+
+            var request = new GetCeramicByIdQuery
+            {
+                ceramicId = ceramicId
+            };
+
+            var result = await _mediator.Send(request);
+
+            var response = ApiResponse<object>.SuccessResponse(
+                result,
+                "Ceramic retrieved successfully");
+
             return Ok(response);
         }
     }

@@ -1,8 +1,9 @@
 using MediatR;
+using Shatabli.Core.Domain.Common;
 
 namespace Shatabli.Core.Application.Features.Users.Commands.Register
 {
-    public class RegisterCommand : IRequest<string>
+    public class RegisterCommand : IRequest<Result>
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;

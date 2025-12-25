@@ -6,9 +6,6 @@ namespace Shatabli.Core.Application.Features.Users.Commands.UpdateProfile
     {
         public UpdateProfileCommandValidator()
         {
-            RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("User ID must be provided");
-
             RuleFor(x => x.FullName)
                 .NotEmpty().WithMessage("Full name is required")
                 .MaximumLength(100).WithMessage("Full name cannot exceed 100 characters");

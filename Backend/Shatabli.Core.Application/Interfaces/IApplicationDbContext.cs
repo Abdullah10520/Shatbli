@@ -20,6 +20,10 @@ namespace Shatabli.Core.Application.Interfaces
         // User Management
         public DbSet<User> Users { get; set; }
 
+        public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+
+        public DbSet<UserSubscription> UserSubscriptions { get; set; }
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 
 

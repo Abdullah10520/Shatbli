@@ -5,9 +5,12 @@ using Shatabli.Core.Application.Interfaces;
 using Shatabli.Infrastructure;
 using Shatabli.Infrastructure.Context;
 using Shatabli.Infrastructure.Data;
+using Shatabli.Infrastructure.Middleware;
 using Shatabli.Infrastructure.Services;
 using System.Text;
-using FluentValidation;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace Shatabli
 {
     public class Program
@@ -16,8 +19,15 @@ namespace Shatabli
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddControllers();
+            // ✅ Add JSON options with camelCase naming policy
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                    options.JsonSerializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+                });
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -25,7 +35,6 @@ namespace Shatabli
             builder.Services.AddCoreApplicationService();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddTransient<IClaimsService, ClaimsService>();
-
 
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             var secretKey = jwtSettings["SecretKey"] ?? "YourSecretKeyHere_MustBe32CharactersOrMore!";
@@ -51,22 +60,17 @@ namespace Shatabli
             });
 
             builder.Services.AddAuthorization();
-            //builder.Services.AddHttpClient<IStorageService, CloudinaryService>();
-
 
             builder.Services.AddHttpClient<IStorageService, CloudinaryService>(client =>
             {
                 client.Timeout = TimeSpan.FromMinutes(5);
             });
 
-
-
-
             builder.Services.AddCors();
 
             var app = builder.Build();
 
-            // ⚡ Database Seeding
+            // Database Seeding
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -82,21 +86,20 @@ namespace Shatabli
                 }
             }
 
-            // Configure the HTTP request pipeline.
+            // ✅ IMPORTANT: Add Global Exception Handler BEFORE everything else
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
+            // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
-
-
-
-
             app.UseCors(x => x
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader()
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
             );
 
             app.UseHttpsRedirection();
