@@ -1,10 +1,10 @@
 using MediatR;
+using Shatabli.Core.Domain.Common;
 
 namespace Shatabli.Core.Application.Features.Users.Commands.ChangePassword
 {
-    public class ChangePasswordCommand : IRequest<bool>
+    public class ChangePasswordCommand : IRequest<Result>
     {
-        public string UserId { get; set; }
         public string CurrentPassword { get; set; } = string.Empty;
         public string NewPassword { get; set; } = string.Empty;
     }

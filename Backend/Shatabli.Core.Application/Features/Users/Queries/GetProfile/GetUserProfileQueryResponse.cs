@@ -2,7 +2,6 @@ namespace Shatabli.Core.Application.Features.Users.Queries.GetProfile
 {
     public class GetUserProfileQueryResponse
     {
-        public string Id { get; set; }
         public string Email { get; set; } = string.Empty;
         public string FullName { get; set; } = string.Empty;
         public string? PhoneNumber { get; set; }

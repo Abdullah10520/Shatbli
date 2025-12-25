@@ -13,19 +13,24 @@ namespace Shatabli.Infrastructure.Data
             await context.Database.MigrateAsync();
 
             await SeedAdminUserAsync(context, configuration);
+
+            await SeedSubscriptionPlansAsync(context, configuration);
         }
 
         private static async Task SeedAdminUserAsync(ApplictionDbContext context, IConfiguration configuration)
         {
-            var adminExists = await context.Users.AnyAsync(u => u.Role == UserRole.Admin);
+            var adminConfig = configuration.GetSection("DefaultAdmin");
+            var adminEmail = adminConfig["Email"] ?? "admin@shatabli.com";
 
-            if (!adminExists)
+            // Check if admin exists
+            var adminUser = await context.Users.AsTracking().FirstOrDefaultAsync(u => u.Role == UserRole.Admin);
+
+            if (adminUser == null)
             {
-                var adminConfig = configuration.GetSection("DefaultAdmin");
-
-                var adminUser = new User
+                // ✅ Create new admin
+                adminUser = new User
                 {
-                    Email = adminConfig["Email"] ?? "admin@shatabli.com",
+                    Email = adminEmail,
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminConfig["Password"] ?? "Admin@123"),
                     FullName = adminConfig["FullName"] ?? "System Administrator",
                     PhoneNumber = adminConfig["PhoneNumber"],
@@ -44,8 +49,173 @@ namespace Shatabli.Infrastructure.Data
             }
             else
             {
-                Console.WriteLine("ℹ️ Admin user already exists.");
+                // ✅ Update existing admin if config changed
+                var configPassword = adminConfig["Password"] ?? "Admin@123";
+                var configFullName = adminConfig["FullName"] ?? "System Administrator";
+                var configPhoneNumber = adminConfig["PhoneNumber"];
+
+                bool hasChanges = false;
+
+                // Update email if changed
+                if (adminUser.Email != adminEmail)
+                {
+                    adminUser.Email = adminEmail;
+                    hasChanges = true;
+                }
+
+                // Update full name if changed
+                if (adminUser.FullName != configFullName)
+                {
+                    adminUser.FullName = configFullName;
+                    hasChanges = true;
+                }
+
+                // Update phone number if changed
+                if (adminUser.PhoneNumber != configPhoneNumber)
+                {
+                    adminUser.PhoneNumber = configPhoneNumber;
+                    hasChanges = true;
+                }
+
+                // Update password if "ForcePasswordUpdate" is true in config
+                if (adminConfig.GetValue<bool>("ForcePasswordUpdate", false))
+                {
+                    adminUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(configPassword);
+                    hasChanges = true;
+                    Console.WriteLine("🔑 Admin password updated from configuration");
+                }
+
+                if (hasChanges)
+                {
+                    adminUser.UpdatedAt = DateTime.UtcNow;
+                    context.Users.Update(adminUser);
+                    await context.SaveChangesAsync();
+                    Console.WriteLine("♻️ Admin user updated successfully!");
+                }
+                else
+                {
+                    Console.WriteLine("ℹ️ Admin user already exists and is up-to-date.");
+                }
             }
+        }
+
+        private static async Task SeedSubscriptionPlansAsync(ApplictionDbContext context, IConfiguration configuration)
+        {
+            var seedPlans = new List<SubscriptionPlan>
+            {
+                new SubscriptionPlan
+                {
+                    Name = "Free",
+                    Type = PlanType.Free,
+                    Price = 0,
+                    MaxImagesPerMonth = 10,
+                    MaxImagesPerDay = 1,
+                    HasWatermark = true,
+                    HasPriorityGeneration = false,
+                    Description = "Free plan - 10 images per month"
+                },
+                new SubscriptionPlan
+                {
+                    Name = "Basic",
+                    Type = PlanType.Basic,
+                    Price = 30m,
+                    MaxImagesPerMonth = 200,
+                    MaxImagesPerDay = 20,
+                    HasWatermark = false,
+                    HasPriorityGeneration = false,
+                    Description = "Basic plan - 200 images per month"
+                },
+                new SubscriptionPlan
+                {
+                    Name = "Premium",
+                    Type = PlanType.Premium,
+                    Price = 100m,
+                    MaxImagesPerMonth = -1,
+                    MaxImagesPerDay = -1,
+                    HasWatermark = false,
+                    HasPriorityGeneration = true,
+                    Description = "Premium plan - unlimited images"
+                }
+            };
+
+            foreach (var seedPlan in seedPlans)
+            {
+                // Check if plan exists by Type (unique identifier)
+                var existingPlan = await context.SubscriptionPlans
+                    .FirstOrDefaultAsync(p => p.Type == seedPlan.Type);
+
+                if (existingPlan == null)
+                {
+                    // ✅ Create new plan
+                    seedPlan.Id = Guid.NewGuid().ToString();
+                    seedPlan.CreatedAt = DateTime.UtcNow;
+                    seedPlan.IsDeleted = false;
+
+                    await context.SubscriptionPlans.AddAsync(seedPlan);
+                    Console.WriteLine($"✅ Created subscription plan: {seedPlan.Name}");
+                }
+                else
+                {
+                    // ✅ Update existing plan
+                    bool hasChanges = false;
+
+                    if (existingPlan.Name != seedPlan.Name)
+                    {
+                        existingPlan.Name = seedPlan.Name;
+                        hasChanges = true;
+                    }
+
+                    if (existingPlan.Price != seedPlan.Price)
+                    {
+                        existingPlan.Price = seedPlan.Price;
+                        hasChanges = true;
+                    }
+
+                    if (existingPlan.MaxImagesPerMonth != seedPlan.MaxImagesPerMonth)
+                    {
+                        existingPlan.MaxImagesPerMonth = seedPlan.MaxImagesPerMonth;
+                        hasChanges = true;
+                    }
+
+                    if (existingPlan.MaxImagesPerDay != seedPlan.MaxImagesPerDay)
+                    {
+                        existingPlan.MaxImagesPerDay = seedPlan.MaxImagesPerDay;
+                        hasChanges = true;
+                    }
+
+                    if (existingPlan.HasWatermark != seedPlan.HasWatermark)
+                    {
+                        existingPlan.HasWatermark = seedPlan.HasWatermark;
+                        hasChanges = true;
+                    }
+
+                    if (existingPlan.HasPriorityGeneration != seedPlan.HasPriorityGeneration)
+                    {
+                        existingPlan.HasPriorityGeneration = seedPlan.HasPriorityGeneration;
+                        hasChanges = true;
+                    }
+
+                    if (existingPlan.Description != seedPlan.Description)
+                    {
+                        existingPlan.Description = seedPlan.Description;
+                        hasChanges = true;
+                    }
+
+                    if (hasChanges)
+                    {
+                        existingPlan.UpdatedAt = DateTime.UtcNow;
+                        context.SubscriptionPlans.Update(existingPlan);
+                        Console.WriteLine($"♻️ Updated subscription plan: {existingPlan.Name}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"ℹ️ Subscription plan '{existingPlan.Name}' is up-to-date");
+                    }
+                }
+            }
+
+            await context.SaveChangesAsync();
+            Console.WriteLine("✅ Subscription plans seeding completed");
         }
     }
 }

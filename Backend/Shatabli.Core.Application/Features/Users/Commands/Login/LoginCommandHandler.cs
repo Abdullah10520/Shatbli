@@ -1,10 +1,11 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shatabli.Core.Application.Interfaces;
+using Shatabli.Core.Domain.Common;
 
 namespace Shatabli.Core.Application.Features.Users.Commands.Login
 {
-    public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
+    public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginResponse>>
     {
         private readonly IApplicationDbContext _context;
         private readonly ITokenService _tokenService;
@@ -15,37 +16,39 @@ namespace Shatabli.Core.Application.Features.Users.Commands.Login
             _tokenService = tokenService;
         }
 
-        public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
+        public async Task<Result<LoginResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var user = await _context.Users
-                .AsTracking() // ⚡ عشان الـ LastLoginAt
+                .AsTracking()
                 .FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
 
+            // ✅ Business validation - NO exception
             if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
             {
-                throw new UnauthorizedAccessException("Invalid email or password");
+                return Result<LoginResponse>.Unauthorized("Invalid email or password");
             }
 
             if (!user.IsActive)
             {
-                throw new UnauthorizedAccessException("User account is inactive");
+                return Result<LoginResponse>.Unauthorized("User account is inactive");
             }
 
             // Update last login
             user.LastLoginAt = DateTime.UtcNow;
             await _context.SaveChangesAsync(cancellationToken);
 
-            // Generate JWT token using the service
+            // Generate JWT token
             var token = _tokenService.GenerateJwtToken(user);
 
-            return new LoginResponse
+            var response = new LoginResponse
             {
-                UserId = user.Id,
                 Email = user.Email,
                 FullName = user.FullName,
                 Token = token,
                 Role = user.Role.ToString()
             };
+
+            return Result<LoginResponse>.Success(response, "Login successful");
         }
 
         private bool VerifyPassword(string password, string passwordHash)

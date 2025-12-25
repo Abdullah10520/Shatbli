@@ -6,6 +6,8 @@ using Shatabli.Core.Application.Features.Users.Commands.Login;
 using Shatabli.Core.Application.Features.Users.Commands.Register;
 using Shatabli.Core.Application.Features.Users.Commands.UpdateProfile;
 using Shatabli.Core.Application.Features.Users.Queries.GetProfile;
+using Shatabli.Core.Application.Interfaces;
+using Shatabli.Core.Domain.Common;
 
 namespace Shatabli.API.Controllers
 {
@@ -15,101 +17,89 @@ namespace Shatabli.API.Controllers
     {
         private readonly IMediator _mediator;
 
-        public UsersController(IMediator mediator)
+        public UsersController(IMediator mediator, IClaimsService claimsService)
         {
             _mediator = mediator;
         }
 
         [HttpPost("register")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<string>> Register([FromBody] RegisterCommand command)
+        [AllowAnonymous]
+        public async Task<IActionResult> Register([FromBody] RegisterCommand command)
         {
-            try
+            var result = await _mediator.Send(command);
+
+            if (!result.IsSuccess)
             {
-                var userId = await _mediator.Send(command);
-                return CreatedAtAction(nameof(GetProfile), new { id = userId }, userId);
+                return StatusCode(result.StatusCode, 
+                    ApiResponse<object>.FailureResponse(result.Message, result.Errors));
             }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+
+            var response = ApiResponse<object>.SuccessResponse(null, result.Message);
+            return StatusCode(StatusCodes.Status201Created, response);
         }
 
         [HttpPost("login")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginCommand command)
+        [AllowAnonymous]
+        public async Task<IActionResult> Login([FromBody] LoginCommand command)
         {
-            try
+            var result = await _mediator.Send(command);
+
+            if (!result.IsSuccess)
             {
-                var response = await _mediator.Send(command);
-                return Ok(response);
+                return StatusCode(result.StatusCode, 
+                    ApiResponse<object>.FailureResponse(result.Message, result.Errors));
             }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(new { message = ex.Message });
-            }
+
+            var response = ApiResponse<object>.SuccessResponse(result.Data, result.Message);
+            return Ok(response);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("profile")]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GetUserProfileQueryResponse>> GetProfile(string id)
+        public async Task<IActionResult> GetProfile()
         {
-            try
+            var query = new GetUserProfileQuery();
+            var result = await _mediator.Send(query);
+
+            if (!result.IsSuccess)
             {
-                var query = new GetUserProfileQuery { UserId = id };
-                var profile = await _mediator.Send(query);
-                return Ok(profile);
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
             }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
+
+            var response = ApiResponse<object>.SuccessResponse(result.Data, result.Message);
+            return Ok(response);
         }
 
-        //[HttpPut]
-        [HttpPut("{id}")]
+        [HttpPut("profile")]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<bool>> UpdateProfile(string id, [FromBody] UpdateProfileCommand command)
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileCommand command)
         {
-            try
+           
+            var result = await _mediator.Send(command);
+
+            if (!result.IsSuccess)
             {
-                command.UserId = id;
-                var result = await _mediator.Send(command);
-                return Ok(result);
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
             }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
+
+            var response = ApiResponse<object>.SuccessResponse(null, result.Message);
+            return Ok(response);
         }
 
-        [HttpPut("{id}/change-password")]
+        [HttpPut("change-password")]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<bool>> ChangePassword(string id, [FromBody] ChangePasswordCommand command)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
         {
-            try
+            
+            var result = await _mediator.Send(command);
+
+            if (!result.IsSuccess)
             {
-                command.UserId = id;
-                var result = await _mediator.Send(command);
-                return Ok(result);
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
             }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(new { message = ex.Message });
-            }
+
+            var response = ApiResponse<object>.SuccessResponse(null, result.Message);
+            return Ok(response);
         }
     }
 }

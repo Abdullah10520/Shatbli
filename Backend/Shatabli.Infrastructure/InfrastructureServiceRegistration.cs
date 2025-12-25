@@ -15,14 +15,13 @@ namespace Shatabli.Infrastructure
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-                //.LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging(true);
             });
 
-           
             services.AddTransient<IApplicationDbContext, ApplictionDbContext>();
             services.AddTransient<IStorageService, CloudinaryService>();
             services.AddTransient<IGenerateRoomImageService, PythonService>();
+
             services.AddHttpClient("AIService", client =>
             {
                 var baseAddress = configuration["AIService:BaseAddress"];
@@ -34,7 +33,6 @@ namespace Shatabli.Infrastructure
             });
 
             services.AddHttpContextAccessor();
-
 
             return services;
         }

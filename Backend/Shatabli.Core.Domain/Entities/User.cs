@@ -17,6 +17,7 @@ namespace Shatabli.Core.Domain.Entities
 
         // Navigation properties
         public ICollection<Design> Designs { get; set; } = new List<Design>();
+        public ICollection<UserSubscription> Subscriptions { get; set; } = new List<UserSubscription>();
 
         // Metadata
         public DateTime? LastLoginAt { get; set; }
