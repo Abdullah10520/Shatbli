@@ -126,7 +126,7 @@ namespace Shatabli.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateDesignWithUserCeramicAndPaint([FromForm] IFormFile roomImageFile, [FromForm] IFormFile ceramicOrPaintImageFile, [FromForm] string colorCode)
+        public async Task<IActionResult> GenerateDesignWithUserCeramicAndPaint(IFormFile roomImageFile, IFormFile ceramicOrPaintImageFile, string colorCode)
         {
             //try
             //{
