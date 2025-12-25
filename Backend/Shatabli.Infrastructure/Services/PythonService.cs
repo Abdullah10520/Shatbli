@@ -22,9 +22,40 @@ namespace Shatabli.Infrastructure.Services
             _httpClient = httpClientFactory.CreateClient("AIService");
         }
 
-        public Task<byte[]> GenerateDesignWithCeramicAndPaint(byte[] roomImage, byte[] ceramicImage, string colorCode)
+        public async Task<byte[]> GenerateDesignWithCeramicAndPaint(byte[] roomImage, byte[] ceramicImage, string colorCode)
         {
-            throw new NotImplementedException();
+            var form = new MultipartFormDataContent();
+
+            // Room image
+            var roomContent = new ByteArrayContent(roomImage);
+            roomContent.Headers.ContentType =
+                MediaTypeHeaderValue.Parse("image/jpeg");
+            form.Add(roomContent, "roomImage", "room.jpg");
+
+            // Ceramic tile image
+            var ceramicContent = new ByteArrayContent(ceramicImage);
+            ceramicContent.Headers.ContentType =
+                MediaTypeHeaderValue.Parse("image/jpeg");
+            form.Add(ceramicContent, "ceramicTileImage", "tile.jpg");
+
+            // Wall color HEX code
+            var colorContent = new StringContent(colorCode);
+            form.Add(colorContent, "wall_color_hex");
+
+            HttpResponseMessage response;
+            try
+            {
+                response = await _httpClient.PostAsync(
+                    "/roomCeramicWithWallColor",
+                    form);
+
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsByteArrayAsync();
+            }
+            finally
+            {
+                form.Dispose();
+            }
         }
 
         public async Task<byte[]> GenerateImage(byte[] roomImage, byte[] ceramicOrPaintImage , DesignType designType)
