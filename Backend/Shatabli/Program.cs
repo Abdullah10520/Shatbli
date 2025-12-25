@@ -1,5 +1,7 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Shatabli.API;
 using Shatabli.Core.Application;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Infrastructure;
@@ -7,7 +9,6 @@ using Shatabli.Infrastructure.Context;
 using Shatabli.Infrastructure.Data;
 using Shatabli.Infrastructure.Services;
 using System.Text;
-using FluentValidation;
 namespace Shatabli
 {
     public class Program
@@ -60,7 +61,7 @@ namespace Shatabli
             });
 
 
-
+            builder.Services.AddScoped<IPathProvider, WebPathProvider>();
 
             builder.Services.AddCors();
 
@@ -100,8 +101,11 @@ namespace Shatabli
             );
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
+
+            
 
             app.MapControllers();
 
