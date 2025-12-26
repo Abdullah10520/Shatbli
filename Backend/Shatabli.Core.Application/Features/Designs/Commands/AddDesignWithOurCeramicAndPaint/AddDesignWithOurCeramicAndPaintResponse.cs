@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicAndPaint
+namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithOurCeramicAndPaint
 {
-    public class AddDesignWithUserCeramicAndPaintResponse
+    public class AddDesignWithOurCeramicAndPaintResponse
     {
         //public Stream GeneratedImage { get; set; }
         public string generatedImagePath { get; set; }

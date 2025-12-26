@@ -4,15 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
-using Shatabli.Core.Domain.Enums;
 
-namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
+namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithOurCeramicAndPaint
 {
-    public class AddDesignWithOurCeramicImageValidator : AbstractValidator<AddDesignWithOurCeramicImageCommand>
+    public class AddDesignWithOurCeramicAndPaintValidator : AbstractValidator<AddDesignWithOurCeramicAndPaintCommand>
     {
-        public AddDesignWithOurCeramicImageValidator()
+        public AddDesignWithOurCeramicAndPaintValidator()
         {
-
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".jfif" };
 
             RuleFor(x => x.roomimageName)
@@ -42,43 +40,12 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
             RuleFor(x => x.ceramicId)
                 .NotEmpty().WithMessage("ceramicId code is required");
 
-            RuleFor(x => x.designType)
-                .IsInEnum().WithMessage("Invalid Design Type selection.");
+            RuleFor(x => x.colorCode)
+                .NotEmpty().WithMessage("Color code is required")
+                .Must(x => x.Length <= 6).WithMessage("Color code in hex and 6 or less char");
+
 
             RuleFor(x => x.roomimageName).NotEmpty().MaximumLength(200);
-
-
-
-
-
-
-
-
-
-            // Check Not Null
-            //RuleFor(c => c.stream)
-            //    .NotNull()
-            //    .WithMessage("You Should Select Image To Upload");
-
-
-            // Check Not Empty
-            //RuleFor(c => c.stream)
-                //.Must(StreamMustHaveData)
-                //.When(c => c.stream != null)
-                //.WithMessage("The Image File Is Empty ");
-
-            // Check On File Name Exists Or Not
-            //RuleFor(c => c.imageName)
-            //    .NotEmpty()
-            //    .WithMessage("Image Should Have Name");
-
-            RuleFor(c => c.ceramicId)
-                .NotEmpty()
-                .WithMessage("You Should Select Ceramic Image");
-            RuleFor(c => c.designType)
-                .IsInEnum()
-                .WithMessage("Must Be in The Enum");
         }
     }
 }
-

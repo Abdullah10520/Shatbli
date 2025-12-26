@@ -55,36 +55,36 @@ namespace Shatabli.Core.Domain.Common
         }
 
         // ✅ Overload for single error message
-        public static Result<T> Failure(string message, int statusCode, string error)
-        {
-            return new Result<T>
-            {
-                IsSuccess = false,
-                Data = default,
-                Message = message,
-                Errors = new Dictionary<string, List<string>>
-                {
-                    ["general"] = new List<string> { error }
-                },
-                StatusCode = statusCode
-            };
-        }
+        //public static Result<T> Failure(string message, int statusCode, string error)
+        //{
+        //    return new Result<T>
+        //    {
+        //        IsSuccess = false,
+        //        Data = default,
+        //        Message = message,
+        //        Errors = new Dictionary<string, List<string>>
+        //        {
+        //            ["general"] = new List<string> { error }
+        //        },
+        //        StatusCode = statusCode
+        //    };
+        //}
 
         // ✅ Overload for single field error
-        public static Result<T> Failure(string message, int statusCode, string fieldName, string error)
-        {
-            return new Result<T>
-            {
-                IsSuccess = false,
-                Data = default,
-                Message = message,
-                Errors = new Dictionary<string, List<string>>
-                {
-                    [fieldName] = new List<string> { error }
-                },
-                StatusCode = statusCode
-            };
-        }
+        //public static Result<T> Failure(string message, int statusCode, string fieldName, string error)
+        //{
+        //    return new Result<T>
+        //    {
+        //        IsSuccess = false,
+        //        Data = default,
+        //        Message = message,
+        //        Errors = new Dictionary<string, List<string>>
+        //        {
+        //            [fieldName] = new List<string> { error }
+        //        },
+        //        StatusCode = statusCode
+        //    };
+        //}
 
         public static Result<T> NotFound(string message = "Resource not found")
         {

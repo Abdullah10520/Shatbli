@@ -47,35 +47,35 @@ namespace Shatabli.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAllCeramics()
         {
-            var request = new GetAllCeramicsQuery();
-            var result = await _mediator.Send(request);
+            var result = await _mediator.Send(new GetAllCeramicsQuery());
 
-            var response = ApiResponse<object>.SuccessResponse(
-                result,
-                "Ceramics retrieved successfully");
+            // 1. فحص الفشل
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
+            }
 
-            return Ok(response);
+            return Ok(ApiResponse<GetAllCeramicsResponse>.SuccessResponse(result.Data, result.Message));
+
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetCeramicById(string ceramicId)
         {
+
             if (string.IsNullOrWhiteSpace(ceramicId))
-                throw new ArgumentException("Ceramic ID is required");
-
-            var request = new GetCeramicByIdQuery
             {
-                ceramicId = ceramicId
-            };
+                return BadRequest(ApiResponse<object>.FailureResponse("Ceramic ID is required",null));
+            }
 
-            var result = await _mediator.Send(request);
+            var result = await _mediator.Send(new GetCeramicByIdQuery { ceramicId = ceramicId });
 
-            var response = ApiResponse<object>.SuccessResponse(
-                result,
-                "Ceramic retrieved successfully");
-
-            return Ok(response);
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
+            }
+            return Ok(ApiResponse<GetCeramicByIdResponse>.SuccessResponse(result.Data, result.Message));
         }
     }
 }

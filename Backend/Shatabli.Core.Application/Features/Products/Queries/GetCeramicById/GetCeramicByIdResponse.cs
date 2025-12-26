@@ -12,9 +12,8 @@ namespace Shatabli.Core.Application.Features.Products.Queries.GetCeramicById
     }
     public class CeramicDTO
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string ImageUrl { get; set; }
-        public bool IsActive { get; set; }
+        public string productId { get; set; }
+        public string productName { get; set; }
+        public string productImageUrl { get; set; }
     }
 }

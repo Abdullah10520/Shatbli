@@ -12,7 +12,13 @@ namespace Shatabli.Core.Application.Features.Designs.Queries.GetDesignById
     {
         public GetDesignByIdMapper() 
         {
-            CreateProjection<Design, GetDesignByIdDTO>();
+            //CreateProjection<Design, GetDesignByIdDTO>();
+            CreateProjection<Design, GetDesignByIdDTO>()
+            .ForMember(dest => dest.designId, opt => opt.MapFrom(src => src.Id))
+
+            .ForMember(dest => dest.generatedImageUrl, opt => opt.MapFrom(src => src.GeneratedImageUrl))
+
+            .ForMember(dest => dest.completedAt, opt => opt.MapFrom(src => src.CompletedAt ?? src.CreatedAt));
         }
     }
 }
