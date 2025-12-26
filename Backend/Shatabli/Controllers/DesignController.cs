@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithOurCeramicAndPaint;
 using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicAndPaint;
 using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicImage;
 using Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage;
@@ -10,6 +11,7 @@ using Shatabli.Core.Application.Features.Designs.Commands.SoftDeleteDesign;
 using Shatabli.Core.Application.Features.Designs.Queries.GetAllDesigns;
 using Shatabli.Core.Application.Features.Designs.Queries.GetDesignById;
 using Shatabli.Core.Application.Interfaces;
+using Shatabli.Core.Domain.Common;
 using Shatabli.Core.Domain.Enums;
 using System.Threading.Tasks;
 
@@ -32,200 +34,172 @@ namespace Shatabli.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateDesign(IFormFile imageFile,string ceramicId, DesignType designType)
+        public async Task<IActionResult> GenerateDesignWIthOurCeramic(IFormFile imageFile,string ceramicId)
         {
+            using var roomImageMemoryStream = new MemoryStream();
+            await imageFile.CopyToAsync(roomImageMemoryStream);
 
-            try
+            var request = new AddDesignWithOurCeramicImageCommand
             {
-                var imageStream = imageFile.OpenReadStream();
-
-                MemoryStream roomImageMemoryStream = new MemoryStream();
-
-                await imageStream.CopyToAsync(roomImageMemoryStream);
-
-                AddDesignWithOurCeramicImageCommand request = new AddDesignWithOurCeramicImageCommand();
-                request.stream = roomImageMemoryStream.ToArray();
-                request.imageName = imageFile.FileName;
-                request.ceramicId = ceramicId;
-                request.designType = designType;
-
-                var result = await _mediator.Send(request);
-
-
-                var baseUrl = $"{Request.Scheme}://{Request.Host}";
-                var imagePath = $"{baseUrl}{result.GeneratedImagePath}";
-
-
-                //return File(result.GeneratedImage, "image/png");
-                return Ok(new
-                {
-                    success = true,
-                    generatedImageUrl = imagePath,
-                    designId = result.designId
-                });
-            }
-            catch (Exception Ex)
-            {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Error While Generate Design !"
-                });
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> GenerateDesignWithUserCeramicImage(IFormFile roomImageFile, IFormFile ceramicOrPaintImageFile, DesignType designType)
-        {
-
-            try
-            {
-                var roomStream = roomImageFile.OpenReadStream();
-                var ceramicOrPaintStream = ceramicOrPaintImageFile.OpenReadStream();
-
-                MemoryStream roomMemoryStream = new MemoryStream();
-                MemoryStream ceramicMemoryStream = new MemoryStream();
-
-                await roomStream.CopyToAsync(roomMemoryStream);
-                await ceramicOrPaintStream.CopyToAsync(ceramicMemoryStream);
-
-                var roomBytes = roomMemoryStream.ToArray();
-                var ceramicOrPaintBytes = ceramicMemoryStream.ToArray();
-
-
-
-                AddDesignWithUserCeramicImageCommand request = new AddDesignWithUserCeramicImageCommand();
-                request.roomBytes = roomBytes;
-                request.ceramicOrPaintBytes = ceramicOrPaintBytes;
-                request.roomimageName = roomImageFile.FileName;
-                request.ceramicOrPaintimageName = ceramicOrPaintImageFile.FileName;
-                request.designType = designType;
-
-                var result = await _mediator.Send(request);
-
-                var baseUrl = $"{Request.Scheme}://{Request.Host}";
-                var imageUrl = $"{baseUrl}{result.GeneratedImagePath}";
-
-
-                //return File(result.GeneratedImage, "image/png");
-                return Ok(new
-                {
-                    success = true,
-                    generatedImageUrl = imageUrl,
-                    designId = result.designId
-                });
-            }
-            catch (Exception)
-            {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Error While Generate Design"
-                });
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> GenerateDesignWithUserCeramicAndPaint(IFormFile roomImageFile, IFormFile ceramicOrPaintImageFile, string colorCode)
-        {
-            //try
-            //{
-            var roomStream = roomImageFile.OpenReadStream();
-            var ceramicOrPaintStream = ceramicOrPaintImageFile.OpenReadStream();
-
-            MemoryStream roomMemoryStream = new MemoryStream();
-            MemoryStream ceramicMemoryStream = new MemoryStream();
-
-            await roomStream.CopyToAsync(roomMemoryStream);
-            await ceramicOrPaintStream.CopyToAsync(ceramicMemoryStream);
-
-            var roomBytes = roomMemoryStream.ToArray();
-            var ceramicOrPaintBytes = ceramicMemoryStream.ToArray();
-
-            AddDesignWithUserCeramicAndPaintCommand request = new AddDesignWithUserCeramicAndPaintCommand();
-            request.roomBytes = roomBytes;
-            request.ceramicBytes = ceramicOrPaintBytes;
-            request.colorCode = colorCode;
+                roomBytes = roomImageMemoryStream.ToArray(),
+                roomimageName = imageFile.FileName,
+                ceramicId = ceramicId,
+                designType = DesignType.CeramicFloor
+            };
 
             var result = await _mediator.Send(request);
 
-            var baseUrl = $"{Request.Scheme}://{Request.Host}";
-            var imageUrl = $"{baseUrl}/{result.GeneratedImageUrl}";
-
-            return Ok(new
+             if (!result.IsSuccess)
             {
-                success = true,
-                generatedImageUrl = imageUrl,
-                designId = result.designId
-            });
-            //    }
-            //    catch (Exception)
-            //    {
-            //        return BadRequest(new
-            //        {
-            //            success = false,
-            //            message = "Error While Generate Design"
-            //        });
-            //    }
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
+            }
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+
+            var responseData = result.Data;
+            responseData.GeneratedImagePath = $"{baseUrl}{responseData.GeneratedImagePath}";
+
+            return Ok(ApiResponse<AddDesignWithOurCeramicImageResponse>.SuccessResponse(responseData, result.Message));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateDesignWithUserCeramicImage(IFormFile roomImageFile, IFormFile ceramicImageFile)
+        {
+
+            using var roomMemoryStream = new MemoryStream();
+            using var ceramicMemoryStream = new MemoryStream();
+
+            await roomImageFile.CopyToAsync(roomMemoryStream);
+            await ceramicImageFile.CopyToAsync(ceramicMemoryStream);
+
+            var request = new AddDesignWithUserCeramicImageCommand
+            {
+                roomBytes = roomMemoryStream.ToArray(),
+                ceramicBytes = ceramicMemoryStream.ToArray(),
+                roomimageName = roomImageFile.FileName,
+                ceramicImageName = ceramicImageFile.FileName,
+                designType = DesignType.CeramicFloor
+            };
+
+            var result = await _mediator.Send(request);
+
+
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
+            }
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+
+            var responseData = result.Data;
+            responseData.generatedImagePath = $"{baseUrl}{responseData.generatedImagePath}";
+
+            return Ok(ApiResponse<AddDesignWithUserCeramicImageResponse>.SuccessResponse(responseData, result.Message));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateDesignWithOurCeramicAndPaint(IFormFile roomImageFile, string ceramicId, string colorCode)
+        {
+
+            using var roomMemoryStream = new MemoryStream();
+            await roomImageFile.CopyToAsync(roomMemoryStream);
+
+            var request = new AddDesignWithOurCeramicAndPaintCommand
+            {
+                roomBytes = roomMemoryStream.ToArray(),
+                ceramicId = ceramicId,
+                roomimageName = roomImageFile.FileName,
+                colorCode = colorCode
+            };
+
+            var result = await _mediator.Send(request);
+
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
+            }
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+
+            var responseData = result.Data;
+            responseData.generatedImagePath = $"{baseUrl}{responseData.generatedImagePath}";
+
+            return Ok(ApiResponse<AddDesignWithOurCeramicAndPaintResponse>.SuccessResponse(responseData, result.Message));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateDesignWithUserCeramicAndPaint(IFormFile roomImageFile, IFormFile ceramicImageFile, string colorCode)
+        { 
+            using var roomMemoryStream = new MemoryStream();
+            using var ceramicMemoryStream = new MemoryStream();
+
+            await roomImageFile.CopyToAsync(roomMemoryStream);
+            await ceramicImageFile.CopyToAsync(ceramicMemoryStream);
+
+            var request = new AddDesignWithUserCeramicAndPaintCommand
+            {
+                roomBytes = roomMemoryStream.ToArray(),
+                ceramicBytes = ceramicMemoryStream.ToArray(),
+                roomimageName = roomImageFile.FileName,
+                ceramicImageName = ceramicImageFile.FileName,
+                colorCode = colorCode
+            };
+
+            var result = await _mediator.Send(request);
+
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
+            }
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+
+            var responseData = result.Data;
+            responseData.generatedImagePath = $"{baseUrl}{responseData.generatedImagePath}";
+
+            return Ok(ApiResponse<AddDesignWithUserCeramicAndPaintResponse>.SuccessResponse(responseData, result.Message));
         }
 
         [HttpPost]
         public async Task<IActionResult> SaveDesign(SaveDesignCommand request)
         {
+            var result = await _mediator.Send(request);
 
-            //try
-            //{
-                //var imageUrl = request.designImagePath;
-                //var fileName = Path.GetFileName(imageUrl);
-
-                //var fullPath = Path.Combine(
-                //_webHostEnvironment.WebRootPath,
-                //"temp-images",
-                //fileName
-                //);
-                //request.designImagePath = fullPath;
-
-                var result = await _mediator.Send(request);
-
-                //System.IO.File.Delete(fullPath);
-
-                return Ok(new
-                {
-                    success = true,
-                    generatedImageUrl = result.generatedImageUrl,
-                    designId = result.designId
-                });
-            //}
-            //catch (Exception)
-            //{
-            //    return BadRequest(new
-            //    {
-            //        success = false,
-            //        message = "Error While Saving Design"
-            //    });
-            //}
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
+            }
+            return Ok(ApiResponse<SaveDesignResponse>.SuccessResponse(result.Data, result.Message));
         }
 
 
         [HttpGet]
         public async Task<IActionResult> GetAllDesigns()
         {
-            GetAllDesignsQuery request = new GetAllDesignsQuery();
+            var result = await _mediator.Send(new GetAllDesignsQuery());
 
-            var result = await _mediator.Send(request);
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
+            }
 
-            return Ok(result);
+            return Ok(ApiResponse<GetAllDesignsResponse>.SuccessResponse(result.Data, result.Message));
+
         }
 
         [HttpGet]
         public async Task<IActionResult> GetDesignById(string designId)
         {
-            GetDesignByIdQuery request = new();
-            request.designId = designId;
 
-            var response = await _mediator.Send(request);
+            var query = new GetDesignByIdQuery { designId = designId };
+            var result = await _mediator.Send(query);
 
-            return Ok(response);
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
+            }
+
+            return Ok(ApiResponse<GetDesignByIdResponse>.SuccessResponse(result.Data));
         }
         [HttpDelete]
         public async Task<IActionResult> SoftDeleteDesign(string designId)
@@ -239,7 +213,3 @@ namespace Shatabli.API.Controllers
         }
     }
 }
-Beta
-0 / 0
-used queries
-1

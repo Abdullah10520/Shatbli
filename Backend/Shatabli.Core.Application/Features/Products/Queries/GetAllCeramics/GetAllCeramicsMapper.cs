@@ -12,7 +12,11 @@ namespace Shatabli.Core.Application.Features.Products.Queries.GetAllCeramics
     {
         public GetAllCeramicsMapper() 
         {
-            CreateProjection<Product, CeramicDTO>();
+            //CreateProjection<Product, CeramicDTO>();
+            CreateProjection<Product, CeramicDTO>()
+            .ForMember(dest => dest.productId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.productName, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.productImageUrl, opt => opt.MapFrom(src => src.ImageUrl));
         }
     }
 }

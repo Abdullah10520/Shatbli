@@ -1,4 +1,5 @@
 using FluentValidation;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Shatabli.API;
@@ -73,6 +74,15 @@ namespace Shatabli
 
             builder.Services.AddCors();
 
+            builder.Services.AddTransient<IDesignBackgroundJobService, DesignBackgroundJobService>();
+
+            builder.Services.AddHangfire(config =>
+            {
+                config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            builder.Services.AddHangfireServer();
+
             var app = builder.Build();
 
             // Database Seeding
@@ -112,7 +122,9 @@ namespace Shatabli
             app.UseAuthentication();
             app.UseAuthorization();
 
-            
+
+            app.UseHangfireDashboard();
+
 
             app.MapControllers();
 

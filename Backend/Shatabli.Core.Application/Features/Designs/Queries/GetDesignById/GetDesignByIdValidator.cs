@@ -13,7 +13,7 @@ namespace Shatabli.Core.Application.Features.Designs.Queries.GetDesignById
         {
             RuleFor(q=>q.designId)
                 .NotEmpty()
-                .WithMessage("Error Design Id is Null");
+                .WithMessage("Error Design Id is required");
         }
     }
 }

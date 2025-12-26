@@ -24,7 +24,7 @@ namespace Shatabli.Core.Application.Interfaces
 
         public DbSet<UserSubscription> UserSubscriptions { get; set; }
 
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
 
     }

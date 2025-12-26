@@ -9,7 +9,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
     public class AddDesignWithUserCeramicAndPaintResponse
     {
         //public Stream GeneratedImage { get; set; }
-        public string GeneratedImageUrl { get; set; }
+        public string generatedImagePath { get; set; }
         public string designId  { get; set; } 
     }
 }

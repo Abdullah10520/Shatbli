@@ -1,64 +1,90 @@
-﻿using System;
+﻿using AutoMapper;
+using MediatR;
+using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicAndPaint;
+using Shatabli.Core.Application.Interfaces;
+using Shatabli.Core.Domain.Common;
+using Shatabli.Core.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
-using MediatR;
-using Shatabli.Core.Application.Interfaces;
-using Shatabli.Core.Domain.Entities;
 
 namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicImage
 {
-    public class AddDesignWithUserCeramicImageCommandHandler : IRequestHandler<AddDesignWithUserCeramicImageCommand, AddDesignWithUserCeramicImageResponse>
+    public class AddDesignWithUserCeramicImageCommandHandler : IRequestHandler<AddDesignWithUserCeramicImageCommand, Result<AddDesignWithUserCeramicImageResponse>>
     {
         private readonly IApplicationDbContext _context;
         public IStorageService _storageService;
         private readonly IClaimsService _claimsService;
+        private readonly IDesignBackgroundJobService _designBackgroundJobService;
         private readonly IGenerateRoomImageService _generateRoomImageService;
-        public AddDesignWithUserCeramicImageCommandHandler(IApplicationDbContext context ,IGenerateRoomImageService generateRoomImageService ,IStorageService storageService, IClaimsService claimsService )
+        public AddDesignWithUserCeramicImageCommandHandler(IApplicationDbContext context ,IGenerateRoomImageService generateRoomImageService ,IStorageService storageService, IClaimsService claimsService, IDesignBackgroundJobService designBackgroundJobService )
         {
             _context = context;
             _storageService = storageService;
             _claimsService = claimsService;
+            _designBackgroundJobService = designBackgroundJobService;
             _generateRoomImageService = generateRoomImageService;
         }
-        public async Task<AddDesignWithUserCeramicImageResponse> Handle(AddDesignWithUserCeramicImageCommand request, CancellationToken cancellationToken)
+        public async Task<Result<AddDesignWithUserCeramicImageResponse>> Handle(AddDesignWithUserCeramicImageCommand request, CancellationToken cancellationToken)
         {
-            string designId = Guid.NewGuid().ToString();
+            try
+            {
+                var generatedImageBytes = await _generateRoomImageService.GenerateImage(request.roomBytes, request.ceramicBytes, request.designType);
 
-            var GeneratedImageBytes = await _generateRoomImageService.GenerateImage(request.roomBytes, request.ceramicOrPaintBytes, request.designType);
+                if (generatedImageBytes == null || generatedImageBytes.Length == 0)
+                {
+                    return Result<AddDesignWithUserCeramicImageResponse>.Failure("Failed to generate image from AI service.", 500);
+                }
 
+                
+                var fileName = $"{Guid.NewGuid()}.png";
+                var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp-images");
 
-            var fileName = $"{Guid.NewGuid()}.png";
-            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp-images");
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
 
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
+                var filePath = Path.Combine(folderPath, fileName);
+                await System.IO.File.WriteAllBytesAsync(filePath, generatedImageBytes);
 
-            var filePath = Path.Combine(folderPath, fileName);
+                var genImagePath = $"/temp-images/{fileName}";
 
-            await System.IO.File.WriteAllBytesAsync(filePath, GeneratedImageBytes);
+                var currentUserId = _claimsService.GetCurrentUserId();
+                if (string.IsNullOrEmpty(currentUserId))
+                {
+                    return Result<AddDesignWithUserCeramicImageResponse>.Unauthorized("User session expired or invalid.");
+                }
 
-            var genImagePath = $"/temp-images/{fileName}";
+                string designId = Guid.NewGuid().ToString();
+                Design design = new Design
+                {
+                    Id = designId,
+                    GeneratedImagePath = genImagePath,
+                    UserId = currentUserId
+                };
 
+                _context.Designs.Add(design);
+                await _context.SaveChangesAsync(cancellationToken);
 
-            Design design = new Design();
-            design.Id = designId;
-            design.GeneratedImagePath = genImagePath;
-            design.UserId = _claimsService.GetCurrentUserId();
-            //design.UserId = "bad9014b-a457-47a6-afa0-cedefa8832c0";
+                _designBackgroundJobService.CleanUpDb(designId);
 
+                var response = new AddDesignWithUserCeramicImageResponse
+                {
+                    generatedImagePath = genImagePath,
+                    designId = designId
+                };
 
-
-            _context.Designs.Add(design);
-            await _context.SaveChangesAsync(cancellationToken);
-
-            AddDesignWithUserCeramicImageResponse response = new AddDesignWithUserCeramicImageResponse();
-            response.GeneratedImagePath = genImagePath;
-            response.designId = designId;
-
-            return response;
+                return Result<AddDesignWithUserCeramicImageResponse>.Success(response, "Design created and saved localy successfully.");
+            }
+            catch (Exception ex)
+            {
+                return Result<AddDesignWithUserCeramicImageResponse>.Failure(
+                    message: "An unexpected error occurred during processing.",
+                    statusCode: 500,
+                    errors: new List<string> { ex.Message }
+                );
+            }
         }
     }
 }

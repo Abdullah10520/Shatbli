@@ -1,19 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Shatabli.Core.Application.Features.Designs.Queries.GetAllDesigns;
 using Shatabli.Core.Application.Interfaces;
+using Shatabli.Core.Domain.Common;
 using Shatabli.Core.Domain.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Shatabli.Core.Application.Features.Products.Queries.GetCeramicById
 {
-    public class GetCeramicByIdQueryHandler : IRequestHandler<GetCeramicByIdQuery, GetCeramicByIdResponse>
+    public class GetCeramicByIdQueryHandler : IRequestHandler<GetCeramicByIdQuery, Result<GetCeramicByIdResponse>>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -23,23 +25,36 @@ namespace Shatabli.Core.Application.Features.Products.Queries.GetCeramicById
             _context = context;
             _mapper = mapper;
         }
-        async Task<GetCeramicByIdResponse> IRequestHandler<GetCeramicByIdQuery, GetCeramicByIdResponse>.Handle(GetCeramicByIdQuery request, CancellationToken cancellationToken)
+        async Task<Result<GetCeramicByIdResponse>> IRequestHandler<GetCeramicByIdQuery, Result<GetCeramicByIdResponse>>.Handle(GetCeramicByIdQuery request, CancellationToken cancellationToken)
         {
 
-            var result = _context.Products
-                .Where(p => p.Id == request.ceramicId && p.Category == ProductCategory.FlooringCeramics)
-                .Select(d => new CeramicDTO
+            try
+            {
+                var ceramic = await _context.Products
+                    .Where(p => p.Id == request.ceramicId && p.Category == ProductCategory.FlooringCeramics)
+                    .ProjectTo<CeramicDTO>(_mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (ceramic == null)
                 {
-                    Id = d.Id,
-                    ImageUrl = d.ImageUrl,
-                    IsActive = d.IsActive,
-                    Name = d.Name
-                }).FirstOrDefault();
+                    return Result<GetCeramicByIdResponse>.NotFound($"Ceramic product with ID {request.ceramicId} not found.");
+                }
 
-            GetCeramicByIdResponse response = new();
-            response.ceramicProduct = result ;
+                var response = new GetCeramicByIdResponse
+                {
+                    ceramicProduct = ceramic
+                };
 
-            return response;
+                return Result<GetCeramicByIdResponse>.Success(response, "Product retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                return Result<GetCeramicByIdResponse>.Failure(
+                    message: "An unexpected error occurred during getting product.",
+                    statusCode: 500,
+                    errors: new List<string> { ex.Message }
+                    );
+            }
         }
     }
 }

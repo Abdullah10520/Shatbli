@@ -2,11 +2,13 @@
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicAndPaint;
 using Shatabli.Core.Application.Interfaces;
+using Shatabli.Core.Domain.Common;
 
 namespace Shatabli.Core.Application.Features.Designs.Queries.GetAllDesigns
 {
-    public class GetAllDesignsQueryHandler : IRequestHandler<GetAllDesignsQuery, GetAllDesignsResponse>
+    public class GetAllDesignsQueryHandler : IRequestHandler<GetAllDesignsQuery, Result<GetAllDesignsResponse>>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -20,18 +22,38 @@ namespace Shatabli.Core.Application.Features.Designs.Queries.GetAllDesigns
         }
 
 
-        async Task<GetAllDesignsResponse> IRequestHandler<GetAllDesignsQuery, GetAllDesignsResponse>.Handle(GetAllDesignsQuery request, CancellationToken cancellationToken)
+        async Task<Result<GetAllDesignsResponse>> IRequestHandler<GetAllDesignsQuery, Result<GetAllDesignsResponse>>.Handle(GetAllDesignsQuery request, CancellationToken cancellationToken)
         {
-            var result = await _context.Designs
-            .Where(d => d.UserId == _claimsService.GetCurrentUserId())
-            .ProjectTo<GetAllDesignDTO>(_mapper.ConfigurationProvider)
-            .ToListAsync();
+            try
+            {
+                var userId = _claimsService.GetCurrentUserId();
 
-            GetAllDesignsResponse response = new GetAllDesignsResponse();
-            response.designsList = result;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Result<GetAllDesignsResponse>.Unauthorized("User session is invalid or expired.");
+                }
 
+                var designs = await _context.Designs
+                    .Where(d => d.UserId == userId&&d.GeneratedImageUrl!=null)
+                    .OrderByDescending(d => d.CreatedAt) 
+                    .ProjectTo<GetAllDesignDTO>(_mapper.ConfigurationProvider)
+                    .ToListAsync(cancellationToken);
 
-            return response;
+                var response = new GetAllDesignsResponse
+                {
+                    designsList = designs ?? new List<GetAllDesignDTO>()
+                };
+
+                return Result<GetAllDesignsResponse>.Success(response, "Designs retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                return Result<GetAllDesignsResponse>.Failure(
+                    message: "An unexpected error occurred during Getting all designes.",
+                    statusCode: 500,
+                    errors: new List<string> { ex.Message }
+                );
+            }
         }
     }
 }

@@ -13,9 +13,9 @@ namespace Shatabli.Core.Application.Features.Designs.Queries.GetAllDesigns
     }
     public class GetAllDesignDTO
     {
-        public string Id { get; set; }
-        public string? GeneratedImageUrl { get; set; }
-        public DateTime? CompletedAt { get; set; }
+        public string designId { get; set; }
+        public string generatedImageUrl { get; set; }
+        public DateTime? completedAt { get; set; }
 
     }
 }

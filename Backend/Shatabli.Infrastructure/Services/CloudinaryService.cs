@@ -51,34 +51,85 @@ namespace Shatabli.Infrastructure.Services
         public async Task<string> UploadAsync(string imageUrl,string imagePublicId)
         {
 
-            var fileName = Path.GetFileName(imageUrl);
-
-            var fullPath = Path.Combine(
-                _pathProvider.WebRootPath,
-                "temp-images",
-                fileName
-            );
+            var fileName = Path.GetFileName(imageUrl.TrimStart('/')); // Trim لضمان عدم وجود سلاش في البداية
+            var fullPath = Path.Combine(_pathProvider.WebRootPath, "temp-images", fileName);
 
             if (!File.Exists(fullPath))
-                throw new FileNotFoundException("Temp image not found", fullPath);
-
-
-            using var stream = System.IO.File.OpenRead(fullPath);
-
-            var uploadparams = new ImageUploadParams()
             {
-                File = new FileDescription(imagePublicId, stream),
-                PublicId = imagePublicId,
-                Overwrite = false
-            };
-            var uploadResult = await cloudinary.UploadAsync(uploadparams);
-            if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                File.Delete(fullPath);
-                return uploadResult.SecureUrl.ToString();
-
+                // بدل الـ Exception، ممكن نرجع null والـ Handler يتصرف
+                return null;
             }
-            return "Can't Save The Image";
+
+            try
+            {
+                // 3. فتح الملف ورفعه إلى Cloudinary
+                using (var stream = System.IO.File.OpenRead(fullPath))
+                {
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(imagePublicId, stream),
+                        PublicId = imagePublicId,
+                        Overwrite = true // يفضل True لو حبيت تعمل تحديث لنفس التصميم لاحقاً
+                    };
+
+                    var uploadResult = await cloudinary.UploadAsync(uploadParams);
+
+                    // 4. فحص نتيجة الرفع
+                    if (uploadResult.Error == null) // Cloudinary يفضل فحص Error null
+                    {
+                        // 5. مسح الملف من الـ Local Disk بعد التأكد من رفعه بنجاح
+                        stream.Close(); // التأكد من غلق الـ stream قبل المسح
+                        if (File.Exists(fullPath))
+                        {
+                            File.Delete(fullPath);
+                        }
+
+                        return uploadResult.SecureUrl.ToString();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // سجل الخطأ هنا (Logging)
+                return null;
+            }
+
+            return null;
+
+
+
+
+
+
+
+            //var fileName = Path.GetFileName(imageUrl);
+
+            //var fullPath = Path.Combine(
+            //    _pathProvider.WebRootPath,
+            //    "temp-images",
+            //    fileName
+            //);
+
+            //if (!File.Exists(fullPath))
+            //    throw new FileNotFoundException("Temp image not found", fullPath);
+
+
+            //using var stream = System.IO.File.OpenRead(fullPath);
+
+            //var uploadparams = new ImageUploadParams()
+            //{
+            //    File = new FileDescription(imagePublicId, stream),
+            //    PublicId = imagePublicId,
+            //    Overwrite = false
+            //};
+            //var uploadResult = await cloudinary.UploadAsync(uploadparams);
+            //if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK)
+            //{
+            //    File.Delete(fullPath);
+            //    return uploadResult.SecureUrl.ToString();
+
+            //}
+            //return "Can't Save The Image";
         }
 
         public string GetImageURL(string imagePublicId)
@@ -90,17 +141,21 @@ namespace Shatabli.Infrastructure.Services
 
         public async Task<Stream> downloadImageStream(string imagePublicId)
         {
-            var downloadUrl = GetImageURL(imagePublicId);
-            //var urlBuilder = cloudinary.Api.UrlImgUp;
-            
-            //var downloadUrl = urlBuilder.BuildUrl($"OrignalImage/{imagePublicId}");
-            //var downloadUrl = urlBuilder.BuildUrl(imagePublicId);
 
-            var response = await _httpClient.GetAsync(downloadUrl);
+            try
+            {
+                var downloadUrl = GetImageURL(imagePublicId);
+                var response = await _httpClient.GetAsync(downloadUrl);
 
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStreamAsync();
+                if (!response.IsSuccessStatusCode)
+                    return null; 
 
+                return await response.Content.ReadAsStreamAsync();
+            }
+            catch
+            {
+                return null; 
+            }
         }
     }
     
