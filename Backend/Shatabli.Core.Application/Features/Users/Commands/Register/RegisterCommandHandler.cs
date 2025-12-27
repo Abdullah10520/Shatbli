@@ -49,7 +49,34 @@ namespace Shatabli.Core.Application.Features.Users.Commands.Register
             await _context.Users.AddAsync(user, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
+            await SubscribeUserToFreePlan(user.Id, cancellationToken);
+
             return Result.Success("User registered successfully");
+        }
+
+        private async Task SubscribeUserToFreePlan(string userId, CancellationToken cancellationToken)
+        {
+
+            // ✅ Auto-subscribe to Free plan
+            var freePlan = await _context.SubscriptionPlans
+                .FirstOrDefaultAsync(p => p.Type == PlanType.Free, cancellationToken);
+
+            if (freePlan != null)
+            {
+                var freeSubscription = new UserSubscription
+                {
+                    UserId = userId,
+                    SubscriptionPlanId = freePlan.Id,
+                    StartDate = DateTime.UtcNow,
+                    IsActive = true,
+                    ImagesGeneratedThisMonth = 0,
+                    ImagesGeneratedToday = 0,
+                    LastResetDate = DateTime.UtcNow
+                };
+
+                await _context.UserSubscriptions.AddAsync(freeSubscription, cancellationToken);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
         }
     }
 }
