@@ -12,9 +12,11 @@ namespace Shatabli.Infrastructure.Data
         {
             await context.Database.MigrateAsync();
 
-            await SeedAdminUserAsync(context, configuration);
-
+            // ✅ Seed plans first (needed for admin subscription)
             await SeedSubscriptionPlansAsync(context, configuration);
+
+            // ✅ Then seed admin (and subscribe to premium)
+            await SeedAdminUserAsync(context, configuration);
         }
 
         private static async Task SeedAdminUserAsync(ApplictionDbContext context, IConfiguration configuration)
@@ -46,6 +48,9 @@ namespace Shatabli.Infrastructure.Data
 
                 Console.WriteLine("✅ Admin user created successfully!");
                 Console.WriteLine($"📧 Email: {adminUser.Email}");
+
+                // ✅ Auto-subscribe admin to Premium plan
+                await SubscribeAdminToPremiumAsync(context, adminUser.Id);
             }
             else
             {
@@ -56,28 +61,24 @@ namespace Shatabli.Infrastructure.Data
 
                 bool hasChanges = false;
 
-                // Update email if changed
                 if (adminUser.Email != adminEmail)
                 {
                     adminUser.Email = adminEmail;
                     hasChanges = true;
                 }
 
-                // Update full name if changed
                 if (adminUser.FullName != configFullName)
                 {
                     adminUser.FullName = configFullName;
                     hasChanges = true;
                 }
 
-                // Update phone number if changed
                 if (adminUser.PhoneNumber != configPhoneNumber)
                 {
                     adminUser.PhoneNumber = configPhoneNumber;
                     hasChanges = true;
                 }
 
-                // Update password if "ForcePasswordUpdate" is true in config
                 if (adminConfig.GetValue<bool>("ForcePasswordUpdate", false))
                 {
                     adminUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(configPassword);
@@ -96,6 +97,53 @@ namespace Shatabli.Infrastructure.Data
                 {
                     Console.WriteLine("ℹ️ Admin user already exists and is up-to-date.");
                 }
+
+                // ✅ Check if admin has premium subscription
+                var hasActiveSubscription = await context.UserSubscriptions
+                    .Include(s => s.SubscriptionPlan)
+                    .AnyAsync(s => s.UserId == adminUser.Id && s.IsActive && s.SubscriptionPlan.Type == PlanType.Premium);
+
+                if (!hasActiveSubscription)
+                {
+                    await SubscribeAdminToPremiumAsync(context, adminUser.Id);
+                }
+            }
+        }
+
+        private static async Task SubscribeAdminToPremiumAsync(ApplictionDbContext context, string adminUserId)
+        {
+            var premiumPlan = await context.SubscriptionPlans
+                .FirstOrDefaultAsync(p => p.Type == PlanType.Premium);
+
+            if (premiumPlan != null)
+            {
+                // Deactivate any existing subscriptions
+                var existingSubscriptions = await context.UserSubscriptions
+                    .Where(s => s.UserId == adminUserId && s.IsActive)
+                    .ToListAsync();
+
+                foreach (var sub in existingSubscriptions)
+                {
+                    sub.IsActive = false;
+                    sub.EndDate = DateTime.UtcNow;
+                }
+
+                // Create premium subscription
+                var premiumSubscription = new UserSubscription
+                {
+                    UserId = adminUserId,
+                    SubscriptionPlanId = premiumPlan.Id,
+                    StartDate = DateTime.UtcNow,
+                    IsActive = true,
+                    ImagesGeneratedThisMonth = 0,
+                    ImagesGeneratedToday = 0,
+                    LastResetDate = DateTime.UtcNow
+                };
+
+                await context.UserSubscriptions.AddAsync(premiumSubscription);
+                await context.SaveChangesAsync();
+
+                Console.WriteLine("🌟 Admin subscribed to Premium plan successfully!");
             }
         }
 
@@ -140,13 +188,11 @@ namespace Shatabli.Infrastructure.Data
 
             foreach (var seedPlan in seedPlans)
             {
-                // Check if plan exists by Type (unique identifier)
                 var existingPlan = await context.SubscriptionPlans
                     .FirstOrDefaultAsync(p => p.Type == seedPlan.Type);
 
                 if (existingPlan == null)
                 {
-                    // ✅ Create new plan
                     seedPlan.Id = Guid.NewGuid().ToString();
                     seedPlan.CreatedAt = DateTime.UtcNow;
                     seedPlan.IsDeleted = false;
@@ -156,7 +202,6 @@ namespace Shatabli.Infrastructure.Data
                 }
                 else
                 {
-                    // ✅ Update existing plan
                     bool hasChanges = false;
 
                     if (existingPlan.Name != seedPlan.Name)
