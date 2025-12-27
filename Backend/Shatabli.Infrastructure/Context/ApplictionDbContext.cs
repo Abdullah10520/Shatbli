@@ -43,12 +43,12 @@ namespace Shatabli.Infrastructure.Context
                 {
                     entry.Entity.UpdatedAt = DateTime.UtcNow;
                 }
-                else if (entry.State == EntityState.Deleted)
-                {
-                    entry.Entity.DeletedAt = DateTime.UtcNow;
-                    entry.Entity.IsDeleted = true;
-                    entry.State = EntityState.Modified;
-                }
+                //else if (entry.State == EntityState.Deleted)
+                //{
+                //    entry.Entity.DeletedAt = DateTime.UtcNow;
+                //    entry.Entity.IsDeleted = true;
+                //    entry.State = EntityState.Modified;
+                //}
             }
         }
 
