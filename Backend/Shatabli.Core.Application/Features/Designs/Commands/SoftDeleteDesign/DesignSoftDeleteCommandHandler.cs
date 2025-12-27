@@ -1,35 +1,52 @@
-﻿using System;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Shatabli.Core.Application.Interfaces;
+using Shatabli.Core.Domain.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Shatabli.Core.Application.Interfaces;
 
 namespace Shatabli.Core.Application.Features.Designs.Commands.SoftDeleteDesign
 {
-    public class DesignSoftDeleteCommandHandler : IRequestHandler<DesignSoftDeleteCommand, DesignSoftDeleteResponse>
+    public class DesignSoftDeleteCommandHandler : IRequestHandler<DesignSoftDeleteCommand, Result<DesignSoftDeleteResponse>>
     {
         private readonly IApplicationDbContext _context;
+        private readonly IClaimsService _claimsService;
 
-        public DesignSoftDeleteCommandHandler(IApplicationDbContext context)
+        public DesignSoftDeleteCommandHandler(IApplicationDbContext context, IClaimsService claimsService)
         {
             _context = context;
+            _claimsService = claimsService;
         }
-        async Task<DesignSoftDeleteResponse> IRequestHandler<DesignSoftDeleteCommand, DesignSoftDeleteResponse>.Handle(DesignSoftDeleteCommand request, CancellationToken cancellationToken)
-        { 
-           var designFromDb = _context.Designs
-                .Where(d => d.Id == request.designId).AsTracking().FirstOrDefault();
-            //designFromDb.IsDeleted = true;
+        async Task<Result<DesignSoftDeleteResponse>> IRequestHandler<DesignSoftDeleteCommand, Result<DesignSoftDeleteResponse>>.Handle(DesignSoftDeleteCommand request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var currentUserId = _claimsService.GetCurrentUserId();
 
-            _context.Designs.Remove(designFromDb);
-            await _context.SaveChangesAsync(cancellationToken);
+                var designFromDb = await _context.Designs
+                    .AsTracking()
+                    .SingleOrDefaultAsync(d => d.Id == request.designId && d.UserId == currentUserId, cancellationToken);
 
-            DesignSoftDeleteResponse response = new();
-            response.Success = true;
-            return response;
-            //throw new NotImplementedException();
+                if (designFromDb == null)
+                {
+                    return Result<DesignSoftDeleteResponse>.NotFound("Design not found or you don't have permission to delete it.");
+                }
+
+                designFromDb.IsDeleted = true;
+                designFromDb.DeletedAt = DateTime.UtcNow;
+                designFromDb.DeletedBy = currentUserId;
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                return Result<DesignSoftDeleteResponse>.Success(new DesignSoftDeleteResponse { Success = true }, "Design deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return Result<DesignSoftDeleteResponse>.Failure($"An error occurred while deleting: {ex.Message}", 500);
+            }
         }
     }
 }

@@ -2,7 +2,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithOurCeramicAndPaint;
+using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithPaintOnly;
 using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicAndPaint;
 using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicImage;
 using Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage;
@@ -161,6 +163,33 @@ namespace Shatabli.API.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> GenerateDesignWithPaintOnly(IFormFile roomImage, string colorCode)
+        {
+            using var roomImageStream = new MemoryStream();
+
+            await roomImage.CopyToAsync(roomImageStream);
+
+            AddDesignWithPaintCommand request = new AddDesignWithPaintCommand
+            {
+                roomBytes = roomImageStream.ToArray(),
+                roomimageName = roomImage.FileName,
+                colorCode = colorCode
+            };
+            var result = await _mediator.Send(request);
+
+            if(!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message,result.Errors));
+            }
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+
+            var responseData = result.Data;
+            responseData.generatedImagePath = $"{baseUrl}{responseData.generatedImagePath}";
+
+            return Ok(ApiResponse<AddDesignWithPaintResponse>.SuccessResponse(responseData, result.Message));
+        }
+
+        [HttpPost]
         public async Task<IActionResult> SaveDesign(SaveDesignCommand request)
         {
             var result = await _mediator.Send(request);
@@ -204,12 +233,15 @@ namespace Shatabli.API.Controllers
         [HttpDelete]
         public async Task<IActionResult> SoftDeleteDesign(string designId)
         {
-            DesignSoftDeleteCommand request = new DesignSoftDeleteCommand();
-            request.designId = designId;
+            var request = new DesignSoftDeleteCommand { designId = designId };
+            var result = await _mediator.Send(request);
 
-            var response = await _mediator.Send(request);
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.StatusCode, ApiResponse<object>.FailureResponse(result.Message, result.Errors));
+            }
 
-            return Ok(response);
+            return Ok(ApiResponse<DesignSoftDeleteResponse>.SuccessResponse(result.Data, result.Message));
         }
     }
 }

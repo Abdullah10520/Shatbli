@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
 using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicAndPaint;
+using Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage;
+using Shatabli.Core.Application.Features.Subscriptions.Queries.CheckCanGenerate;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Core.Domain.Common;
 using Shatabli.Core.Domain.Entities;
@@ -18,19 +20,34 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
         public IStorageService _storageService;
         private readonly IClaimsService _claimsService;
         private readonly IDesignBackgroundJobService _designBackgroundJobService;
+        private readonly IMediator _mediator;
         private readonly IGenerateRoomImageService _generateRoomImageService;
-        public AddDesignWithUserCeramicImageCommandHandler(IApplicationDbContext context ,IGenerateRoomImageService generateRoomImageService ,IStorageService storageService, IClaimsService claimsService, IDesignBackgroundJobService designBackgroundJobService )
+        public AddDesignWithUserCeramicImageCommandHandler(IApplicationDbContext context ,IGenerateRoomImageService generateRoomImageService ,IStorageService storageService, IClaimsService claimsService, IDesignBackgroundJobService designBackgroundJobService, IMediator mediator )
         {
             _context = context;
             _storageService = storageService;
             _claimsService = claimsService;
             _designBackgroundJobService = designBackgroundJobService;
+            _mediator = mediator;
             _generateRoomImageService = generateRoomImageService;
         }
         public async Task<Result<AddDesignWithUserCeramicImageResponse>> Handle(AddDesignWithUserCeramicImageCommand request, CancellationToken cancellationToken)
         {
             try
             {
+                //var allowGenerate = await _mediator.Send(new CheckCanGenerateQuery());
+                //if (!allowGenerate.IsSuccess)
+                //{
+                //    return Result<AddDesignWithUserCeramicImageResponse>.Failure(allowGenerate.Message, allowGenerate.StatusCode, allowGenerate.Errors);
+                //}
+
+                //var US = _context.UserSubscriptions.Where(us => us.UserId == _claimsService.GetCurrentUserId()).FirstOrDefault();
+
+                //US.ImagesGeneratedToday = US.ImagesGeneratedToday + 1;
+                //US.ImagesGeneratedThisMonth = US.ImagesGeneratedThisMonth + 1;
+                //_context.UserSubscriptions.Update(US);
+
+
                 var generatedImageBytes = await _generateRoomImageService.GenerateImage(request.roomBytes, request.ceramicBytes, request.designType);
 
                 if (generatedImageBytes == null || generatedImageBytes.Length == 0)

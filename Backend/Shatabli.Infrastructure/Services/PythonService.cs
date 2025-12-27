@@ -98,5 +98,10 @@ namespace Shatabli.Infrastructure.Services
                 form.Dispose();
             }
         }
+
+        public Task<byte[]> GenerateDesignWithPaintOnly(byte[] roomImage, string colorCode)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

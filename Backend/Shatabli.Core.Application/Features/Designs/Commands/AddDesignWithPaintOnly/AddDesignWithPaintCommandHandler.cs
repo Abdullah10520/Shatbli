@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
-using Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage;
+using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicAndPaint;
+using Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicImage;
+using Shatabli.Core.Application.Features.Products.Queries.GetProductImageById;
 using Shatabli.Core.Application.Features.Subscriptions.Queries.CheckCanGenerate;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Core.Domain.Common;
@@ -12,33 +14,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserCeramicAndPaint
+namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithPaintOnly
 {
-    public class AddDesignWithUserCeramicAndPaintCommandHandler : IRequestHandler<AddDesignWithUserCeramicAndPaintCommand, Result<AddDesignWithUserCeramicAndPaintResponse>>
+    public class AddDesignWithPaintCommandHandler : IRequestHandler<AddDesignWithPaintCommand, Result<AddDesignWithPaintResponse>>
     {
         private readonly IApplicationDbContext _context;
         public IStorageService _storageService;
         private readonly IClaimsService _claimsService;
-        private readonly IDesignBackgroundJobService _designBackgroundJobService;
         private readonly IMediator _mediator;
+        private readonly IDesignBackgroundJobService _designBackgroundJobService;
         private readonly IGenerateRoomImageService _generateRoomImageService;
-        public AddDesignWithUserCeramicAndPaintCommandHandler(IApplicationDbContext context, IGenerateRoomImageService generateRoomImageService, IStorageService storageService, IClaimsService claimsService, IDesignBackgroundJobService designBackgroundJobService, IMediator mediator)
+        public AddDesignWithPaintCommandHandler(IApplicationDbContext context ,IGenerateRoomImageService generateRoomImageService ,IStorageService storageService, IClaimsService claimsService, IMediator mediator, IDesignBackgroundJobService designBackgroundJobService )
         {
             _context = context;
             _storageService = storageService;
             _claimsService = claimsService;
-            _designBackgroundJobService = designBackgroundJobService;
             _mediator = mediator;
+            _designBackgroundJobService = designBackgroundJobService;
             _generateRoomImageService = generateRoomImageService;
         }
-        public async Task<Result<AddDesignWithUserCeramicAndPaintResponse>> Handle(AddDesignWithUserCeramicAndPaintCommand request, CancellationToken cancellationToken)
+        public async Task<Result<AddDesignWithPaintResponse>> Handle(AddDesignWithPaintCommand request, CancellationToken cancellationToken)
         {
             try
             {
                 //var allowGenerate = await _mediator.Send(new CheckCanGenerateQuery());
                 //if (!allowGenerate.IsSuccess)
                 //{
-                //    return Result<AddDesignWithUserCeramicAndPaintResponse>.Failure(allowGenerate.Message, allowGenerate.StatusCode, allowGenerate.Errors);
+                //    return Result<AddDesignWithPaintResponse>.Failure(allowGenerate.Message, allowGenerate.StatusCode, allowGenerate.Errors);
                 //}
 
                 //var US = _context.UserSubscriptions.Where(us => us.UserId == _claimsService.GetCurrentUserId()).FirstOrDefault();
@@ -47,18 +49,15 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
                 //US.ImagesGeneratedThisMonth = US.ImagesGeneratedThisMonth + 1;
                 //_context.UserSubscriptions.Update(US);
 
-                var generatedImageBytes = await _generateRoomImageService.GenerateDesignWithCeramicAndPaint(request.roomBytes, request.ceramicBytes, request.colorCode);
+
+                var generatedImageBytes = await _generateRoomImageService.GenerateDesignWithPaintOnly(request.roomBytes, request.colorCode);
 
                 if (generatedImageBytes == null || generatedImageBytes.Length == 0)
                 {
-                    return Result<AddDesignWithUserCeramicAndPaintResponse>.Failure(
-                        message: "AI Generation Failed",
-                        statusCode: 500,
-                        errors: new List<string> { "The AI service returned empty or null data." }
-                    );
+                    return Result<AddDesignWithPaintResponse>.Failure("Failed to generate image from AI service.", 500);
                 }
 
-                string designId = Guid.NewGuid().ToString();
+
                 var fileName = $"{Guid.NewGuid()}.png";
                 var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp-images");
 
@@ -73,8 +72,10 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
                 var currentUserId = _claimsService.GetCurrentUserId();
                 if (string.IsNullOrEmpty(currentUserId))
                 {
-                    return Result<AddDesignWithUserCeramicAndPaintResponse>.Unauthorized("User session expired or invalid.");
+                    return Result<AddDesignWithPaintResponse>.Unauthorized("User session expired or invalid.");
                 }
+
+                string designId = Guid.NewGuid().ToString();
                 Design design = new Design
                 {
                     Id = designId,
@@ -87,17 +88,17 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithUserC
 
                 _designBackgroundJobService.CleanUpDb(designId);
 
-                var response = new AddDesignWithUserCeramicAndPaintResponse
+                var response = new AddDesignWithPaintResponse
                 {
                     generatedImagePath = genImagePath,
                     designId = designId
                 };
 
-                return Result<AddDesignWithUserCeramicAndPaintResponse>.Success(response, "Design generated and saved local successfully.");
+                return Result<AddDesignWithPaintResponse>.Success(response, "Design created and saved localy successfully.");
             }
             catch (Exception ex)
             {
-                return Result<AddDesignWithUserCeramicAndPaintResponse>.Failure(
+                return Result<AddDesignWithPaintResponse>.Failure(
                     message: "An unexpected error occurred during processing.",
                     statusCode: 500,
                     errors: new List<string> { ex.Message }
