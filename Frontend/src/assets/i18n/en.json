@@ -5,7 +5,8 @@
     },
     "nav": {
         "studio": "Studio",
-        "logout": "Logout"
+        "logout": "Logout",
+        "subscription": "Subscription"
     },
     "studio": {
         "title": "Design Your Dream Space",
@@ -104,5 +105,20 @@
     },
     "common": {
         "copied": "Image link copied!"
+    },
+    "subscription": {
+        "title": "Choose Your Plan",
+        "subtitle": "Select the perfect plan that suits your design needs",
+        "current_plan": "Current Plan",
+        "usage": "Usage",
+        "images_this_month": "images this month",
+        "popular": "Most Popular",
+        "free": "Free",
+        "month": "month",
+        "subscribe": "Subscribe",
+        "cancel": "Cancel Subscription",
+        "current": "Current Plan",
+        "error_subscribing": "Error subscribing to plan",
+        "error_cancelling": "Error cancelling subscription"
     }
 }

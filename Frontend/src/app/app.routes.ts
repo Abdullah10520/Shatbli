@@ -17,6 +17,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'subscription',
+    loadComponent: () => import('./features/subscription/subscription.component').then(m => m.SubscriptionComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '',
     redirectTo: 'auth',
     pathMatch: 'full'

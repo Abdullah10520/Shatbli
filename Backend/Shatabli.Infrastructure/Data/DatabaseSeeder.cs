@@ -157,7 +157,7 @@ namespace Shatabli.Infrastructure.Data
                     Type = PlanType.Free,
                     Price = 0,
                     MaxImagesPerMonth = 10,
-                    MaxImagesPerDay = 1,
+                    MaxImagesPerDay = 3,
                     HasWatermark = true,
                     HasPriorityGeneration = false,
                     Description = "Free plan - 10 images per month"

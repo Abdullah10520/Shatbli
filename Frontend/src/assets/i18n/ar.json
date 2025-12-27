@@ -5,7 +5,8 @@
     },
     "nav": {
         "studio": "الاستوديو",
-        "logout": "خروج"
+        "logout": "خروج",
+        "subscription": "الاشتراك"
     },
     "studio": {
         "title": "صمم مساحة أحلامك",
@@ -104,5 +105,20 @@
     },
     "common": {
         "copied": "تم نسخ رابط الصورة!"
+    },
+    "subscription": {
+        "title": "اختر خطتك",
+        "subtitle": "اختر الخطة المثالية التي تناسب احتياجات تصميمك",
+        "current_plan": "الخطة الحالية",
+        "usage": "الاستخدام",
+        "images_this_month": "صورة هذا الشهر",
+        "popular": "الأكثر شيوعاً",
+        "free": "مجاني",
+        "month": "شهر",
+        "subscribe": "اشترك",
+        "cancel": "إلغاء الاشتراك",
+        "current": "الخطة الحالية",
+        "error_subscribing": "حدث خطأ أثناء الاشتراك",
+        "error_cancelling": "حدث خطأ أثناء إلغاء الاشتراك"
     }
 }
