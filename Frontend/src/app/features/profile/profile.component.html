@@ -1,0 +1,297 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+  <!-- Header -->
+  <header class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </div>
+          <span class="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            {{ 'app.name' | translate }}
+          </span>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-4">
+          <app-language-switcher />
+          <app-theme-toggle />
+
+          <button (click)="goToStudio()"
+            class="px-4 py-2 text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 transition-colors">
+            {{ 'profile.back_to_studio' | translate }}
+          </button>
+
+          <button (click)="logout()"
+            class="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors">
+            {{ 'nav.logout' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">{{ 'profile.title' | translate }}</h1>
+
+    <!-- Loading -->
+    @if (isLoading()) {
+    <div class="flex justify-center py-12">
+      <svg class="animate-spin h-10 w-10 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </div>
+    } @else {
+
+    <!-- Profile Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+      <!-- Profile Header -->
+      <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-8">
+        <div class="flex items-center gap-4">
+          <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-white text-3xl font-bold">
+            {{ profile()?.fullName?.charAt(0) || '?' }}
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-white">{{ profile()?.fullName }}</h2>
+            <p class="text-purple-200">{{ profile()?.email }}</p>
+            <span class="inline-block mt-2 px-3 py-1 bg-white/20 rounded-full text-sm text-white">
+              {{ profile()?.role }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Details -->
+      <div class="p-6">
+        <!-- Success Message -->
+        @if (profileSuccessMessage()) {
+        <div class="mb-4 p-3 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg text-sm text-center">
+          {{ profileSuccessMessage() }}
+        </div>
+        }
+
+        <!-- General Error -->
+        @if (profileErrors()['general']) {
+        <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm text-center">
+          {{ profileErrors()['general'][0] }}
+        </div>
+        }
+
+        @if (!isEditingProfile()) {
+        <!-- View Mode -->
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-500 dark:text-gray-400">{{ 'auth.full_name' | translate }}</span>
+            <span class="text-gray-900 dark:text-white font-medium">{{ profile()?.fullName }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-500 dark:text-gray-400">{{ 'auth.email' | translate }}</span>
+            <span class="text-gray-900 dark:text-white font-medium">{{ profile()?.email }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-500 dark:text-gray-400">{{ 'auth.phone' | translate }}</span>
+            <span class="text-gray-900 dark:text-white font-medium">{{ profile()?.phoneNumber || '-' }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-500 dark:text-gray-400">{{ 'profile.member_since' | translate }}</span>
+            <span class="text-gray-900 dark:text-white font-medium">{{ profile()?.createdAt | date:'mediumDate' }}</span>
+          </div>
+
+          <button (click)="startEditing()"
+            class="w-full mt-4 py-3 px-4 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 transition-all">
+            {{ 'profile.edit_profile' | translate }}
+          </button>
+        </div>
+        } @else {
+        <!-- Edit Mode -->
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="space-y-4">
+          <!-- Full Name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'auth.full_name' | translate }}</label>
+            <input type="text" formControlName="fullName"
+              class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg p-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all">
+            @if (profileForm.get('fullName')?.invalid && profileForm.get('fullName')?.touched) {
+            <p class="text-red-500 dark:text-red-400 text-xs mt-1">{{ 'errors.name_required' | translate }}</p>
+            }
+            @if (getFieldErrors('fullName', profileErrors()).length) {
+            <p class="text-red-500 dark:text-red-400 text-xs mt-1">{{ getFieldErrors('fullName', profileErrors())[0] }}</p>
+            }
+          </div>
+
+          <!-- Phone Number -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'auth.phone' | translate }}</label>
+            <input type="tel" formControlName="phoneNumber"
+              class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg p-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all">
+            @if (profileForm.get('phoneNumber')?.invalid && profileForm.get('phoneNumber')?.touched) {
+            <p class="text-red-500 dark:text-red-400 text-xs mt-1">{{ 'errors.phone_invalid' | translate }}</p>
+            }
+            @if (getFieldErrors('phoneNumber', profileErrors()).length) {
+            <p class="text-red-500 dark:text-red-400 text-xs mt-1">{{ getFieldErrors('phoneNumber', profileErrors())[0] }}</p>
+            }
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex gap-3 pt-2">
+            <button type="submit" [disabled]="profileForm.invalid || isSavingProfile()"
+              class="flex-1 py-3 px-4 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+              @if (isSavingProfile()) {
+              <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              {{ 'profile.saving' | translate }}
+              } @else {
+              {{ 'profile.save_changes' | translate }}
+              }
+            </button>
+            <button type="button" (click)="cancelEditing()"
+              class="py-3 px-6 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
+              {{ 'profile.cancel' | translate }}
+            </button>
+          </div>
+        </form>
+        }
+      </div>
+    </div>
+
+    <!-- Change Password Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div class="p-6">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">{{ 'profile.change_password' | translate }}</h3>
+
+        <!-- Success Message -->
+        @if (passwordSuccessMessage()) {
+        <div class="mb-4 p-3 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg text-sm text-center">
+          {{ passwordSuccessMessage() }}
+        </div>
+        }
+
+        <!-- General Error -->
+        @if (passwordErrors()['general']) {
+        <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm text-center">
+          {{ passwordErrors()['general'][0] }}
+        </div>
+        }
+
+        @if (!isChangingPassword()) {
+        <p class="text-gray-500 dark:text-gray-400 mb-4">{{ 'profile.password_hint' | translate }}</p>
+        <button (click)="startChangingPassword()"
+          class="py-3 px-6 rounded-lg text-sm font-medium text-purple-600 dark:text-purple-400 border border-purple-600 dark:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all">
+          {{ 'profile.change_password' | translate }}
+        </button>
+        } @else {
+        <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" class="space-y-4">
+          <!-- Current Password -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'profile.current_password' | translate }}</label>
+            <div class="relative">
+              <input [type]="showCurrentPassword() ? 'text' : 'password'" formControlName="currentPassword"
+                class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg p-3 pl-10 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all">
+              <button type="button" (click)="toggleCurrentPassword()"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                @if (showCurrentPassword()) {
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                </svg>
+                } @else {
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
+                  <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                </svg>
+                }
+              </button>
+            </div>
+            @if (getFieldErrors('currentPassword', passwordErrors()).length) {
+            <p class="text-red-500 dark:text-red-400 text-xs mt-1">{{ getFieldErrors('currentPassword', passwordErrors())[0] }}</p>
+            }
+          </div>
+
+          <!-- New Password -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'profile.new_password' | translate }}</label>
+            <div class="relative">
+              <input [type]="showNewPassword() ? 'text' : 'password'" formControlName="newPassword"
+                class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg p-3 pl-10 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all">
+              <button type="button" (click)="toggleNewPassword()"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                @if (showNewPassword()) {
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                </svg>
+                } @else {
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
+                  <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                </svg>
+                }
+              </button>
+            </div>
+            @if (passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched) {
+            <p class="text-red-500 dark:text-red-400 text-xs mt-1">{{ 'errors.password_required' | translate }}</p>
+            }
+            @if (getFieldErrors('newPassword', passwordErrors()).length) {
+            <p class="text-red-500 dark:text-red-400 text-xs mt-1">{{ getFieldErrors('newPassword', passwordErrors())[0] }}</p>
+            }
+          </div>
+
+          <!-- Confirm New Password -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'profile.confirm_new_password' | translate }}</label>
+            <div class="relative">
+              <input [type]="showConfirmPassword() ? 'text' : 'password'" formControlName="confirmPassword"
+                class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg p-3 pl-10 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all">
+              <button type="button" (click)="toggleConfirmPassword()"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                @if (showConfirmPassword()) {
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                </svg>
+                } @else {
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
+                  <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                </svg>
+                }
+              </button>
+            </div>
+            @if (getFieldErrors('confirmPassword', passwordErrors()).length) {
+            <p class="text-red-500 dark:text-red-400 text-xs mt-1">{{ getFieldErrors('confirmPassword', passwordErrors())[0] }}</p>
+            }
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex gap-3 pt-2">
+            <button type="submit" [disabled]="passwordForm.invalid || isSavingPassword()"
+              class="flex-1 py-3 px-4 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+              @if (isSavingPassword()) {
+              <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              {{ 'profile.saving' | translate }}
+              } @else {
+              {{ 'profile.save_changes' | translate }}
+              }
+            </button>
+            <button type="button" (click)="cancelChangingPassword()"
+              class="py-3 px-6 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
+              {{ 'profile.cancel' | translate }}
+            </button>
+          </div>
+        </form>
+        }
+      </div>
+    </div>
+
+    }
+  </main>
+</div>

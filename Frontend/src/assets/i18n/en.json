@@ -86,6 +86,22 @@
         "terms": "Terms",
         "privacy": "Privacy"
     },
+    "profile": {
+        "title": "Profile",
+        "edit_profile": "Edit Profile",
+        "change_password": "Change Password",
+        "current_password": "Current Password",
+        "new_password": "New Password",
+        "confirm_new_password": "Confirm New Password",
+        "save_changes": "Save Changes",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "profile_updated": "Profile updated successfully",
+        "password_changed": "Password changed successfully",
+        "password_hint": "Change your password to keep your account secure",
+        "back_to_studio": "Back to Studio",
+        "member_since": "Member Since"
+    },
     "common": {
         "copied": "Image link copied!"
     }

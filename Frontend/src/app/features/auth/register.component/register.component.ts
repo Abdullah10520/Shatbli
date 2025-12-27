@@ -54,14 +54,23 @@ export class RegisterComponent {
       const { confirmPassword, ...registerData } = this.registerForm.getRawValue();
 
       this.authService.register(registerData).subscribe({
-        next: () => {
+        next: (response) => {
           // التسجيل ناجح - توجيه المستخدم لصفحة تسجيل الدخول
-          // لأن الـ Register API بيرجع userId فقط، مش token
-          this.router.navigate(['/auth/login']);
+          if (response.success) {
+            this.router.navigate(['/auth/login']);
+          } else {
+            this.isLoading.set(false);
+            // عرض أول خطأ من الـ errors object
+            const firstError = Object.values(response.errors || {})[0];
+            this.errorMessage.set(firstError?.[0] || response.message || 'حدث خطأ أثناء التسجيل');
+          }
         },
         error: (err) => {
           this.isLoading.set(false);
-          this.errorMessage.set(err.error?.message || 'حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى');
+          // عرض أول خطأ من الـ errors object إن وجد
+          const errors = err.error?.errors as Record<string, string[]> | undefined;
+          const firstError = errors ? Object.values(errors)[0] : undefined;
+          this.errorMessage.set(firstError?.[0] || err.error?.message || 'حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى');
         },
       });
     }

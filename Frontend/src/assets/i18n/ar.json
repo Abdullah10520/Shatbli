@@ -86,6 +86,22 @@
         "terms": "الشروط",
         "privacy": "الخصوصية"
     },
+    "profile": {
+        "title": "الملف الشخصي",
+        "edit_profile": "تعديل البيانات",
+        "change_password": "تغيير كلمة المرور",
+        "current_password": "كلمة المرور الحالية",
+        "new_password": "كلمة المرور الجديدة",
+        "confirm_new_password": "تأكيد كلمة المرور الجديدة",
+        "save_changes": "حفظ التغييرات",
+        "saving": "جاري الحفظ...",
+        "cancel": "إلغاء",
+        "profile_updated": "تم تحديث البيانات بنجاح",
+        "password_changed": "تم تغيير كلمة المرور بنجاح",
+        "password_hint": "قم بتغيير كلمة المرور الخاصة بك للحفاظ على أمان حسابك",
+        "back_to_studio": "العودة للاستوديو",
+        "member_since": "تاريخ الانضمام"
+    },
     "common": {
         "copied": "تم نسخ رابط الصورة!"
     }

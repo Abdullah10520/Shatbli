@@ -1,7 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
-import { AuthResponse, User, LoginRequest, RegisterRequest } from '../../shared/models/user.model';
+import { ApiResponse, LoginData, User, LoginRequest, RegisterRequest } from '../../shared/models/user.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -37,34 +37,31 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest) {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/Users/login`, credentials)
+    return this.http.post<ApiResponse<LoginData>>(`${this.apiUrl}/Users/login`, credentials)
       .pipe(
         tap(res => {
-          this.saveAuthData(res);
+          if (res.success && res.data) {
+            this.saveAuthData(res.data);
+          }
         })
       );
   }
 
   register(data: RegisterRequest) {
-    // الـ Register API بيرجع userId فقط (plain text string)، مش JSON
-    return this.http.post(`${this.apiUrl}/Users/register`, data, {
-      responseType: 'text'
-    });
+    // الـ Register API بيرجع JSON: { success, message, errors }
+    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/Users/register`, data);
   }
 
-  private saveAuthData(res: AuthResponse): void {
-    // التأكد من وجود البيانات قبل حفظها
-    // الـ API بيرجع البيانات مباشرة: { userId, email, fullName, token, role }
-    if (res && res.token && res.userId) {
+  private saveAuthData(data: LoginData): void {
+    if (data && data.token) {
       const user: User = {
-        id: res.userId,
-        email: res.email,
-        fullName: res.fullName,
-        role: res.role,
-        token: res.token
+        email: data.email,
+        fullName: data.fullName,
+        role: data.role,
+        token: data.token
       };
       localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('token', res.token);
+      localStorage.setItem('token', data.token);
       this.currentUserSig.set(user);
     }
   }

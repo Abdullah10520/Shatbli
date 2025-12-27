@@ -36,8 +36,13 @@ export class LoginComponent {
       const credentials = this.loginForm.getRawValue();
 
       this.authService.login(credentials).subscribe({
-        next: () => {
-          this.router.navigate(['/studio']);
+        next: (response) => {
+          if (response.success) {
+            this.router.navigate(['/studio']);
+          } else {
+            this.isLoading.set(false);
+            this.errorMessage.set(response.message || 'خطأ في البريد الإلكتروني أو كلمة المرور');
+          }
         },
         error: (err) => {
           this.isLoading.set(false);
