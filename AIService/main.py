@@ -30,10 +30,13 @@ async def generateRoomWithCeramicTile(roomImage: UploadFile = File(...), ceramic
         " Align the tiles to the apartment’s floor plane using realistic perspective projection (correct vanishing lines)."
         "\n4) Preserve all furniture, objects, shadows, reflections, and lighting direction from IMAGE 1."
         " Only modify the floor material and wall color — do not alter geometry, decor, or lighting."
-        "\n5) Do not hallucinate or remove objects. Do not modify the structure, windows, or perspective."
-        "\n6) The new floor should appear recently installed, clean, and professionally finished."
+        "\n5) CEILING COLOR: Ensure the ceiling remains a clean, solid WHITE color (#FFFFFF)."
+        "Do NOT apply any tint, shadow colorization, or stylistic variation to the ceiling."
+        "The ceiling must appear uniformly white with natural lighting and no color shift."
+        "\n6) Do not hallucinate or remove objects. Do not modify the structure, windows, or perspective."
+        "\n7) The new floor should appear recently installed, clean, and professionally finished."
         " Include subtle reflections and realistic surface gloss typical of ceramic tiles."
-        "\n7) Output exactly one high-resolution, photorealistic image (PNG only)."
+        "\n8) Output exactly one high-resolution, photorealistic image (PNG only)."
         " Do not include text, borders, watermarks, or artistic filters."
         "\n\nRendering quality goals: physically-based realism, accurate light interaction, smooth surfaces,"
         " consistent perspective alignment, and no visible seams or distortions."
@@ -164,17 +167,21 @@ async def generateRoomWithCeramicAndWallColor(
         "\n4) SURFACE PREPARATION (WALLS ONLY): Before painting, CLEAN and RESTORE wall surfaces — remove dust, stains, cracks,"
         " concrete patches, or unfinished textures so the walls appear smooth and professionally painted."
         " Do NOT clean, modify, or alter the ceiling."
-
-        "\n5) PRESERVATION: Preserve all furniture, objects, shadows, reflections, and lighting direction from IMAGE 1."
+        
+        "\n5) CEILING COLOR: Ensure the ceiling remains a clean, solid WHITE color (#FFFFFF)."
+        "Do NOT apply any tint, shadow colorization, or stylistic variation to the ceiling."
+        "The ceiling must appear uniformly white with natural lighting and no color shift."
+        
+        "\n6) PRESERVATION: Preserve all furniture, objects, shadows, reflections, and lighting direction from IMAGE 1."
         " Only modify the FLOOR material and WALL color — do not alter geometry, decor, lighting, or ceiling surfaces."
-
-        "\n6) CONSTRAINTS: Do not hallucinate or remove objects."
+        
+        "\n7) CONSTRAINTS: Do not hallucinate or remove objects."
         " Do not modify the structure, windows, ceiling, or perspective."
 
-        "\n7) FINISH QUALITY: The painted walls should appear clean, uniform, and recently completed,"
+        "\n8) FINISH QUALITY: The painted walls should appear clean, uniform, and recently completed,"
         " with realistic light interaction (brighter near light sources, softer in shadows)."
 
-        "\n8) OUTPUT: Output exactly ONE high-resolution, photorealistic image (PNG only)."
+        "\n9) OUTPUT: Output exactly ONE high-resolution, photorealistic image (PNG only)."
         " Do not include text, borders, watermarks, or artistic filters."
 
         "\n\nRendering quality goals: physically-based realism, accurate light interaction,"
@@ -196,6 +203,79 @@ async def generateRoomWithCeramicAndWallColor(
                 inline_data=types.Blob(
                     mime_type="image/png",
                     data=tile_bytes
+                )
+            )
+        ],
+        config={
+            "temperature": 0.4,
+            "top_p": 0.75,
+            "max_output_tokens": 8192
+        }
+    )
+
+    # Return generated image
+    for part in response.candidates[0].content.parts:
+        if part.inline_data is not None:
+            return Response(
+                content=part.inline_data.data,
+                media_type=part.inline_data.mime_type
+            )
+
+@app.post("/roomPaintOnly")
+async def generateRoomWithWallPaintOnly(
+    roomImage: UploadFile = File(...),
+    wall_color_hex: str = Form(...)
+):
+    # Read room image
+    room_bytes = await roomImage.read()
+
+    # Paint-only prompt
+    prompt = (
+        "You are a professional architectural renderer. Produce one PHOTOREALISTIC edit of IMAGE 1 (the apartment interior)."
+        "\n\nStrict instructions:"
+
+        "\n1) WALL COLOR (WALLS ONLY): Repaint ALL visible WALL surfaces using the EXACT solid color specified by this HEX code: "
+        f"{wall_color_hex}. "
+        "The wall color must match this HEX code precisely with no variation, tint, or artistic interpretation."
+
+        "\nIMPORTANT: DO NOT paint, recolor, or modify the CEILING in any way."
+        " The ceiling must remain EXACTLY as it appears in IMAGE 1, including its original color, texture, lighting, and material."
+        " Ceiling surfaces are STRICTLY excluded from repainting."
+
+        "\n2) SURFACE PREPARATION (WALLS ONLY): Before painting, CLEAN and RESTORE wall surfaces — remove dust, stains, cracks,"
+        " concrete patches, or unfinished textures so the walls appear smooth and professionally painted."
+        " Do NOT clean, modify, or alter the ceiling."
+
+        "\n3) PRESERVATION: Preserve ALL existing floor materials, furniture, objects, shadows, reflections,"
+        " and lighting direction from IMAGE 1."
+        " Only modify WALL color — do not alter floor materials, geometry, decor, lighting, or ceiling surfaces."
+        
+        "\n4) CEILING COLOR: Ensure the ceiling remains a clean, solid WHITE color (#FFFFFF)."
+        "Do NOT apply any tint, shadow colorization, or stylistic variation to the ceiling."
+        "The ceiling must appear uniformly white with natural lighting and no color shift."
+        
+        "\n5) CONSTRAINTS: Do not hallucinate or remove objects."
+        " Do not modify the structure, windows, ceiling, or perspective."
+
+        "\n6) FINISH QUALITY: The painted walls should appear clean, uniform, and recently completed,"
+        " with realistic light interaction (brighter near light sources, softer in shadows)."
+
+        "\n7) OUTPUT: Output exactly ONE high-resolution, photorealistic image (PNG only)."
+        " Do not include text, borders, watermarks, or artistic filters."
+
+        "\n\nRendering quality goals: physically-based realism, accurate light interaction,"
+        " smooth surfaces, consistent perspective alignment, and no visible seams or distortions."
+    )
+
+    # Call Gemini
+    response = client.models.generate_content(
+        model="gemini-2.5-flash-image",
+        contents=[
+            prompt,
+            types.Part(
+                inline_data=types.Blob(
+                    mime_type="image/png",
+                    data=room_bytes
                 )
             )
         ],

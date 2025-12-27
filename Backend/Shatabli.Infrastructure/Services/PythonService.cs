@@ -99,9 +99,35 @@ namespace Shatabli.Infrastructure.Services
             }
         }
 
-        public Task<byte[]> GenerateDesignWithPaintOnly(byte[] roomImage, string colorCode)
+        public async Task<byte[]> GenerateDesignWithPaintOnly(byte[] roomImage, string colorCode)
         {
-            throw new NotImplementedException();
+            var form = new MultipartFormDataContent();
+
+            // Room image
+            var roomContent = new ByteArrayContent(roomImage);
+            roomContent.Headers.ContentType =
+                MediaTypeHeaderValue.Parse("image/jpeg");
+            form.Add(roomContent, "roomImage", "room.jpg");
+
+
+            // Wall color HEX code
+            var colorContent = new StringContent(colorCode);
+            form.Add(colorContent, "wall_color_hex");
+
+            HttpResponseMessage response;
+            try
+            {
+                response = await _httpClient.PostAsync(
+                    "/roomPaintOnly",
+                    form);
+
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsByteArrayAsync();
+            }
+            finally
+            {
+                form.Dispose();
+            }
         }
     }
 }
