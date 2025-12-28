@@ -5,10 +5,12 @@ import { environment } from '../../../environments/environment';
 import {
     Ceramic,
     CeramicsResponse,
-    PaintsResponse,
-    DesignType,
     GeneratedDesign,
-    GenerateDesignResponse
+    GenerateDesignResponse,
+    SaveDesignResponse,
+    GetAllDesignsResponse,
+    DeleteDesignResponse,
+    SavedDesign
 } from '../../shared/models/design.model';
 
 @Injectable({ providedIn: 'root' })
@@ -18,12 +20,15 @@ export class DesignService {
 
     // حالة السيراميك
     ceramicsSig = signal<Ceramic[]>([]);
-    paintsSig = signal<Ceramic[]>([]);
     isLoadingSig = signal(false);
 
     // حالة التوليد
     isGeneratingSig = signal(false);
     generatedResultSig = signal<GeneratedDesign | null>(null);
+
+    // التصاميم المحفوظة
+    savedDesignsSig = signal<SavedDesign[]>([]);
+    isSavingSig = signal(false);
 
     /**
      * جلب كل السيراميك
@@ -33,69 +38,48 @@ export class DesignService {
         return this.http.get<CeramicsResponse>(`${this.apiUrl}/Product/GetAllCeramics`)
             .pipe(
                 tap(response => {
-                    // فلترة العناصر النشطة فقط
-                    const activeCeramics = response.ceramicList.filter(c => c.isActive);
-                    this.ceramicsSig.set(activeCeramics);
+                    if (response.success && response.data?.ceramicList) {
+                        const ceramics: Ceramic[] = response.data.ceramicList.map(c => ({
+                            id: c.productId,
+                            name: c.productName,
+                            imageUrl: c.productImageUrl
+                        }));
+                        this.ceramicsSig.set(ceramics);
+                    }
                     this.isLoadingSig.set(false);
                 }),
                 catchError(error => {
                     this.isLoadingSig.set(false);
-                    return of({ ceramicList: [] });
+                    console.error('Failed to load ceramics:', error);
+                    return of({ success: false, message: '', data: { ceramicList: [] }, errors: {}, timestamp: '' });
                 })
             );
     }
 
-    /**
-     * جلب كل الألوان
-     * (افتراضي: نفس endpoint السيراميك مع تغيير الاسم)
-     */
-    getAllPaints(): Observable<PaintsResponse> {
-        this.isLoadingSig.set(true);
-        return this.http.get<PaintsResponse>(`${this.apiUrl}/Product/GetAllPaints`)
-            .pipe(
-                tap(response => {
-                    // فلترة العناصر النشطة فقط
-                    const activePaints = response.paintList.filter(p => p.isActive);
-                    this.paintsSig.set(activePaints);
-                    this.isLoadingSig.set(false);
-                }),
-                catchError(error => {
-                    this.isLoadingSig.set(false);
-                    return of({ paintList: [] });
-                })
-            );
-    }
+    // ============== Generation Methods ==============
 
     /**
-     * توليد تصميم من المعرض
-     * @param roomImage صورة الغرفة
-     * @param ceramicId معرف السيراميك/اللون من المعرض
-     * @param designType نوع التصميم (1=سيراميك، 2=لون)
+     * توليد تصميم بلون فقط
      */
-    generateDesign(
-        roomImage: File,
-        ceramicId: string,
-        designType: DesignType
-    ): Observable<GenerateDesignResponse> {
+    generateWithPaintOnly(roomImage: File, colorCode: string): Observable<GenerateDesignResponse> {
         this.isGeneratingSig.set(true);
 
         const formData = new FormData();
-        formData.append('imageFile', roomImage);
+        formData.append('roomImage', roomImage);
 
         return this.http.post<GenerateDesignResponse>(
-            `${this.apiUrl}/Design/GenerateDesign`,
+            `${this.apiUrl}/Design/GenerateDesignWithPaintOnly`,
             formData,
-            { params: { designType: designType.toString(), ceramicId } }
+            { params: { colorCode } }
         ).pipe(
             tap(response => {
                 this.isGeneratingSig.set(false);
-                if (response.success) {
+                if (response.success && response.data) {
                     this.generatedResultSig.set({
-                        id: response.designId,
+                        designId: response.data.designId,
                         originalImageUrl: URL.createObjectURL(roomImage),
-                        generatedImageUrl: response.generatedImageUrl,
-                        designType,
-                        ceramicOrPaintId: ceramicId,
+                        generatedImageUrl: response.data.generatedImagePath,
+                        isSaved: false,
                         createdAt: new Date().toISOString()
                     });
                 }
@@ -108,41 +92,206 @@ export class DesignService {
     }
 
     /**
-     * توليد تصميم بصورة مخصصة
-     * @param roomImage صورة الغرفة
-     * @param ceramicOrPaintImage صورة السيراميك/اللون المخصصة
-     * @param designType نوع التصميم (1=سيراميك، 2=لون)
+     * توليد تصميم بسيراميك من المعرض
      */
-    generateDesignWithUserImage(
-        roomImage: File,
-        ceramicOrPaintImage: File,
-        designType: DesignType
-    ): Observable<GenerateDesignResponse> {
+    generateWithOurCeramic(roomImage: File, ceramicId: string): Observable<GenerateDesignResponse> {
         this.isGeneratingSig.set(true);
 
         const formData = new FormData();
-        formData.append('roomImageFile', roomImage);
-        formData.append('ceramicOrPaintImageFile', ceramicOrPaintImage);
+        formData.append('imageFile', roomImage);
 
         return this.http.post<GenerateDesignResponse>(
-            `${this.apiUrl}/Design/GenerateDesignWithUserCeramicImage`,
+            `${this.apiUrl}/Design/GenerateDesignWIthOurCeramic`,
             formData,
-            { params: { designType: designType.toString() } }
+            { params: { ceramicId } }
         ).pipe(
             tap(response => {
                 this.isGeneratingSig.set(false);
-                if (response.success) {
+                if (response.success && response.data) {
                     this.generatedResultSig.set({
-                        id: response.designId,
+                        designId: response.data.designId,
                         originalImageUrl: URL.createObjectURL(roomImage),
-                        generatedImageUrl: response.generatedImageUrl,
-                        designType,
+                        generatedImageUrl: response.data.generatedImagePath,
+                        isSaved: false,
                         createdAt: new Date().toISOString()
                     });
                 }
             }),
             catchError(error => {
                 this.isGeneratingSig.set(false);
+                throw error;
+            })
+        );
+    }
+
+    /**
+     * توليد تصميم بسيراميك مخصص (صورة المستخدم)
+     */
+    generateWithUserCeramic(roomImage: File, ceramicImage: File): Observable<GenerateDesignResponse> {
+        this.isGeneratingSig.set(true);
+
+        const formData = new FormData();
+        formData.append('roomImageFile', roomImage);
+        formData.append('ceramicImageFile', ceramicImage);
+
+        return this.http.post<GenerateDesignResponse>(
+            `${this.apiUrl}/Design/GenerateDesignWithUserCeramicImage`,
+            formData
+        ).pipe(
+            tap(response => {
+                this.isGeneratingSig.set(false);
+                if (response.success && response.data) {
+                    this.generatedResultSig.set({
+                        designId: response.data.designId,
+                        originalImageUrl: URL.createObjectURL(roomImage),
+                        generatedImageUrl: response.data.generatedImagePath,
+                        isSaved: false,
+                        createdAt: new Date().toISOString()
+                    });
+                }
+            }),
+            catchError(error => {
+                this.isGeneratingSig.set(false);
+                throw error;
+            })
+        );
+    }
+
+    /**
+     * توليد تصميم بسيراميك من المعرض + لون
+     */
+    generateWithOurCeramicAndPaint(roomImage: File, ceramicId: string, colorCode: string): Observable<GenerateDesignResponse> {
+        this.isGeneratingSig.set(true);
+
+        const formData = new FormData();
+        formData.append('roomImageFile', roomImage);
+
+        return this.http.post<GenerateDesignResponse>(
+            `${this.apiUrl}/Design/GenerateDesignWithOurCeramicAndPaint`,
+            formData,
+            { params: { ceramicId, colorCode } }
+        ).pipe(
+            tap(response => {
+                this.isGeneratingSig.set(false);
+                if (response.success && response.data) {
+                    this.generatedResultSig.set({
+                        designId: response.data.designId,
+                        originalImageUrl: URL.createObjectURL(roomImage),
+                        generatedImageUrl: response.data.generatedImagePath,
+                        isSaved: false,
+                        createdAt: new Date().toISOString()
+                    });
+                }
+            }),
+            catchError(error => {
+                this.isGeneratingSig.set(false);
+                throw error;
+            })
+        );
+    }
+
+    /**
+     * توليد تصميم بسيراميك مخصص + لون
+     */
+    generateWithUserCeramicAndPaint(roomImage: File, ceramicImage: File, colorCode: string): Observable<GenerateDesignResponse> {
+        this.isGeneratingSig.set(true);
+
+        const formData = new FormData();
+        formData.append('roomImageFile', roomImage);
+        formData.append('ceramicImageFile', ceramicImage);
+
+        return this.http.post<GenerateDesignResponse>(
+            `${this.apiUrl}/Design/GenerateDesignWithUserCeramicAndPaint`,
+            formData,
+            { params: { colorCode } }
+        ).pipe(
+            tap(response => {
+                this.isGeneratingSig.set(false);
+                if (response.success && response.data) {
+                    this.generatedResultSig.set({
+                        designId: response.data.designId,
+                        originalImageUrl: URL.createObjectURL(roomImage),
+                        generatedImageUrl: response.data.generatedImagePath,
+                        isSaved: false,
+                        createdAt: new Date().toISOString()
+                    });
+                }
+            }),
+            catchError(error => {
+                this.isGeneratingSig.set(false);
+                throw error;
+            })
+        );
+    }
+
+    // ============== Favorites Methods ==============
+
+    /**
+     * حفظ التصميم في المفضلة
+     */
+    saveDesign(designId: string): Observable<SaveDesignResponse> {
+        this.isSavingSig.set(true);
+
+        return this.http.post<SaveDesignResponse>(
+            `${this.apiUrl}/Design/SaveDesign`,
+            { designId }
+        ).pipe(
+            tap(response => {
+                this.isSavingSig.set(false);
+                if (response.success && response.data) {
+                    // تحديث الـ generatedResult ليكون محفوظ
+                    const current = this.generatedResultSig();
+                    if (current && current.designId === designId) {
+                        this.generatedResultSig.set({
+                            ...current,
+                            generatedImageUrl: response.data.generatedImageUrl,
+                            isSaved: true
+                        });
+                    }
+                }
+            }),
+            catchError(error => {
+                this.isSavingSig.set(false);
+                throw error;
+            })
+        );
+    }
+
+    /**
+     * جلب كل التصاميم المحفوظة
+     */
+    getAllDesigns(): Observable<GetAllDesignsResponse> {
+        return this.http.get<GetAllDesignsResponse>(`${this.apiUrl}/Design/GetAllDesigns`)
+            .pipe(
+                tap(response => {
+                    if (response.success && response.data?.designsList) {
+                        this.savedDesignsSig.set(response.data.designsList);
+                    }
+                }),
+                catchError(error => {
+                    console.error('Failed to load saved designs:', error);
+                    return of({ success: false, message: '', data: { designsList: [] }, errors: {}, timestamp: '' });
+                })
+            );
+    }
+
+    /**
+     * حذف تصميم من المفضلة
+     */
+    deleteDesign(designId: string): Observable<DeleteDesignResponse> {
+        return this.http.delete<DeleteDesignResponse>(
+            `${this.apiUrl}/Design/SoftDeleteDesign`,
+            { params: { designId } }
+        ).pipe(
+            tap(response => {
+                if (response.success) {
+                    // حذف من القائمة المحلية
+                    const current = this.savedDesignsSig();
+                    this.savedDesignsSig.set(current.filter(d => d.designId !== designId));
+                }
+            }),
+            catchError(error => {
+                console.error('Failed to delete design:', error);
                 throw error;
             })
         );

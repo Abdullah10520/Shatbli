@@ -18,11 +18,14 @@ export class PreviewPanelComponent {
     roomImageUrl = input<string | null>(null);
     generatedResult = input<GeneratedDesign | null>(null);
     isGenerating = input<boolean>(false);
+    isSaving = input<boolean>(false);
+    saveButtonExpired = input<boolean>(false);
     progressMessage = input<string>('');
 
     // المخرجات
     downloadClicked = output<void>();
     shareClicked = output<void>();
+    saveClicked = output<void>();
 
     // الحالة
     viewMode = signal<'original' | 'compare' | 'new'>('compare');
@@ -46,5 +49,9 @@ export class PreviewPanelComponent {
 
     share(): void {
         this.shareClicked.emit();
+    }
+
+    save(): void {
+        this.saveClicked.emit();
     }
 }

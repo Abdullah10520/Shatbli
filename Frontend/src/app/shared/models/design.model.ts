@@ -1,66 +1,105 @@
 // أنواع التصميم
 export enum DesignType {
     Ceramic = 1,
-    Paint = 2
+    Paint = 2,
+    CeramicAndPaint = 3
 }
 
 // استجابة جلب السيراميك
 export interface CeramicsResponse {
-    ceramicList: Ceramic[];
+    success: boolean;
+    message: string;
+    data: {
+        ceramicList: CeramicProduct[];
+    };
+    errors: Record<string, string[]>;
+    timestamp: string;
 }
 
-// استجابة جلب الألوان
+// استجابة جلب الألوان (غير مستخدمة حالياً - نستخدم Color Picker)
 export interface PaintsResponse {
-    paintList: Ceramic[];
+    success: boolean;
+    message: string;
+    data: {
+        paintList: CeramicProduct[];
+    };
+    errors: Record<string, string[]>;
+    timestamp: string;
 }
 
-// نموذج السيراميك/اللون
+// نموذج السيراميك/اللون من الـ API
+export interface CeramicProduct {
+    productId: string;
+    productName: string;
+    productImageUrl: string;
+}
+
+// نموذج السيراميك للاستخدام الداخلي
 export interface Ceramic {
     id: string;
     name: string;
     imageUrl: string;
-    isActive: boolean;
-}
-
-// نموذج التصميم (للتوافق مع الكود القديم)
-export interface Design {
-    id: string;
-    name: string;
-    imageUrl: string;
-    type: DesignType;
-    description?: string;
-    createdAt?: string;
+    isActive?: boolean;
 }
 
 // نموذج نتيجة التوليد
 export interface GeneratedDesign {
-    id: string;
+    designId: string;
     originalImageUrl: string;
     generatedImageUrl: string;
-    designType: DesignType;
-    ceramicOrPaintId?: string;
+    isSaved: boolean;
     createdAt: string;
 }
 
-// طلب التوليد من المعرض
-export interface GenerateFromGalleryRequest {
-    roomImage: File;
-    ceramicId: string;
-    designType: DesignType;
-}
-
-// طلب التوليد بصورة مخصصة
-export interface GenerateWithCustomImageRequest {
-    roomImage: File;
-    ceramicOrPaintImage: File;
-    designType: DesignType;
-}
-
-// استجابة التوليد
+// استجابة التوليد (الفورمات الجديد)
 export interface GenerateDesignResponse {
     success: boolean;
-    generatedImageUrl: string;
-    designId: string;
-    message?: string;
+    message: string;
+    data: {
+        generatedImagePath: string;
+        designId: string;
+    };
+    errors: Record<string, string[]>;
+    timestamp: string;
 }
 
+// استجابة حفظ التصميم
+export interface SaveDesignResponse {
+    success: boolean;
+    message: string;
+    data: {
+        designId: string;
+        generatedImageUrl: string;
+    };
+    errors: Record<string, string[]>;
+    timestamp: string;
+}
+
+// تصميم محفوظ في المفضلة
+export interface SavedDesign {
+    designId: string;
+    generatedImageUrl: string;
+    completedAt: string;
+}
+
+// استجابة جلب التصاميم المحفوظة
+export interface GetAllDesignsResponse {
+    success: boolean;
+    message: string;
+    data: {
+        designsList: SavedDesign[];
+    };
+    errors: Record<string, string[]>;
+    timestamp: string;
+}
+
+// استجابة حذف التصميم
+export interface DeleteDesignResponse {
+    success: boolean;
+    message: string;
+    data: {
+        success: boolean;
+    };
+    errors: Record<string, string[]>;
+    timestamp: string;
+}

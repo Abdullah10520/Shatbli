@@ -14,9 +14,16 @@
         "step1_title": "1. Upload Room Photo",
         "step1_desc": "Start by adding a photo of your space",
         "step2_title": "2. Choose Design",
-        "step2_desc": "Select ceramic or wall paint",
+        "step2_desc": "Select ceramic and/or wall color",
         "generate_btn": "Generate with AI",
-        "generating": "Generating..."
+        "generating": "Generating...",
+        "ceramic": "Ceramic Tiles",
+        "wall_color": "Wall Color",
+        "from_gallery": "From Gallery",
+        "upload_image": "Upload Image",
+        "image_selected": "Image selected",
+        "click_to_upload": "Click to upload ceramic image",
+        "selected_color": "Selected Color"
     },
     "design": {
         "ceramic": "Ceramic",
@@ -41,7 +48,10 @@
         "upload_prompt": "Upload an image to start",
         "select_prompt": "Select ceramic or paint then click \"Generate\"",
         "share": "Share Design",
-        "download": "Download Result"
+        "download": "Download Result",
+        "save_to_favorites": "Save to Favorites",
+        "temp_warning": "⚠️ This image is temporary and will expire in 4 minutes. Save to favorites to keep it.",
+        "saved_success": "✅ Design saved to your favorites!"
     },
     "progress": {
         "received": "✨ Request received!",
@@ -120,5 +130,18 @@
         "current": "Current Plan",
         "error_subscribing": "Error subscribing to plan",
         "error_cancelling": "Error cancelling subscription"
+    },
+    "favorites": {
+        "title": "My Favorites",
+        "designs": "designs",
+        "design_alt": "Saved design",
+        "delete": "Delete",
+        "delete_title": "Delete Design?",
+        "delete_message": "Are you sure you want to delete this design? This action cannot be undone.",
+        "cancel": "Cancel",
+        "confirm_delete": "Delete",
+        "success_title": "Saved Successfully!",
+        "success_message": "Your design has been saved to favorites. You can view it anytime.",
+        "ok": "Great!"
     }
 }

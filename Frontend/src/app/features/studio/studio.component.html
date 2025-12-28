@@ -22,10 +22,7 @@
 
                 <!-- المستخدم وزر الوضع واللغة -->
                 <div class="flex items-center gap-3">
-                    <!-- زر تبديل اللغة -->
                     <app-language-switcher />
-
-                    <!-- زر التبديل للوضع الداكن -->
                     <app-theme-toggle />
 
                     @if (currentUser()) {
@@ -61,7 +58,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- اللوحة اليسرى - الأدوات -->
             <div class="lg:col-span-1 space-y-6">
-                <!-- رفع صورة الغرفة -->
+                <!-- ١. رفع صورة الغرفة -->
                 <div
                     class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <h2 class="text-lg font-semibold mb-1 text-gray-900 dark:text-white">{{ 'studio.step1_title' |
@@ -77,20 +74,90 @@
                     <app-image-upload (imageSelected)="onRoomImageSelected($event)" />
                 </div>
 
-                <!-- اختيار نوع التصميم والمعرض (مدمجين) -->
+                <!-- ٢. اختيار التصميم -->
                 <div
                     class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <h2 class="text-lg font-semibold mb-1 text-gray-900 dark:text-white">{{ 'studio.step2_title' |
                         translate }}</h2>
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ 'studio.step2_desc' | translate }}</p>
 
-                    <!-- أزرار اختيار النوع -->
-                    <app-design-selector [selectedType]="designType()" (typeChanged)="onDesignTypeChanged($event)" />
+                    <!-- اختيارات التصميم -->
+                    <div class="space-y-4">
 
-                    <!-- المعرض مباشرة تحت الأزرار -->
-                    <div class="mt-4">
-                        <app-gallery-grid [designType]="designType()" (designSelected)="onDesignSelected($event)"
-                            (customImageSelected)="onCustomImageSelected($event)" />
+                        <!-- اختيار السيراميك -->
+                        <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" [checked]="useCeramic()" (change)="toggleCeramic()"
+                                    class="w-5 h-5 rounded text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600">
+                                <span class="font-medium text-gray-900 dark:text-white">🧱 {{ 'studio.ceramic' |
+                                    translate }}</span>
+                            </label>
+
+                            @if (useCeramic()) {
+                            <div class="mt-4 space-y-3">
+                                <!-- مصدر السيراميك -->
+                                <div class="flex gap-2">
+                                    <button (click)="setCeramicSource('gallery')"
+                                        class="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors
+                                        {{ ceramicSource() === 'gallery' ? 'bg-purple-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' }}">
+                                        {{ 'studio.from_gallery' | translate }}
+                                    </button>
+                                    <button (click)="setCeramicSource('custom')"
+                                        class="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors
+                                        {{ ceramicSource() === 'custom' ? 'bg-purple-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' }}">
+                                        {{ 'studio.upload_image' | translate }}
+                                    </button>
+                                </div>
+
+                                @if (ceramicSource() === 'gallery') {
+                                <app-gallery-grid (designSelected)="onCeramicSelected($event)" />
+                                } @else {
+                                <!-- رفع صورة سيراميك -->
+                                <div
+                                    class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center hover:border-purple-500 transition-colors">
+                                    <input type="file" accept="image/*" class="hidden" id="ceramicUpload"
+                                        (change)="onCustomCeramicUpload($event)">
+                                    <label for="ceramicUpload" class="cursor-pointer">
+                                        @if (customCeramicImage()) {
+                                        <div class="text-green-600 dark:text-green-400">
+                                            ✅ {{ 'studio.image_selected' | translate }}
+                                        </div>
+                                        } @else {
+                                        <div class="text-gray-500 dark:text-gray-400">
+                                            📷 {{ 'studio.click_to_upload' | translate }}
+                                        </div>
+                                        }
+                                    </label>
+                                </div>
+                                }
+                            </div>
+                            }
+                        </div>
+
+                        <!-- اختيار اللون -->
+                        <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" [checked]="usePaint()" (change)="togglePaint()"
+                                    class="w-5 h-5 rounded text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600">
+                                <span class="font-medium text-gray-900 dark:text-white">🎨 {{ 'studio.wall_color' |
+                                    translate }}</span>
+                            </label>
+
+                            @if (usePaint()) {
+                            <div class="mt-4">
+                                <div class="flex items-center gap-4">
+                                    <input type="color" [value]="selectedColor()" (input)="onColorChange($event)"
+                                        class="w-16 h-16 rounded-lg border-2 border-gray-300 dark:border-gray-600 cursor-pointer">
+                                    <div>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'studio.selected_color' |
+                                            translate }}</p>
+                                        <p class="text-xl font-mono font-bold text-gray-900 dark:text-white">{{
+                                            selectedColor() }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                        </div>
                     </div>
                 </div>
 
@@ -115,9 +182,55 @@
             <div class="lg:col-span-2">
                 <app-preview-panel [roomImageUrl]="roomImageUrl()" [generatedResult]="generatedResult()"
                     [isGenerating]="isGenerating()" [progressMessage]="progressService.currentMessage()"
-                    (downloadClicked)="downloadResult()" (shareClicked)="shareResult()" />
+                    [isSaving]="isSaving()" [saveButtonExpired]="saveButtonExpired()"
+                    (downloadClicked)="downloadResult()" (shareClicked)="shareResult()"
+                    (saveClicked)="saveToFavorites()" />
             </div>
         </div>
+
+        <!-- قسم المفضلة -->
+        @if (savedDesigns().length > 0) {
+        <section class="mt-16">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                    ❤️ {{ 'favorites.title' | translate }}
+                </h2>
+                <span class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ savedDesigns().length }} {{ 'favorites.designs' | translate }}
+                </span>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                @for (design of savedDesigns(); track design.designId) {
+                <div class="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
+                    (click)="openImageViewer(design.generatedImageUrl)">
+                    <img [src]="design.generatedImageUrl" [alt]="'favorites.design_alt' | translate"
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+
+                    <!-- Overlay with actions -->
+                    <div
+                        class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
+                        <button (click)="openDeleteModal(design.designId); $event.stopPropagation()"
+                            class="bg-red-500 hover:bg-red-600 text-white p-3 rounded-full shadow-lg transition-colors"
+                            [title]="'favorites.delete' | translate">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Date badge -->
+                    <div
+                        class="absolute bottom-2 left-2 bg-black/50 backdrop-blur text-white text-xs px-2 py-1 rounded">
+                        {{ design.completedAt | date:'short' }}
+                    </div>
+                </div>
+                }
+            </div>
+        </section>
+        }
     </main>
 
     <!-- Footer -->
@@ -141,4 +254,100 @@
             </div>
         </div>
     </footer>
+
+    <!-- Delete Confirmation Modal -->
+    @if (showDeleteModal()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+        (click)="closeDeleteModal()">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6"
+            (click)="$event.stopPropagation()">
+            <!-- Icon -->
+            <div
+                class="mx-auto w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-xl font-bold text-center text-gray-900 dark:text-white mb-2">
+                {{ 'favorites.delete_title' | translate }}
+            </h3>
+
+            <!-- Message -->
+            <p class="text-center text-gray-500 dark:text-gray-400 mb-6">
+                {{ 'favorites.delete_message' | translate }}
+            </p>
+
+            <!-- Buttons -->
+            <div class="flex gap-3">
+                <button (click)="closeDeleteModal()"
+                    class="flex-1 py-3 px-4 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    {{ 'favorites.cancel' | translate }}
+                </button>
+                <button (click)="confirmDelete()" [disabled]="isDeleting()"
+                    class="flex-1 py-3 px-4 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50">
+                    @if (isDeleting()) {
+                    <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    }
+                    {{ 'favorites.confirm_delete' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- Success Modal -->
+    @if (showSuccessModal()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+        (click)="closeSuccessModal()">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6 text-center"
+            (click)="$event.stopPropagation()">
+            <!-- Success Icon -->
+            <div
+                class="mx-auto w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                {{ 'favorites.success_title' | translate }}
+            </h3>
+
+            <!-- Message -->
+            <p class="text-gray-500 dark:text-gray-400 mb-6">
+                {{ 'favorites.success_message' | translate }}
+            </p>
+
+            <!-- Button -->
+            <button (click)="closeSuccessModal()"
+                class="w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors">
+                {{ 'favorites.ok' | translate }}
+            </button>
+        </div>
+    </div>
+    }
+
+    <!-- Image Viewer Modal -->
+    @if (showImageViewer()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90" (click)="closeImageViewer()">
+        <!-- Close Button -->
+        <button (click)="closeImageViewer()"
+            class="absolute top-4 right-4 text-white/70 hover:text-white p-2 rounded-full transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+
+        <!-- Image -->
+        <img [src]="viewingImageUrl()" alt="Design Preview"
+            class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" (click)="$event.stopPropagation()">
+    </div>
+    }
 </div>
