@@ -22,16 +22,31 @@ export class SubscriptionService {
     isLoadingSig = signal(false);
     isProcessingSig = signal(false);
 
+    // Cache flag to avoid reloading plans every time
+    private plansLoaded = false;
+
     /**
-     * Get all available subscription plans
+     * Get all available subscription plans (cached after first load)
      */
-    getPlans(): Observable<GetPlansResponse> {
+    getPlans(forceRefresh = false): Observable<GetPlansResponse> {
+        // If plans are already loaded and no force refresh, return cached plans
+        if (this.plansLoaded && this.plansSig().length > 0 && !forceRefresh) {
+            return of({
+                success: true,
+                message: 'Plans loaded from cache',
+                data: this.plansSig(),
+                errors: {},
+                timestamp: new Date().toISOString()
+            });
+        }
+
         this.isLoadingSig.set(true);
         return this.http.get<GetPlansResponse>(`${this.apiUrl}/Subscription/GetPlans`)
             .pipe(
                 tap(response => {
                     if (response.success && response.data) {
                         this.plansSig.set(response.data);
+                        this.plansLoaded = true;
                     }
                     this.isLoadingSig.set(false);
                 }),
