@@ -8,8 +8,6 @@ import { UserService } from '../../Core/services/user.service';
 import { AuthService } from '../../Core/auth/auth.service';
 import { ThemeService } from '../../Core/services/theme.service';
 import { LanguageService } from '../../Core/services/language.service';
-import { ThemeToggleComponent } from '../../shared/components/theme-toggle.component';
-import { LanguageSwitcherComponent } from '../../shared/components/language-switcher.component';
 import { ProfileData } from '../../shared/models/user.model';
 
 @Component({
@@ -19,9 +17,7 @@ import { ProfileData } from '../../shared/models/user.model';
         CommonModule,
         ReactiveFormsModule,
         RouterModule,
-        TranslatePipe,
-        ThemeToggleComponent,
-        LanguageSwitcherComponent
+        TranslatePipe
     ],
     templateUrl: './profile.component.html',
     styleUrl: './profile.component.css'

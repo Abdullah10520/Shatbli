@@ -1,244 +1,195 @@
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300"
-    [dir]="languageService.isRTL() ? 'rtl' : 'ltr'">
-    <!-- Header -->
-    <header
-        class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex items-center gap-3">
-                    <div
-                        class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                        </svg>
-                    </div>
-                    <span
-                        class="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                        {{ 'app.name' | translate }}
-                    </span>
-                </div>
+<!-- Main Content --><div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">{{ 'subscription.title' | translate }}
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">{{ 'subscription.subtitle' | translate
+            }}</p>
+    </div>
 
-                <!-- Actions -->
-                <div class="flex items-center gap-4">
-                    <app-language-switcher />
-                    <app-theme-toggle />
-
-                    <button (click)="goToStudio()"
-                        class="px-4 py-2 text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 transition-colors">
-                        {{ 'nav.studio' | translate }}
-                    </button>
-
-                    <button (click)="goToProfile()"
-                        class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300 transition-colors">
-                        {{ 'profile.title' | translate }}
-                    </button>
-
-                    <button (click)="logout()"
-                        class="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors">
-                        {{ 'nav.logout' | translate }}
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <!-- Page Header -->
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">{{ 'subscription.title' | translate }}
-            </h1>
-            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">{{ 'subscription.subtitle' | translate
-                }}</p>
-        </div>
-
-        <!-- Success/Error Messages -->
-        @if (successMessage()) {
-        <div
-            class="max-w-md mx-auto mb-8 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-xl text-center animate-fade-in">
-            <div class="flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-                {{ successMessage() }}
-            </div>
-        </div>
-        }
-
-        @if (errorMessage()) {
-        <div
-            class="max-w-md mx-auto mb-8 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-xl text-center animate-fade-in">
-            <div class="flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                {{ errorMessage() }}
-            </div>
-        </div>
-        }
-
-        <!-- Current Subscription Card -->
-        @if (currentSubscription()) {
-        <div class="max-w-2xl mx-auto mb-12">
-            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-6 text-white shadow-xl">
-                <div class="flex items-center justify-between flex-wrap gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-2xl">
-                            {{ getPlanIcon(currentSubscription()!.planType) }}
-                        </div>
-                        <div>
-                            <p class="text-purple-200 text-sm">{{ 'subscription.current_plan' | translate }}</p>
-                            <h3 class="text-2xl font-bold">{{ currentSubscription()!.planName }}</h3>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-6">
-                        <div class="text-end">
-                            <p class="text-purple-200 text-sm">{{ 'subscription.usage' | translate }}</p>
-                            <p class="text-lg font-medium">
-                                {{ currentSubscription()!.imagesGeneratedThisMonth }}
-                                @if (currentSubscription()!.maxImagesPerMonth !== -1) {
-                                / {{ currentSubscription()!.maxImagesPerMonth }}
-                                } @else {
-                                / ∞
-                                }
-                                {{ 'subscription.images_this_month' | translate }}
-                            </p>
-                        </div>
-                        <!-- Cancel Button in Card -->
-                        @if (currentSubscription()!.planType !== 'Free') {
-                        <button (click)="cancelSubscription()" [disabled]="isProcessing()"
-                            class="px-4 py-2 rounded-lg text-sm font-medium bg-white/20 hover:bg-white/30 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                            @if (isProcessing()) {
-                            <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-                                    fill="none"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                            </svg>
-                            } @else {
-                            {{ 'subscription.cancel' | translate }}
-                            }
-                        </button>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-        }
-
-        <!-- Loading -->
-        @if (isLoading()) {
-        <div class="flex justify-center py-12">
-            <svg class="animate-spin h-12 w-12 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
+    <!-- Success/Error Messages -->
+    @if (successMessage()) {
+    <div
+        class="max-w-md mx-auto mb-8 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-xl text-center animate-fade-in">
+        <div class="flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
+            {{ successMessage() }}
         </div>
-        } @else {
+    </div>
+    }
 
-        <!-- Pricing Cards - Using flex for RTL support -->
-        <div class="flex flex-col md:flex-row gap-8 max-w-5xl mx-auto justify-center"
-            [class.md:flex-row-reverse]="languageService.isRTL()">
-            @for (plan of sortedPlans(); track plan.id) {
-            <div class="relative group flex-1 max-w-sm">
-                <!-- Popular Badge -->
-                @if (plan.type === 'Basic') {
-                <div class="absolute -top-4 inset-x-0 flex justify-center z-10">
-                    <span
-                        class="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg">
-                        {{ 'subscription.popular' | translate }}
-                    </span>
+    @if (errorMessage()) {
+    <div
+        class="max-w-md mx-auto mb-8 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-xl text-center animate-fade-in">
+        <div class="flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            {{ errorMessage() }}
+        </div>
+    </div>
+    }
+
+    <!-- Current Subscription Card -->
+    @if (currentSubscription()) {
+    <div class="max-w-2xl mx-auto mb-12">
+        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-6 text-white shadow-xl">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-2xl">
+                        {{ getPlanIcon(currentSubscription()!.planType) }}
+                    </div>
+                    <div>
+                        <p class="text-purple-200 text-sm">{{ 'subscription.current_plan' | translate }}</p>
+                        <h3 class="text-2xl font-bold">{{ currentSubscription()!.planName }}</h3>
+                    </div>
                 </div>
-                }
-
-                <div
-                    class="h-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 transition-all duration-300 overflow-hidden
-          {{ isCurrentPlan(plan) ? 'border-purple-500 ring-4 ring-purple-500/20' : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700' }}">
-
-                    <!-- Plan Header -->
-                    <div
-                        class="p-6 text-center {{ plan.type === 'Premium' ? 'bg-gradient-to-br from-purple-600 to-indigo-600 text-white' : '' }}">
-                        <div class="text-4xl mb-3">{{ getPlanIcon(plan.type) }}</div>
-                        <h3
-                            class="text-2xl font-bold {{ plan.type === 'Premium' ? 'text-white' : 'text-gray-900 dark:text-white' }}">
-                            {{ plan.name }}
-                        </h3>
-                        <div class="mt-4">
-                            <span
-                                class="text-4xl font-bold {{ plan.type === 'Premium' ? 'text-white' : 'text-gray-900 dark:text-white' }}">
-                                @if (plan.price === 0) {
-                                {{ 'subscription.free' | translate }}
-                                } @else {
-                                ${{ plan.price }}
-                                }
-                            </span>
-                            @if (plan.price > 0) {
-                            <span
-                                class="{{ plan.type === 'Premium' ? 'text-purple-200' : 'text-gray-500 dark:text-gray-400' }}">/{{
-                                'subscription.month' | translate }}</span>
-                            }
-                        </div>
-                    </div>
-
-                    <!-- Features -->
-                    <div class="p-6 space-y-4">
-                        @for (feature of getFeatures(plan); track feature.text) {
-                        <div class="flex items-center gap-3">
-                            @if (feature.included) {
-                            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5 13l4 4L19 7" />
-                            </svg>
+                <div class="flex items-center gap-6">
+                    <div class="text-end">
+                        <p class="text-purple-200 text-sm">{{ 'subscription.usage' | translate }}</p>
+                        <p class="text-lg font-medium">
+                            {{ currentSubscription()!.imagesGeneratedThisMonth }}
+                            @if (currentSubscription()!.maxImagesPerMonth !== -1) {
+                            / {{ currentSubscription()!.maxImagesPerMonth }}
                             } @else {
-                            <svg class="w-5 h-5 text-gray-300 dark:text-gray-600 flex-shrink-0" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            / ∞
                             }
-                            <span
-                                class="{{ feature.included ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500' }}">
-                                {{ feature.text }}
-                            </span>
-                        </div>
-                        }
+                            {{ 'subscription.images_this_month' | translate }}
+                        </p>
                     </div>
-
-                    <!-- Action Button -->
-                    <div class="p-6 pt-0">
-                        @if (isCurrentPlan(plan)) {
-                        <div
-                            class="w-full py-3 px-4 rounded-xl text-sm font-medium text-center bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-2 border-purple-500">
-                            {{ 'subscription.current' | translate }}
-                        </div>
+                    <!-- Cancel Button in Card -->
+                    @if (currentSubscription()!.planType !== 'Free') {
+                    <button (click)="cancelSubscription()" [disabled]="isProcessing()"
+                        class="px-4 py-2 rounded-lg text-sm font-medium bg-white/20 hover:bg-white/30 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        @if (isProcessing()) {
+                        <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+                                fill="none"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
                         } @else {
-                        <button (click)="subscribeToPlan(plan)" [disabled]="isProcessing() || isPlanProcessing(plan.id)"
-                            class="w-full py-3 px-4 rounded-xl text-sm font-medium text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed
-              {{ plan.type === 'Premium' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg shadow-purple-500/30' : 'bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 dark:from-gray-600 dark:to-gray-700' }}">
-                            @if (isPlanProcessing(plan.id)) {
-                            <svg class="animate-spin h-5 w-5 mx-auto" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-                                    fill="none"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                            </svg>
-                            } @else {
-                            {{ 'subscription.subscribe' | translate }}
-                            }
-                        </button>
+                        {{ 'subscription.cancel' | translate }}
                         }
-                    </div>
+                    </button>
+                    }
                 </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- Loading -->
+    @if (isLoading()) {
+    <div class="flex justify-center py-12">
+        <svg class="animate-spin h-12 w-12 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+        </svg>
+    </div>
+    } @else {
+
+    <!-- Pricing Cards - Using flex for RTL support -->
+    <div class="flex flex-col md:flex-row gap-8 max-w-5xl mx-auto justify-center"
+        [class.md:flex-row-reverse]="languageService.isRTL()">
+        @for (plan of sortedPlans(); track plan.id) {
+        <div class="relative group flex-1 max-w-sm">
+            <!-- Popular Badge -->
+            @if (plan.type === 'Basic') {
+            <div class="absolute -top-4 inset-x-0 flex justify-center z-10">
+                <span
+                    class="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg">
+                    {{ 'subscription.popular' | translate }}
+                </span>
             </div>
             }
-        </div>
 
+            <div
+                class="h-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 transition-all duration-300 overflow-hidden
+          {{ isCurrentPlan(plan) ? 'border-purple-500 ring-4 ring-purple-500/20' : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700' }}">
+
+                <!-- Plan Header -->
+                <div
+                    class="p-6 text-center {{ plan.type === 'Premium' ? 'bg-gradient-to-br from-purple-600 to-indigo-600 text-white' : '' }}">
+                    <div class="text-4xl mb-3">{{ getPlanIcon(plan.type) }}</div>
+                    <h3
+                        class="text-2xl font-bold {{ plan.type === 'Premium' ? 'text-white' : 'text-gray-900 dark:text-white' }}">
+                        {{ plan.name }}
+                    </h3>
+                    <div class="mt-4">
+                        <span
+                            class="text-4xl font-bold {{ plan.type === 'Premium' ? 'text-white' : 'text-gray-900 dark:text-white' }}">
+                            @if (plan.price === 0) {
+                            {{ 'subscription.free' | translate }}
+                            } @else {
+                            ${{ plan.price }}
+                            }
+                        </span>
+                        @if (plan.price > 0) {
+                        <span
+                            class="{{ plan.type === 'Premium' ? 'text-purple-200' : 'text-gray-500 dark:text-gray-400' }}">/{{
+                            'subscription.month' | translate }}</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="p-6 space-y-4">
+                    @for (feature of getFeatures(plan); track feature.text) {
+                    <div class="flex items-center gap-3">
+                        @if (feature.included) {
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        } @else {
+                        <svg class="w-5 h-5 text-gray-300 dark:text-gray-600 flex-shrink-0" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        }
+                        <span
+                            class="{{ feature.included ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500' }}">
+                            {{ feature.text }}
+                        </span>
+                    </div>
+                    }
+                </div>
+
+                <!-- Action Button -->
+                <div class="p-6 pt-0">
+                    @if (isCurrentPlan(plan)) {
+                    <div
+                        class="w-full py-3 px-4 rounded-xl text-sm font-medium text-center bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-2 border-purple-500">
+                        {{ 'subscription.current' | translate }}
+                    </div>
+                    } @else {
+                    <button (click)="subscribeToPlan(plan)" [disabled]="isProcessing() || isPlanProcessing(plan.id)"
+                        class="w-full py-3 px-4 rounded-xl text-sm font-medium text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed
+              {{ plan.type === 'Premium' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg shadow-purple-500/30' : 'bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 dark:from-gray-600 dark:to-gray-700' }}">
+                        @if (isPlanProcessing(plan.id)) {
+                        <svg class="animate-spin h-5 w-5 mx-auto" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+                                fill="none"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        } @else {
+                        {{ 'subscription.subscribe' | translate }}
+                        }
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
         }
-    </main>
+    </div>
+
+    }
 </div>

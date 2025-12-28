@@ -13,8 +13,6 @@ import { Ceramic, GeneratedDesign, SavedDesign } from '../../shared/models/desig
 import { ImageUploadComponent } from './components/image-upload/image-upload.component';
 import { GalleryGridComponent } from './components/gallery-grid/gallery-grid.component';
 import { PreviewPanelComponent } from './components/preview-panel/preview-panel.component';
-import { ThemeToggleComponent } from '../../shared/components/theme-toggle.component';
-import { LanguageSwitcherComponent } from '../../shared/components/language-switcher.component';
 
 @Component({
     selector: 'app-studio',
@@ -25,9 +23,7 @@ import { LanguageSwitcherComponent } from '../../shared/components/language-swit
         TranslatePipe,
         ImageUploadComponent,
         GalleryGridComponent,
-        PreviewPanelComponent,
-        ThemeToggleComponent,
-        LanguageSwitcherComponent
+        PreviewPanelComponent
     ],
     templateUrl: './studio.component.html',
     styleUrl: './studio.component.css',
@@ -73,7 +69,7 @@ export class StudioComponent implements OnInit {
     customCeramicImage = signal<File | null>(null);
 
     // اختيارات اللون
-    usePaint = signal(false);
+    usePaint = signal(true);
     selectedColor = signal('#E44C51');
 
     // حالة التوليد والحفظ
@@ -316,6 +312,24 @@ export class StudioComponent implements OnInit {
         } else {
             navigator.clipboard.writeText(result?.generatedImageUrl || '');
             alert('تم نسخ رابط الصورة!');
+        }
+    }
+
+    // تحميل صورة من المفضلة
+    async downloadFavoriteImage(imageUrl: string): Promise<void> {
+        try {
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = `shatbli-favorite-${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            window.open(imageUrl, '_blank');
         }
     }
 

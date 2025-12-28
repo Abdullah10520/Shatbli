@@ -7,24 +7,29 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth.routes').then(m => m.AUTH_ROUTES)
   },
   {
-    path: 'studio',
-    loadComponent: () => import('./features/studio/studio.component').then(m => m.StudioComponent),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'profile',
-    loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'subscription',
-    loadComponent: () => import('./features/subscription/subscription.component').then(m => m.SubscriptionComponent),
-    canActivate: [authGuard]
-  },
-  {
+    // Main layout wrapper for authenticated pages
     path: '',
-    redirectTo: 'auth',
-    pathMatch: 'full'
+    loadComponent: () => import('./shared/components/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'studio',
+        loadComponent: () => import('./features/studio/studio.component').then(m => m.StudioComponent)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+      },
+      {
+        path: 'subscription',
+        loadComponent: () => import('./features/subscription/subscription.component').then(m => m.SubscriptionComponent)
+      },
+      {
+        path: '',
+        redirectTo: 'studio',
+        pathMatch: 'full'
+      }
+    ]
   }
 ];
 

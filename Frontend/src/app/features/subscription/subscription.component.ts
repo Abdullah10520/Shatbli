@@ -7,8 +7,6 @@ import { SubscriptionService } from '../../Core/services/subscription.service';
 import { AuthService } from '../../Core/auth/auth.service';
 import { ThemeService } from '../../Core/services/theme.service';
 import { LanguageService } from '../../Core/services/language.service';
-import { ThemeToggleComponent } from '../../shared/components/theme-toggle.component';
-import { LanguageSwitcherComponent } from '../../shared/components/language-switcher.component';
 import { SubscriptionPlan } from '../../shared/models/subscription.model';
 
 @Component({
@@ -17,9 +15,7 @@ import { SubscriptionPlan } from '../../shared/models/subscription.model';
     imports: [
         CommonModule,
         RouterModule,
-        TranslatePipe,
-        ThemeToggleComponent,
-        LanguageSwitcherComponent
+        TranslatePipe
     ],
     templateUrl: './subscription.component.html',
     styleUrl: './subscription.component.css'
