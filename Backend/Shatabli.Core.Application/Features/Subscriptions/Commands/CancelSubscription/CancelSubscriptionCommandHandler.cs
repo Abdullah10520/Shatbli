@@ -23,6 +23,7 @@ namespace Shatabli.Core.Application.Features.Subscriptions.Commands.CancelSubscr
             var userId = _claimsService.GetCurrentUserId();
 
             var subscription = await _context.UserSubscriptions
+                .AsTracking()
                 .Include(s => s.SubscriptionPlan)
                 .FirstOrDefaultAsync(s => s.UserId == userId && s.IsActive, cancellationToken);
 
@@ -31,11 +32,11 @@ namespace Shatabli.Core.Application.Features.Subscriptions.Commands.CancelSubscr
                 return Result.NotFound("No active subscription found");
             }
 
+            // ✅ Deactivate current subscription
             subscription.IsActive = false;
             subscription.EndDate = DateTime.UtcNow;
-            await _context.SaveChangesAsync(cancellationToken);
 
-            // Revert to free plan
+            // ✅ Revert to free plan
             var freePlan = await _context.SubscriptionPlans
                 .FirstOrDefaultAsync(p => p.Type == PlanType.Free, cancellationToken);
 
@@ -53,8 +54,10 @@ namespace Shatabli.Core.Application.Features.Subscriptions.Commands.CancelSubscr
                 };
 
                 _context.UserSubscriptions.Add(freeSubscription);
-                await _context.SaveChangesAsync(cancellationToken);
             }
+
+            // ✅ Save both changes together
+            await _context.SaveChangesAsync(cancellationToken);
 
             return Result.Success("Subscription cancelled and reverted to free plan");
         }

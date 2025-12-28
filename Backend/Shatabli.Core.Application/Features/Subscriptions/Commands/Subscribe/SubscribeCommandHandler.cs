@@ -30,6 +30,7 @@ namespace Shatabli.Core.Application.Features.Subscriptions.Commands.Subscribe
 
             // Deactivate existing subscriptions
             var existingSubscriptions = await _context.UserSubscriptions
+                .AsTracking()
                 .Where(s => s.UserId == userId && s.IsActive)
                 .ToListAsync(cancellationToken);
 
