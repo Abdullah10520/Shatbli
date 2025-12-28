@@ -20,14 +20,21 @@
                     </h2>
                 </div>
                 <div class="flex flex-wrap gap-4 mt-2">
-                    <a [routerLink]="studioLink"
+                    @if (isLoggedIn) {
+                    <a routerLink="/studio"
                         class="flex items-center justify-center rounded-xl h-12 px-6 bg-purple-600 hover:bg-purple-700 transition-colors text-white text-base font-bold shadow-lg shadow-purple-600/25">
                         {{ 'home.start_now' | translate }}
                     </a>
-                    <a href="#how-it-works"
-                        class="flex items-center justify-center rounded-xl h-12 px-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-white text-base font-bold">
-                        {{ 'home.learn_more' | translate }}
+                    } @else {
+                    <a routerLink="/auth/login" [queryParams]="{returnUrl: '/studio'}"
+                        class="flex items-center justify-center rounded-xl h-12 px-6 bg-purple-600 hover:bg-purple-700 transition-colors text-white text-base font-bold shadow-lg shadow-purple-600/25">
+                        {{ 'home.start_now' | translate }}
                     </a>
+                    }
+                    <button (click)="scrollToSection('how-it-works')"
+                        class="flex items-center justify-center rounded-xl h-12 px-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-white text-base font-bold cursor-pointer">
+                        {{ 'home.learn_more' | translate }}
+                    </button>
                 </div>
                 <!-- Trust Indicators -->
                 <div class="flex items-center gap-4 mt-4 text-sm text-gray-500 dark:text-gray-400">

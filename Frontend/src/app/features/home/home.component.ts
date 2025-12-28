@@ -22,4 +22,12 @@ export class HomeComponent {
     get studioLink(): string {
         return this.isLoggedIn ? '/studio' : '/auth/login';
     }
+
+    scrollToSection(sectionId: string): void {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
 }
+
