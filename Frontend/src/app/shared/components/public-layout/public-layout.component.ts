@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -26,6 +26,9 @@ export class PublicLayoutComponent {
     private router = inject(Router);
     readonly languageService = inject(LanguageService);
 
+    // Mobile menu state
+    mobileMenuOpen = signal(false);
+
     get isLoggedIn(): boolean {
         return this.authService.isLoggedIn();
     }
@@ -34,8 +37,18 @@ export class PublicLayoutComponent {
         return this.authService.currentUserSig();
     }
 
+    toggleMobileMenu(): void {
+        this.mobileMenuOpen.update(v => !v);
+    }
+
+    closeMobileMenu(): void {
+        this.mobileMenuOpen.set(false);
+    }
+
     logout(): void {
         this.authService.logout();
+        this.closeMobileMenu();
         this.router.navigate(['/']);
     }
 }
+
