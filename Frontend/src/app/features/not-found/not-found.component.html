@@ -1,0 +1,46 @@
+<div class="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
+    <!-- 404 Illustration -->
+    <div class="relative mb-8">
+        <div class="text-[150px] sm:text-[200px] font-black text-gray-200 dark:text-gray-800 leading-none select-none">
+            404
+        </div>
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div
+                class="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                <svg class="w-12 h-12 sm:w-16 sm:h-16 text-purple-600 dark:text-purple-400" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text Content -->
+    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        {{ 'notfound.title' | translate }}
+    </h1>
+    <p class="text-gray-500 dark:text-gray-400 text-lg max-w-md mb-8">
+        {{ 'notfound.message' | translate }}
+    </p>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap gap-4 justify-center">
+        <a routerLink="/"
+            class="flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition-colors shadow-lg shadow-purple-600/25">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            {{ 'notfound.go_home' | translate }}
+        </a>
+        <a routerLink="/studio"
+            class="flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-xl transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg>
+            {{ 'notfound.go_studio' | translate }}
+        </a>
+    </div>
+</div>

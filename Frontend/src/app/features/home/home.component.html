@@ -1,0 +1,432 @@
+<!-- Hero Section -->
+<section class="w-full px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col gap-10 lg:flex-row items-center">
+            <!-- Text Content -->
+            <div class="flex flex-col gap-6 lg:w-1/2 text-start">
+                <div class="flex flex-col gap-4">
+                    <span class="text-purple-600 dark:text-purple-400 font-bold tracking-wider uppercase text-sm">
+                        {{ 'home.hero_badge' | translate }}
+                    </span>
+                    <h1
+                        class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight text-gray-900 dark:text-white">
+                        {{ 'home.hero_title' | translate }}
+                        <span class="text-purple-600 dark:text-purple-400">{{ 'home.hero_highlight' | translate
+                            }}</span>
+                    </h1>
+                    <h2
+                        class="text-gray-500 dark:text-gray-400 text-lg sm:text-xl font-medium leading-relaxed max-w-xl">
+                        {{ 'home.hero_subtitle' | translate }}
+                    </h2>
+                </div>
+                <div class="flex flex-wrap gap-4 mt-2">
+                    <a [routerLink]="studioLink"
+                        class="flex items-center justify-center rounded-xl h-12 px-6 bg-purple-600 hover:bg-purple-700 transition-colors text-white text-base font-bold shadow-lg shadow-purple-600/25">
+                        {{ 'home.start_now' | translate }}
+                    </a>
+                    <a href="#how-it-works"
+                        class="flex items-center justify-center rounded-xl h-12 px-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-white text-base font-bold">
+                        {{ 'home.learn_more' | translate }}
+                    </a>
+                </div>
+                <!-- Trust Indicators -->
+                <div class="flex items-center gap-4 mt-4 text-sm text-gray-500 dark:text-gray-400">
+                    <div class="flex -space-x-2 rtl:space-x-reverse">
+                        <div
+                            class="h-8 w-8 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 border-2 border-white dark:border-gray-900">
+                        </div>
+                        <div
+                            class="h-8 w-8 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 border-2 border-white dark:border-gray-900">
+                        </div>
+                        <div
+                            class="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-400 to-blue-500 border-2 border-white dark:border-gray-900">
+                        </div>
+                    </div>
+                    <p>{{ 'home.trusted_by' | translate }}</p>
+                </div>
+            </div>
+
+            <!-- Hero Visual -->
+            <div class="w-full lg:w-1/2 relative group">
+                <div
+                    class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000">
+                </div>
+                <div
+                    class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700 bg-gray-900">
+                    <img alt="Modern living room interior design" class="w-full h-full object-cover"
+                        src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80">
+                    <!-- Floating UI Card -->
+                    <div
+                        class="absolute bottom-6 start-6 end-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md p-4 rounded-lg border border-white/20 dark:border-gray-700 flex items-center justify-between shadow-lg">
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase">{{
+                                'home.style_applied' | translate }}</p>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white">{{ 'home.style_name' | translate
+                                }}</p>
+                        </div>
+                        <div class="h-10 w-10 rounded-full bg-purple-600 flex items-center justify-center text-white">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Band -->
+<section
+    class="w-full px-4 sm:px-6 lg:px-8 py-8 border-y border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50">
+    <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div class="flex flex-col gap-1 items-center justify-center">
+                <span class="text-2xl md:text-3xl font-black text-gray-900 dark:text-white">50+</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400 font-medium">{{ 'home.stat_styles' | translate
+                    }}</span>
+            </div>
+            <div class="flex flex-col gap-1 items-center justify-center">
+                <span class="text-2xl md:text-3xl font-black text-gray-900 dark:text-white">5s</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400 font-medium">{{ 'home.stat_time' | translate
+                    }}</span>
+            </div>
+            <div class="flex flex-col gap-1 items-center justify-center">
+                <span class="text-2xl md:text-3xl font-black text-gray-900 dark:text-white">100%</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400 font-medium">{{ 'home.stat_ai' | translate
+                    }}</span>
+            </div>
+            <div class="flex flex-col gap-1 items-center justify-center">
+                <span class="text-2xl md:text-3xl font-black text-gray-900 dark:text-white">HD</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400 font-medium">{{ 'home.stat_quality' | translate
+                    }}</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="w-full px-4 sm:px-6 lg:px-8 py-20">
+    <div class="flex flex-col gap-12 max-w-5xl mx-auto">
+        <div class="text-center flex flex-col gap-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">{{ 'home.how_title' | translate }}
+            </h2>
+            <p class="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto">{{ 'home.how_subtitle' | translate }}
+            </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Step 1 -->
+            <div
+                class="flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:border-purple-500/50 transition-colors group">
+                <div
+                    class="h-12 w-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ 'home.step1_title' | translate }}
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'home.step1_desc' | translate }}</p>
+                </div>
+            </div>
+            <!-- Step 2 -->
+            <div
+                class="flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:border-purple-500/50 transition-colors group">
+                <div
+                    class="h-12 w-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                    </svg>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ 'home.step2_title' | translate }}
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'home.step2_desc' | translate }}</p>
+                </div>
+            </div>
+            <!-- Step 3 -->
+            <div
+                class="flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:border-purple-500/50 transition-colors group">
+                <div
+                    class="h-12 w-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ 'home.step3_title' | translate }}
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'home.step3_desc' | translate }}</p>
+                </div>
+            </div>
+            <!-- Step 4 -->
+            <div
+                class="flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:border-purple-500/50 transition-colors group">
+                <div
+                    class="h-12 w-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ 'home.step4_title' | translate }}
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'home.step4_desc' | translate }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Before & After Section -->
+<section class="w-full px-4 sm:px-6 lg:px-8 py-20 bg-gray-50 dark:bg-gray-800/30">
+    <div class="flex flex-col gap-12 max-w-5xl mx-auto">
+        <div class="text-center flex flex-col gap-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">{{ 'home.gallery_title' | translate
+                }}</h2>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">{{ 'home.gallery_subtitle' | translate }}</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <!-- Before Card -->
+            <div
+                class="relative group overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl">
+                <div
+                    class="absolute top-4 start-4 bg-black/60 backdrop-blur px-3 py-1 rounded text-white text-sm font-bold z-10">
+                    {{ 'home.before' | translate }}</div>
+                <img class="w-full aspect-[4/3] object-cover grayscale-[50%] group-hover:grayscale-0 transition-all duration-500"
+                    src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=600&q=80" alt="Before renovation">
+                <div class="p-4 bg-white dark:bg-gray-800">
+                    <h3 class="font-bold text-lg text-gray-900 dark:text-white">{{ 'home.before_title' | translate }}
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'home.before_desc' | translate }}</p>
+                </div>
+            </div>
+            <!-- After Card -->
+            <div
+                class="relative group overflow-hidden rounded-2xl border border-purple-500/30 shadow-xl shadow-purple-500/10">
+                <div class="absolute top-4 start-4 bg-purple-600 px-3 py-1 rounded text-white text-sm font-bold z-10">{{
+                    'home.after' | translate }}</div>
+                <img class="w-full aspect-[4/3] object-cover"
+                    src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=600&q=80"
+                    alt="After renovation">
+                <div
+                    class="absolute bottom-0 start-0 end-0 p-4 bg-gradient-to-t from-black/80 to-transparent text-white z-10">
+                    <h3 class="font-bold text-lg">{{ 'home.after_title' | translate }}</h3>
+                    <p class="text-sm text-gray-200">{{ 'home.after_desc' | translate }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Grid -->
+<section class="w-full px-4 sm:px-6 lg:px-8 py-20">
+    <div class="flex flex-col gap-12 max-w-5xl mx-auto">
+        <div class="flex flex-col gap-2 border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white">{{ 'home.features_title' | translate }}</h2>
+            <p class="text-gray-500 dark:text-gray-400">{{ 'home.features_subtitle' | translate }}</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Feature 1 -->
+            <div
+                class="p-6 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex flex-col gap-4">
+                <div class="text-purple-600 dark:text-purple-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h3 class="font-bold text-lg text-gray-900 dark:text-white">{{ 'home.feature1_title' | translate }}
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'home.feature1_desc' | translate }}</p>
+                </div>
+            </div>
+            <!-- Feature 2 -->
+            <div
+                class="p-6 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex flex-col gap-4">
+                <div class="text-purple-600 dark:text-purple-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h3 class="font-bold text-lg text-gray-900 dark:text-white">{{ 'home.feature2_title' | translate }}
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'home.feature2_desc' | translate }}</p>
+                </div>
+            </div>
+            <!-- Feature 3 -->
+            <div
+                class="p-6 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex flex-col gap-4">
+                <div class="text-purple-600 dark:text-purple-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h3 class="font-bold text-lg text-gray-900 dark:text-white">{{ 'home.feature3_title' | translate }}
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'home.feature3_desc' | translate }}</p>
+                </div>
+            </div>
+            <!-- Feature 4 -->
+            <div
+                class="p-6 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex flex-col gap-4">
+                <div class="text-purple-600 dark:text-purple-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h3 class="font-bold text-lg text-gray-900 dark:text-white">{{ 'home.feature4_title' | translate }}
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'home.feature4_desc' | translate }}</p>
+                </div>
+            </div>
+            <!-- Feature 5 -->
+            <div
+                class="p-6 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex flex-col gap-4">
+                <div class="text-purple-600 dark:text-purple-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h3 class="font-bold text-lg text-gray-900 dark:text-white">{{ 'home.feature5_title' | translate }}
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'home.feature5_desc' | translate }}</p>
+                </div>
+            </div>
+            <!-- Feature 6 -->
+            <div
+                class="p-6 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex flex-col gap-4">
+                <div class="text-purple-600 dark:text-purple-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                    </svg>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h3 class="font-bold text-lg text-gray-900 dark:text-white">{{ 'home.feature6_title' | translate }}
+                    </h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'home.feature6_desc' | translate }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="w-full px-4 sm:px-6 lg:px-8 py-20 bg-gray-50 dark:bg-gray-800/30">
+    <div class="max-w-5xl mx-auto">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">{{ 'home.testimonials_title' |
+            translate }}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Review 1 -->
+            <div
+                class="flex flex-col gap-4 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="flex gap-1 text-yellow-500">
+                    @for (star of [1,2,3,4,5]; track star) {
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                        <path
+                            d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                    </svg>
+                    }
+                </div>
+                <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{{ 'home.review1_text' | translate
+                    }}</p>
+                <div class="flex items-center gap-3 mt-auto">
+                    <div class="h-8 w-8 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500"></div>
+                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400">{{ 'home.review1_author' |
+                        translate }}</span>
+                </div>
+            </div>
+            <!-- Review 2 -->
+            <div
+                class="flex flex-col gap-4 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="flex gap-1 text-yellow-500">
+                    @for (star of [1,2,3,4,5]; track star) {
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                        <path
+                            d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                    </svg>
+                    }
+                </div>
+                <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{{ 'home.review2_text' | translate
+                    }}</p>
+                <div class="flex items-center gap-3 mt-auto">
+                    <div class="h-8 w-8 rounded-full bg-gradient-to-br from-pink-400 to-purple-500"></div>
+                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400">{{ 'home.review2_author' |
+                        translate }}</span>
+                </div>
+            </div>
+            <!-- Review 3 -->
+            <div
+                class="flex flex-col gap-4 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="flex gap-1 text-yellow-500">
+                    @for (star of [1,2,3,4,5]; track star) {
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                        <path
+                            d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                    </svg>
+                    }
+                </div>
+                <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{{ 'home.review3_text' | translate
+                    }}</p>
+                <div class="flex items-center gap-3 mt-auto">
+                    <div class="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-400 to-blue-500"></div>
+                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400">{{ 'home.review3_author' |
+                        translate }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="w-full px-4 sm:px-6 lg:px-8 py-20">
+    <div class="max-w-5xl mx-auto">
+        <div
+            class="flex flex-col lg:flex-row items-center justify-between gap-10 rounded-3xl bg-gradient-to-r from-purple-600 to-indigo-600 p-8 lg:p-12 shadow-2xl">
+            <div class="flex flex-col gap-4 lg:w-2/3">
+                <h2 class="text-3xl font-black text-white">{{ 'home.cta_title' | translate }}</h2>
+                <p class="text-purple-200 text-lg">{{ 'home.cta_subtitle' | translate }}</p>
+                <div class="flex gap-4 mt-2">
+                    <div class="flex items-center gap-2 text-sm text-purple-100">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>{{ 'home.cta_feature1' | translate }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-purple-100">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span>{{ 'home.cta_feature2' | translate }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col gap-3 w-full lg:w-auto">
+                <a [routerLink]="studioLink"
+                    class="whitespace-nowrap flex items-center justify-center rounded-xl h-14 px-8 bg-white hover:bg-gray-100 transition-colors text-purple-600 text-lg font-bold">
+                    {{ 'home.cta_button' | translate }}
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,76 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300 flex flex-col"
+    [dir]="languageService.isRTL() ? 'rtl' : 'ltr'">
+
+    <!-- Public Navbar -->
+    <header
+        class="sticky top-0 z-40 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a routerLink="/" class="flex items-center gap-2">
+                    <img src="/assets/images/logo.png" [alt]="'app.name' | translate" class="h-8 w-auto">
+                    <span class="text-2xl font-bold text-gray-800 dark:text-white">{{ 'app.name' | translate }}</span>
+                </a>
+
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a routerLink="/" routerLinkActive="text-purple-600 dark:text-purple-400"
+                        [routerLinkActiveOptions]="{exact: true}"
+                        class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                        {{ 'nav.home' | translate }}
+                    </a>
+                    <a routerLink="/studio"
+                        class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                        {{ 'nav.studio' | translate }}
+                    </a>
+                    @if (isLoggedIn) {
+                    <a routerLink="/subscription"
+                        class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                        {{ 'nav.subscription' | translate }}
+                    </a>
+                    }
+                </div>
+
+                <!-- Right Side Actions -->
+                <div class="flex items-center gap-3">
+                    <app-language-switcher />
+                    <app-theme-toggle />
+
+                    @if (isLoggedIn) {
+                    <!-- Logged In State -->
+                    <div class="flex items-center gap-3">
+                        <a routerLink="/profile"
+                            class="text-sm text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hidden sm:block">
+                            {{ currentUser?.fullName }}
+                        </a>
+                        <button (click)="logout()"
+                            class="text-sm text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium">
+                            {{ 'nav.logout' | translate }}
+                        </button>
+                    </div>
+                    } @else {
+                    <!-- Guest State -->
+                    <div class="flex items-center gap-3">
+                        <a routerLink="/auth/login"
+                            class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hidden sm:block">
+                            {{ 'nav.login' | translate }}
+                        </a>
+                        <a routerLink="/auth/register"
+                            class="hidden sm:flex items-center justify-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors">
+                            {{ 'nav.register' | translate }}
+                        </a>
+                    </div>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        <router-outlet />
+    </main>
+
+    <!-- Footer -->
+    <app-footer />
+</div>
