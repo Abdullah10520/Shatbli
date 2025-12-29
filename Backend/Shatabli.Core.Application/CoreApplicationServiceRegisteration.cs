@@ -23,6 +23,7 @@ namespace Shatabli.Core.Application
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             });
 
+            services.AddMemoryCache();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

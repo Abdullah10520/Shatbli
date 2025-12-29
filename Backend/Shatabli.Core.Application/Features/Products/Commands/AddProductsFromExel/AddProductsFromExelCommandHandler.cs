@@ -11,7 +11,8 @@ using OfficeOpenXml;
 using Shatabli.Core.Application.Interfaces;
 using Shatabli.Core.Domain.Entities;
 using Shatabli.Core.Domain.Enums;
-
+using Microsoft.Extensions.Caching.Memory;
+using Shatabli.Core.Application.Features.Products.Queries.GetAllCeramics;
 namespace Shatabli.Core.Application.Features.Products.Commands.AddProductsFromExel
 {
     public class AddProductsFromExelCommandHandler : IRequestHandler<AddProductsFromExelCommand, AddProductsFromExelResponse>
@@ -19,12 +20,13 @@ namespace Shatabli.Core.Application.Features.Products.Commands.AddProductsFromEx
         private readonly HttpClient httpClient;
         private readonly IStorageService _storageService;
         private readonly IApplicationDbContext _context;
-
-        public AddProductsFromExelCommandHandler(HttpClient httpClient ,IStorageService storageService, IApplicationDbContext context)
+        private readonly IMemoryCache _cache;
+        public AddProductsFromExelCommandHandler(HttpClient httpClient ,IStorageService storageService, IApplicationDbContext context, IMemoryCache cache)
         {
             this.httpClient = httpClient;
             _storageService = storageService;
             _context = context;
+            _cache = cache;
         }
         async Task<AddProductsFromExelResponse> IRequestHandler<AddProductsFromExelCommand, AddProductsFromExelResponse>.Handle(AddProductsFromExelCommand request, CancellationToken cancellationToken)
         {
@@ -85,6 +87,8 @@ namespace Shatabli.Core.Application.Features.Products.Commands.AddProductsFromEx
                     }
                 }
                 await _context.SaveChangesAsync(cancellationToken);
+                // Invalidate cache to ensure fresh data on next GetAllCeramics call
+                _cache.Remove(GetAllCeramicsQueryHandler.CacheKey);
             }
 
             return new AddProductsFromExelResponse();

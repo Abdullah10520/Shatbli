@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Shatabli.Core.Application.Features.Products.Queries.GetAllCeramics
 {
@@ -19,16 +20,25 @@ namespace Shatabli.Core.Application.Features.Products.Queries.GetAllCeramics
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
 
-        public GetAllCeramicsQueryHandler(IApplicationDbContext context, IMapper mapper)
+        public const string CacheKey = "AllCeramics";
+
+        public GetAllCeramicsQueryHandler(IApplicationDbContext context, IMapper mapper, IMemoryCache cache)
         {
             _context = context;
             _mapper = mapper;
+            _cache = cache;
         }
         async Task<Result<GetAllCeramicsResponse>> IRequestHandler<GetAllCeramicsQuery, Result<GetAllCeramicsResponse>>.Handle(GetAllCeramicsQuery request, CancellationToken cancellationToken)
         {
             try
             {
+                // Check if data exists in cache
+                if (_cache.TryGetValue(CacheKey, out GetAllCeramicsResponse cachedResponse))
+                {
+                    return Result<GetAllCeramicsResponse>.Success(cachedResponse, "Ceramics retrieved from cache.");
+                }
                 var result = await _context.Products
                     .Where(p => p.Category == ProductCategory.FlooringCeramics)
                     .ProjectTo<CeramicDTO>(_mapper.ConfigurationProvider)
@@ -38,6 +48,14 @@ namespace Shatabli.Core.Application.Features.Products.Queries.GetAllCeramics
                 {
                     ceramicList = result ?? new List<CeramicDTO>()
                 };
+
+                // Store in cache with no expiration
+                var cacheEntryOptions = new MemoryCacheEntryOptions
+                {
+                    Priority = CacheItemPriority.NeverRemove
+                };
+
+                _cache.Set(CacheKey, response, cacheEntryOptions);
 
                 return Result<GetAllCeramicsResponse>.Success(response, "Ceramics retrieved successfully.");
             }
