@@ -1,1 +1,53 @@
 /* Studio Component Styles */
+
+/* Slide down animation for accordion */
+.animate-slideDown {
+    animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+@keyframes slideDown {
+    0% {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-8px);
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    100% {
+        opacity: 1;
+        max-height: 500px;
+        transform: translateY(0);
+    }
+}
+
+/* Arrow rotation with smooth transition */
+.rotate-180 {
+    transform: rotate(180deg);
+}
+
+/* Smooth transitions for design cards */
+.design-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.design-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Badge animations */
+.design-card button>div>div {
+    transition: all 0.2s ease;
+}
+
+/* Smooth border glow effect on hover */
+.design-card:hover {
+    box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+:host-context(.dark) .design-card:hover {
+    box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.3),
+        0 4px 6px -4px rgba(0, 0, 0, 0.2);
+}

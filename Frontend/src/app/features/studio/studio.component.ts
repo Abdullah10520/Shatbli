@@ -71,6 +71,10 @@ export class StudioComponent implements OnInit {
     // اختيارات اللون
     usePaint = signal(false);
     selectedColor = signal<string | null>(null);
+    colorSectionExpanded = signal(false);
+
+    // اختيارات السيراميك (مضافة هنا)
+    ceramicSectionExpanded = signal(false);
 
     // حالة التوليد والحفظ
     isGenerating = this.designService.isGeneratingSig;
