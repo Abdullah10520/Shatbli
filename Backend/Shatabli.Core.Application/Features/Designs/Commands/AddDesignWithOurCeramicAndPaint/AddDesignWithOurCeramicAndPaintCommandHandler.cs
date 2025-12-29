@@ -37,19 +37,6 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithOurCe
         {
             try
             {
-                //var allowGenerate = await _mediator.Send(new CheckCanGenerateQuery());
-                //if (!allowGenerate.IsSuccess)
-                //{
-                //    return Result<AddDesignWithOurCeramicAndPaintResponse>.Failure(allowGenerate.Message, allowGenerate.StatusCode, allowGenerate.Errors);
-                //}
-
-                //var US = _context.UserSubscriptions.Where(us => us.UserId == _claimsService.GetCurrentUserId()).FirstOrDefault();
-
-                //US.ImagesGeneratedToday = US.ImagesGeneratedToday + 1;
-                //US.ImagesGeneratedThisMonth = US.ImagesGeneratedThisMonth + 1;
-                //_context.UserSubscriptions.Update(US);
-
-
                 var ceramicResult = await _mediator.Send(new GetCeramicQuery { CeramicId = request.ceramicId }, cancellationToken);
 
                 if (!ceramicResult.IsSuccess)

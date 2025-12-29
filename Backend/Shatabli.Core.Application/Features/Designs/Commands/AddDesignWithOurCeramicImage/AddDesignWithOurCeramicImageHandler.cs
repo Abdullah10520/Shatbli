@@ -35,18 +35,12 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
         {
             try
             {
-                //var allowGenerate = await _mediator.Send(new CheckCanGenerateQuery());
-                //if(!allowGenerate.IsSuccess)
-                //{
-                //    return Result<AddDesignWithOurCeramicImageResponse>.Failure(allowGenerate.Message, allowGenerate.StatusCode, allowGenerate.Errors);
-                //}
+                var allowGenerate = await _mediator.Send(new CheckCanGenerateQuery());
+                if (!allowGenerate.IsSuccess)
+                {
+                    return Result<AddDesignWithOurCeramicImageResponse>.Failure(allowGenerate.Message, allowGenerate.StatusCode, allowGenerate.Errors);
+                }
 
-                //var US = _context.UserSubscriptions.Where(us => us.UserId == _claimsService.GetCurrentUserId()).FirstOrDefault();
-
-                //US.ImagesGeneratedToday = US.ImagesGeneratedToday + 1;
-                //US.ImagesGeneratedThisMonth = US.ImagesGeneratedThisMonth + 1;
-                //_context.UserSubscriptions.Update(US);
-  
 
                 var ceramicResult = await _mediator.Send(new GetCeramicQuery { CeramicId = request.ceramicId }, cancellationToken);
 
@@ -89,6 +83,12 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddOrignalImage
                     GeneratedImagePath = genImagePath,
                     UserId = currentUserId
                 };
+
+                var US = _context.UserSubscriptions.Where(us => us.UserId == _claimsService.GetCurrentUserId()).FirstOrDefault();
+
+                US.ImagesGeneratedToday = US.ImagesGeneratedToday + 1;
+                US.ImagesGeneratedThisMonth = US.ImagesGeneratedThisMonth + 1;
+                _context.UserSubscriptions.Update(US);
 
                 _context.Designs.Add(design);
                 await _context.SaveChangesAsync(cancellationToken);
