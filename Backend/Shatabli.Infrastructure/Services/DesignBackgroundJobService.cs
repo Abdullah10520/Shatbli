@@ -37,11 +37,6 @@ namespace Shatabli.Infrastructure.Services
             _context.Designs.Remove(design);
             await _context.SaveChangesAsync();
 
-            //design.IsDeleted = true;
-            //design.DeletedAt = DateTime.UtcNow;
-
-
-
             var fileName = Path.GetFileName(design.GeneratedImagePath.TrimStart('/')); // Trim لضمان عدم وجود سلاش في البداية
             var fullPath = Path.Combine(_pathProvider.WebRootPath, "temp-images", fileName);
 
@@ -49,15 +44,6 @@ namespace Shatabli.Infrastructure.Services
             {
                 File.Delete(fullPath);
             }
-
-            //_context.Designs.Attach(design);
-
-            //var dbContext = _context as DbContext;
-
-            //dbContext.Entry(design).Property(x => x.IsDeleted).IsModified = true;
-            //dbContext.Entry(design).Property(x => x.DeletedAt).IsModified = true;
-
-            //await _context.SaveChangesAsync();
         }
     }
 }
