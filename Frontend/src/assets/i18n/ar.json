@@ -91,7 +91,10 @@
         "upload_image": "رفع صورة",
         "image_selected": "تم اختيار الصورة",
         "click_to_upload": "اضغط لرفع صورة سيراميك",
-        "selected_color": "اللون المختار"
+        "selected_color": "اللون المختار",
+        "no_color_selected": "لم يتم اختيار لون",
+        "clear_selection": "إلغاء الاختيار",
+        "remove_image": "إزالة الصورة"
     },
     "design": {
         "ceramic": "سيراميك",

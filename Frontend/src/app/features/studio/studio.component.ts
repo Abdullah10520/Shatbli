@@ -70,7 +70,7 @@ export class StudioComponent implements OnInit {
 
     // اختيارات اللون
     usePaint = signal(false);
-    selectedColor = signal('#E44C51');
+    selectedColor = signal<string | null>(null);
 
     // حالة التوليد والحفظ
     isGenerating = this.designService.isGeneratingSig;
@@ -164,10 +164,15 @@ export class StudioComponent implements OnInit {
     }
 
     // معالجة اختيار سيراميك من المعرض
-    onCeramicSelected(ceramic: Ceramic): void {
-        this.useCeramic.set(true);
-        this.selectedCeramic.set(ceramic);
-        this.customCeramicImage.set(null);
+    onCeramicSelected(ceramic: Ceramic | null): void {
+        if (ceramic) {
+            this.useCeramic.set(true);
+            this.selectedCeramic.set(ceramic);
+            this.customCeramicImage.set(null);
+        } else {
+            this.useCeramic.set(false);
+            this.selectedCeramic.set(null);
+        }
     }
 
     // معالجة رفع صورة سيراميك مخصصة
@@ -192,6 +197,24 @@ export class StudioComponent implements OnInit {
         this.selectedColor.set(input.value);
     }
 
+    // إلغاء اختيار اللون
+    clearColor(): void {
+        this.selectedColor.set(null);
+        this.usePaint.set(false);
+    }
+
+    // إلغاء اختيار السيراميك
+    clearCeramic(): void {
+        this.selectedCeramic.set(null);
+        this.useCeramic.set(false);
+    }
+
+    // إلغاء الصورة المرفوعة للسيراميك
+    clearCustomCeramic(): void {
+        this.customCeramicImage.set(null);
+        this.useCeramic.set(false);
+    }
+
     // توليد التصميم
     generate(): void {
         const roomImage = this.roomImage();
@@ -199,7 +222,7 @@ export class StudioComponent implements OnInit {
 
         const useCeramic = this.useCeramic();
         const usePaint = this.usePaint();
-        const colorCode = this.selectedColor().replace('#', '');
+        const colorCode = this.selectedColor()?.replace('#', '') || '';
 
         if (useCeramic && usePaint) {
             // سيراميك + لون

@@ -91,7 +91,10 @@
         "upload_image": "Upload Image",
         "image_selected": "Image selected",
         "click_to_upload": "Click to upload ceramic image",
-        "selected_color": "Selected Color"
+        "selected_color": "Selected Color",
+        "no_color_selected": "No color selected",
+        "clear_selection": "Clear selection",
+        "remove_image": "Remove image"
     },
     "design": {
         "ceramic": "Ceramic",

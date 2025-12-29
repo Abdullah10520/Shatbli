@@ -15,7 +15,7 @@ export class GalleryGridComponent implements OnInit {
     private designService = inject(DesignService);
 
     // المخرجات
-    designSelected = output<Ceramic>();
+    designSelected = output<Ceramic | null>();
 
     // الحالة
     items = signal<Ceramic[]>([]);
@@ -40,7 +40,18 @@ export class GalleryGridComponent implements OnInit {
     }
 
     selectItem(item: Ceramic): void {
-        this.selectedItem.set(item);
-        this.designSelected.emit(item);
+        // إذا تم النقر على نفس العنصر المختار، إلغاء الاختيار
+        if (this.selectedItem()?.id === item.id) {
+            this.selectedItem.set(null);
+            this.designSelected.emit(null);
+        } else {
+            this.selectedItem.set(item);
+            this.designSelected.emit(item);
+        }
+    }
+
+    // إلغاء الاختيار من الخارج
+    clearSelection(): void {
+        this.selectedItem.set(null);
     }
 }
