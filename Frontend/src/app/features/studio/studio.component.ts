@@ -63,13 +63,13 @@ export class StudioComponent implements OnInit {
     roomImageUrl = signal<string | null>(null);
 
     // اختيارات السيراميك
-    useCeramic = signal(true);
+    useCeramic = signal(false);
     ceramicSource = signal<'gallery' | 'custom'>('gallery');
     selectedCeramic = signal<Ceramic | null>(null);
     customCeramicImage = signal<File | null>(null);
 
     // اختيارات اللون
-    usePaint = signal(true);
+    usePaint = signal(false);
     selectedColor = signal('#E44C51');
 
     // حالة التوليد والحفظ
@@ -165,12 +165,14 @@ export class StudioComponent implements OnInit {
 
     // معالجة اختيار سيراميك من المعرض
     onCeramicSelected(ceramic: Ceramic): void {
+        this.useCeramic.set(true);
         this.selectedCeramic.set(ceramic);
         this.customCeramicImage.set(null);
     }
 
     // معالجة رفع صورة سيراميك مخصصة
     onCustomCeramicSelected(file: File): void {
+        this.useCeramic.set(true);
         this.customCeramicImage.set(file);
         this.selectedCeramic.set(null);
     }
@@ -185,6 +187,7 @@ export class StudioComponent implements OnInit {
 
     // تغيير اللون
     onColorChange(event: Event): void {
+        this.usePaint.set(true);
         const input = event.target as HTMLInputElement;
         this.selectedColor.set(input.value);
     }

@@ -99,7 +99,7 @@ namespace Shatabli.Core.Application.Features.Designs.Commands.AddDesignWithPaint
             catch (Exception ex)
             {
                 return Result<AddDesignWithPaintResponse>.Failure(
-                    message: "An unexpected error occurred during processing.",
+                    message: "An an unexpected error occurred during processing.",
                     statusCode: 500,
                     errors: new List<string> { ex.Message }
                 );
